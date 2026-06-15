@@ -501,7 +501,7 @@
           </div>
           <div class="auth-error" id="authError" role="alert" aria-live="polite"></div>
         </form>
-        <p class="auth-note"><strong>Nota:</strong> Contraseña de equipo para acceder a la plataforma.</p>
+        <p class="auth-note"><strong>Nota:</strong> esto evita accesos casuales, pero no sustituye un login real si el site o el JSON están publicados en abierto.</p>
       </div>
     </div>
   </section>
@@ -598,62 +598,275 @@
       const STATUS_OPTIONS = ['Activo', 'En propuesta', 'En espera', 'Cerrado'];
       const ROLE_OPTIONS = ['Partner / Lead', 'Project Manager', 'Senior Consultant', 'Consultant', 'Data Analyst', 'UX / Product', 'Operations'];
       const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      const FIXED_GITHUB_CONFIG = Object.freeze({ owner: 'hybridathletics94', repo: 'Advisory_FTE', branch: 'main', path: 'data/planner.json' });
+      const DEFAULT_DATA = {
+              "settings": {
+                      "portfolioStartDate": "2026-06-15",
+                      "horizonWeeks": 26,
+                      "summaryGranularity": "week"
+              },
+              "people": [
+                      {
+                              "id": "person_qk3xdgo",
+                              "name": "Natalia",
+                              "role": "Partner / Lead",
+                              "capacity": 1,
+                              "active": true
+                      },
+                      {
+                              "id": "person_9bzn2pf",
+                              "name": "Javi",
+                              "role": "Senior Consultant",
+                              "capacity": 1,
+                              "active": true
+                      },
+                      {
+                              "id": "person_sxydvxl",
+                              "name": "Carlos",
+                              "role": "Senior Consultant",
+                              "capacity": 1,
+                              "active": true
+                      },
+                      {
+                              "id": "person_ld8htvs",
+                              "name": "Pedro",
+                              "role": "Consultant",
+                              "capacity": 1,
+                              "active": true
+                      }
+              ],
+              "projects": [
+                      {
+                              "id": "project_ygr40ky",
+                              "name": "PMST - Astara",
+                              "client": "Astara",
+                              "status": "Activo",
+                              "startDate": "2026-06-15",
+                              "durationWeeks": 12,
+                              "notes": "Plan de movilidad corporativa: diagnóstico, medidas potenciales y documentación final.",
+                              "plan": {
+                                      "person_ld8htvs": {
+                                              "0": 0.5,
+                                              "1": 0.5,
+                                              "2": 0.5,
+                                              "3": 0.5,
+                                              "4": 0.5,
+                                              "5": 0.5,
+                                              "6": 0.5,
+                                              "7": 0.5,
+                                              "8": 0.5,
+                                              "9": 0.5,
+                                              "10": 0.5,
+                                              "11": 0.5
+                                      },
+                                      "person_sxydvxl": {
+                                              "0": 0.5,
+                                              "1": 0.5,
+                                              "2": 0.5,
+                                              "3": 0.5,
+                                              "4": 0.5,
+                                              "5": 0.5,
+                                              "6": 0.5,
+                                              "7": 0.5,
+                                              "8": 0.5,
+                                              "9": 0.5,
+                                              "10": 0.5,
+                                              "11": 0.5
+                                      }
+                              }
+                      },
+                      {
+                              "id": "project_jr8ckuq",
+                              "name": "PMST - Metro Bilbao",
+                              "client": "Metro Bilbao",
+                              "status": "Activo",
+                              "startDate": "2026-07-06",
+                              "durationWeeks": 12,
+                              "notes": "Acompañamiento para diagnóstico, lectura de movilidad y preparación de PMST.",
+                              "plan": {
+                                      "person_ld8htvs": {
+                                              "0": 0.5,
+                                              "1": 0.5,
+                                              "2": 0.5,
+                                              "3": 0.5,
+                                              "4": 0.5,
+                                              "5": 0.5,
+                                              "6": 0.5,
+                                              "7": 0.5,
+                                              "8": 0.5,
+                                              "9": 0.5,
+                                              "10": 0.5,
+                                              "11": 0.5
+                                      },
+                                      "person_sxydvxl": {
+                                              "0": 0.5,
+                                              "1": 0.5,
+                                              "2": 0.5,
+                                              "3": 0.5,
+                                              "4": 0.5,
+                                              "5": 0.5,
+                                              "6": 0.5,
+                                              "7": 0.5,
+                                              "8": 0.5,
+                                              "9": 0.5,
+                                              "10": 0.5,
+                                              "11": 0.5
+                                      }
+                              }
+                      },
+                      {
+                              "id": "project_3wly82r",
+                              "name": "Diriyah",
+                              "client": "Bizkaia",
+                              "status": "En espera",
+                              "startDate": "2026-08-03",
+                              "durationWeeks": 16,
+                              "notes": "NA",
+                              "plan": {
+                                      "person_sxydvxl": {
+                                              "0": 0.5,
+                                              "1": 0.5,
+                                              "2": 0.5,
+                                              "3": 0.5,
+                                              "4": 0.5,
+                                              "5": 0.5,
+                                              "6": 0.5,
+                                              "7": 0.5,
+                                              "8": 0.5,
+                                              "9": 0.5,
+                                              "10": 0.5,
+                                              "11": 0.5,
+                                              "12": 0.5,
+                                              "13": 0.5,
+                                              "14": 0.5,
+                                              "15": 0.5
+                                      },
+                                      "person_qk3xdgo": {
+                                              "0": 1,
+                                              "1": 1,
+                                              "2": 1,
+                                              "3": 1,
+                                              "4": 1,
+                                              "5": 1,
+                                              "6": 1,
+                                              "7": 1,
+                                              "8": 1,
+                                              "9": 1,
+                                              "10": 1,
+                                              "11": 1,
+                                              "12": 1,
+                                              "13": 1,
+                                              "14": 1,
+                                              "15": 1
+                                      },
+                                      "person_9bzn2pf": {
+                                              "0": 0.5,
+                                              "1": 0.5,
+                                              "2": 0.5,
+                                              "3": 0.5,
+                                              "4": 0.5,
+                                              "5": 0.5,
+                                              "6": 0.5,
+                                              "7": 0.5,
+                                              "8": 0.5,
+                                              "9": 0.5,
+                                              "10": 0.5,
+                                              "11": 0.5,
+                                              "12": 0.5,
+                                              "13": 0.5,
+                                              "14": 0.5,
+                                              "15": 0.5
+                                      }
+                              }
+                      },
+                      {
+                              "id": "project_imc301n",
+                              "name": "Plan Director de Movilidad",
+                              "client": "Bizkaia",
+                              "status": "En espera",
+                              "startDate": "2026-09-06",
+                              "durationWeeks": 32,
+                              "notes": "",
+                              "plan": {
+                                      "person_9bzn2pf": {
+                                              "0": 1,
+                                              "1": 1,
+                                              "2": 1,
+                                              "3": 1,
+                                              "4": 1,
+                                              "5": 1,
+                                              "6": 1,
+                                              "7": 1,
+                                              "8": 1,
+                                              "9": 1,
+                                              "10": 1,
+                                              "11": 1,
+                                              "12": 1,
+                                              "13": 1,
+                                              "14": 1,
+                                              "15": 1,
+                                              "16": 1,
+                                              "17": 1,
+                                              "18": 1,
+                                              "19": 1,
+                                              "20": 1,
+                                              "21": 1,
+                                              "22": 1,
+                                              "23": 1,
+                                              "24": 1,
+                                              "25": 1,
+                                              "26": 1,
+                                              "27": 1,
+                                              "28": 1,
+                                              "29": 1,
+                                              "30": 1,
+                                              "31": 1
+                                      },
+                                      "person_sxydvxl": {
+                                              "0": 0.5,
+                                              "1": 0.5,
+                                              "2": 0.5,
+                                              "3": 0.5,
+                                              "4": 0.5,
+                                              "5": 0.5,
+                                              "6": 0.5,
+                                              "7": 0.5,
+                                              "8": 0.5,
+                                              "9": 0.5,
+                                              "10": 0.5,
+                                              "11": 0.5,
+                                              "12": 0.5,
+                                              "13": 0.5,
+                                              "14": 0.5,
+                                              "15": 0.5,
+                                              "16": 0.5,
+                                              "17": 0.5,
+                                              "18": 0.5,
+                                              "19": 0.5,
+                                              "20": 0.5,
+                                              "21": 0.5,
+                                              "22": 0.5,
+                                              "23": 0.5,
+                                              "24": 0.5,
+                                              "25": 0.5,
+                                              "26": 0.5,
+                                              "27": 0.5,
+                                              "28": 0.5,
+                                              "29": 0.5,
+                                              "30": 0.5,
+                                              "31": 0.5
+                                      }
+                              }
+                      }
+              ]
+      };
       let ui = { tab: 'summary', selectedProjectId: null, importText: '' };
       let github = { config: loadGithubConfig(), token: sessionStorage.getItem(GITHUB_TOKEN_KEY) || '', sha: null, status: 'local', statusText: 'Sin sincronizar' };
       let state = loadState();
       if (!ui.selectedProjectId && state.projects[0]) ui.selectedProjectId = state.projects[0].id;
 
       function seedState() {
-        const p1 = uid('person'), p2 = uid('person'), p3 = uid('person'), p4 = uid('person'), p5 = uid('person');
-        const pr1 = uid('project'), pr2 = uid('project'), pr3 = uid('project');
-        return {
-          settings: { portfolioStartDate: '2026-06-15', horizonWeeks: 26, summaryGranularity: 'week' },
-          people: [
-            { id: p1, name: 'Carolina', role: 'Project Manager', capacity: 1, active: true },
-            { id: p2, name: 'Ana', role: 'Senior Consultant', capacity: 1, active: true },
-            { id: p3, name: 'Luis', role: 'Data Analyst', capacity: 1, active: true },
-            { id: p4, name: 'Marta', role: 'Consultant', capacity: 1, active: true },
-            { id: p5, name: 'Sofía', role: 'UX / Product', capacity: 0.8, active: true }
-          ],
-          projects: [
-            {
-              id: pr1,
-              name: 'PMST Experience Center', client: 'Astara', status: 'Activo',
-              startDate: '2026-06-15', durationWeeks: 12,
-              notes: 'Plan de movilidad corporativa: diagnóstico, medidas potenciales y documentación final.',
-              plan: {
-                [p1]: {0: .4, 1: .5, 2: .5, 3: .4, 4: .3, 5: .2, 8: .2, 9: .2},
-                [p2]: {0: .6, 1: .8, 2: .8, 3: .6, 4: .4, 5: .2},
-                [p3]: {0: .5, 1: .7, 2: .7, 3: .4, 4: .2},
-                [p5]: {3: .3, 4: .4, 5: .4, 6: .3, 7: .2}
-              }
-            },
-            {
-              id: pr2,
-              name: 'Metro Bilbao · PMST', client: 'Metro Bilbao', status: 'En propuesta',
-              startDate: '2026-07-06', durationWeeks: 10,
-              notes: 'Acompañamiento para diagnóstico, lectura de movilidad y preparación de PMST.',
-              plan: {
-                [p1]: {0: .2, 1: .3, 2: .3, 3: .2, 8: .2},
-                [p2]: {1: .4, 2: .5, 3: .5, 4: .4},
-                [p3]: {0: .6, 1: .7, 2: .7, 3: .5, 4: .3},
-                [p4]: {2: .3, 3: .3, 4: .3, 5: .2}
-              }
-            },
-            {
-              id: pr3,
-              name: 'Playas Bizkaia · Aforos', client: 'Bizkaia', status: 'En espera',
-              startDate: '2026-08-03', durationWeeks: 8,
-              notes: 'Visor y análisis de demanda para aforos, escenarios de acceso y medidas operativas.',
-              plan: {
-                [p1]: {0: .2, 1: .2, 2: .2},
-                [p3]: {0: .5, 1: .6, 2: .5, 3: .3},
-                [p4]: {1: .4, 2: .5, 3: .4, 4: .2},
-                [p5]: {2: .3, 3: .4, 4: .4, 5: .2}
-              }
-            }
-          ]
-        };
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
       }
 
       function uid(prefix) { return `${prefix}_${Math.random().toString(36).slice(2, 9)}`; }
@@ -668,32 +881,18 @@
         } catch { return seedState(); }
       }
       function loadGithubConfig() {
-        try {
-          const saved = JSON.parse(localStorage.getItem(GITHUB_CONFIG_KEY) || '{}');
-          return {
-            owner: saved.owner || '',
-            repo: saved.repo || '',
-            branch: saved.branch || 'main',
-            path: saved.path || 'data/planner.json'
-          };
-        } catch {
-          return { owner: '', repo: '', branch: 'main', path: 'data/planner.json' };
-        }
+        return { ...FIXED_GITHUB_CONFIG };
       }
       function saveGithubConfigFromDom() {
-        const cfg = {
-          owner: document.querySelector('[data-github-field="owner"]')?.value.trim() || '',
-          repo: document.querySelector('[data-github-field="repo"]')?.value.trim() || '',
-          branch: document.querySelector('[data-github-field="branch"]')?.value.trim() || 'main',
-          path: document.querySelector('[data-github-field="path"]')?.value.trim() || 'data/planner.json'
-        };
-        github.config = cfg;
-        localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(cfg));
-        github.token = document.querySelector('[data-github-field="token"]')?.value.trim() || github.token || '';
-        if (github.token) sessionStorage.setItem(GITHUB_TOKEN_KEY, github.token);
-        updateGithubStatus('local', 'Configuración guardada');
+        github.config = { ...FIXED_GITHUB_CONFIG };
+        const tokenInput = document.querySelector('[data-github-field="token"]')?.value.trim();
+        if (tokenInput && !tokenInput.includes('•')) {
+          github.token = tokenInput;
+          sessionStorage.setItem(GITHUB_TOKEN_KEY, github.token);
+        }
+        updateGithubStatus('local', github.token ? 'Token guardado en sesión' : 'Introduce token para publicar');
         saveState(true);
-        toast('Configuración GitHub guardada');
+        toast(github.token ? 'Token GitHub guardado en sesión' : 'Config fija aplicada; falta token');
         render();
       }
       function updateGithubStatus(status, text) {
@@ -759,16 +958,9 @@
         }
       }
       function saveGithubConfigFromInputsOnly() {
-        const cfg = {
-          owner: document.querySelector('[data-github-field="owner"]')?.value.trim() || github.config.owner || '',
-          repo: document.querySelector('[data-github-field="repo"]')?.value.trim() || github.config.repo || '',
-          branch: document.querySelector('[data-github-field="branch"]')?.value.trim() || github.config.branch || 'main',
-          path: document.querySelector('[data-github-field="path"]')?.value.trim() || github.config.path || 'data/planner.json'
-        };
-        github.config = cfg;
-        localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(cfg));
+        github.config = { ...FIXED_GITHUB_CONFIG };
         const tokenInput = document.querySelector('[data-github-field="token"]')?.value.trim();
-        if (tokenInput) {
+        if (tokenInput && !tokenInput.includes('•')) {
           github.token = tokenInput;
           sessionStorage.setItem(GITHUB_TOKEN_KEY, github.token);
         }
@@ -1201,18 +1393,18 @@
         if (!people.length) return `<div class="empty"><h3>No hay personas creadas</h3><p>Crea personas del equipo para poder imputar FTEs en el proyecto.</p><button class="btn btn--primary" data-action="go-people">Crear personas</button></div>`;
         const weeks = range(project.durationWeeks || 1);
         const colTotals = weeks.map(w => people.reduce((sum, p) => sum + projectWeekValue(project, p.id, w), 0));
-        return `<div class="table-scroll"><table class="matrix-table">
+        return `<div class="table-scroll" data-project-matrix-wrap="${project.id}"><table class="matrix-table" data-project-matrix="${project.id}">
           <thead><tr><th class="sticky-col">Persona</th>${weeks.map(w => `<th class="week-head"><span class="week-head__num">S${w+1}</span><span class="week-head__date">${labelWeek(addWeeks(project.startDate, w))}</span></th>`).join('')}<th>Total</th></tr></thead>
           <tbody>
-            ${people.map(person => {
+            ${people.map((person, rowIndex) => {
               const rowTotal = weeks.reduce((sum,w)=>sum + projectWeekValue(project, person.id, w), 0);
-              return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">${esc(person.role)} · cap. ${fmt(person.capacity,1)}</div></span></div></td>${weeks.map(w => {
+              return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">${esc(person.role)} · cap. ${fmt(person.capacity,1)}</div></span></div></td>${weeks.map((w, colIndex) => {
                 const val = projectWeekValue(project, person.id, w);
-                return `<td style="text-align:center"><input class="fte-input ${val ? 'has-value' : ''}" type="number" min="0" max="3" step="0.1" value="${val ? esc(val) : ''}" data-fte-project="${project.id}" data-fte-person="${person.id}" data-fte-week="${w}" aria-label="FTE ${esc(person.name)} semana ${w+1}"></td>`;
-              }).join('')}<td class="cell-total mono">${fmt(rowTotal,1)}</td></tr>`;
+                return `<td style="text-align:center"><input class="fte-input ${val ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${val ? esc(val) : ''}" data-fte-project="${project.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="FTE ${esc(person.name)} semana ${w+1}"></td>`;
+              }).join('')}<td class="cell-total mono" data-row-total="${person.id}">${fmt(rowTotal,1)}</td></tr>`;
             }).join('')}
           </tbody>
-          <tfoot><tr><td class="sticky-col">Total semanal</td>${colTotals.map(v => `<td class="cell-total mono">${fmt(v,1)}</td>`).join('')}<td class="cell-total mono">${fmt(colTotals.reduce((a,b)=>a+b,0),1)}</td></tr></tfoot>
+          <tfoot><tr><td class="sticky-col">Total semanal</td>${colTotals.map((v, w) => `<td class="cell-total mono" data-col-total="${w}">${fmt(v,1)}</td>`).join('')}<td class="cell-total mono" data-grand-total>${fmt(colTotals.reduce((a,b)=>a+b,0),1)}</td></tr></tfoot>
         </table></div>`;
       }
 
@@ -1260,18 +1452,18 @@
               </div>
               <div class="card__body">
                 <div class="sync-grid">
-                  <label class="field"><span class="label">Owner / organización</span><input value="${esc(cfg.owner || '')}" data-github-field="owner" placeholder="astara-intelligence"></label>
-                  <label class="field"><span class="label">Repositorio</span><input value="${esc(cfg.repo || '')}" data-github-field="repo" placeholder="advisory-fte-planner"></label>
-                  <label class="field"><span class="label">Branch</span><input value="${esc(cfg.branch || 'main')}" data-github-field="branch" placeholder="main"></label>
-                  <label class="field"><span class="label">Ruta JSON</span><input value="${esc(cfg.path || 'data/planner.json')}" data-github-field="path" placeholder="data/planner.json"></label>
+                  <label class="field"><span class="label">Owner / organización</span><input value="hybridathletics94" readonly></label>
+                  <label class="field"><span class="label">Repositorio</span><input value="Advisory_FTE" readonly></label>
+                  <label class="field"><span class="label">Branch</span><input value="main" readonly></label>
+                  <label class="field"><span class="label">Ruta JSON</span><input value="data/planner.json" readonly></label>
                   <label class="field field--token"><span class="label">Token GitHub para publicar</span><input type="password" value="${esc(tokenValue)}" data-github-field="token" placeholder="Fine-grained PAT · Contents: Read/Write"></label>
                 </div>
                 <div class="actions actions--left" style="margin-top:14px">
-                  <button class="btn" data-action="save-github-config">Guardar configuración</button>
+                  <button class="btn" data-action="save-github-config">Guardar token</button>
                   <button class="btn" data-action="load-github">Actualizar desde GitHub</button>
                   <button class="btn btn--primary" data-action="publish-github">Publicar cambios</button>
                 </div>
-                <p class="sync-note"><strong>Recomendación:</strong> usa un token fine-grained limitado a este repositorio, con permiso <strong>Contents: Read and Write</strong>. El token solo se mantiene en la sesión del navegador; no se exporta dentro del JSON.</p>
+                <p class="sync-note"><strong>Repositorio fijado:</strong> la publicación apunta siempre a <strong>hybridathletics94 / Advisory_FTE / main / data/planner.json</strong>. Solo necesitas pegar el token de GitHub para publicar cambios.</p>
               </div>
             </div>
             <div class="card"><div class="card__head"><div><h3 class="card__title">Export actual</h3><p class="card__hint">Copia local de la planificación visible en esta sesión.</p></div></div><div class="card__body"><textarea class="data-box" readonly>${esc(data)}</textarea></div></div>
@@ -1298,8 +1490,9 @@
           el.addEventListener('change', e => updatePersonField(e.currentTarget));
         });
         root.querySelectorAll('[data-fte-project]').forEach(el => {
-          el.addEventListener('input', e => e.currentTarget.classList.toggle('has-value', cleanNumber(e.currentTarget.value) > 0));
-          el.addEventListener('change', e => updateFte(e.currentTarget));
+          el.addEventListener('input', e => updateFte(e.currentTarget));
+          el.addEventListener('blur', e => formatFteInput(e.currentTarget));
+          el.addEventListener('keydown', handleFteKeydown);
         });
         root.querySelectorAll('[data-select-project]').forEach(el => el.addEventListener('click', e => { ui.selectedProjectId = e.currentTarget.dataset.selectProject; render(); }));
         root.querySelectorAll('[data-summary-granularity]').forEach(el => el.addEventListener('click', e => {
@@ -1333,12 +1526,66 @@
           p[field] = value;
         }, { silent: true });
       }
+      function normalizeFteInput(el) {
+        const raw = String(el.value || '').replace(',', '.').replace(/[^0-9.]/g, '');
+        const parts = raw.split('.');
+        el.value = parts.length > 1 ? `${parts[0]}.${parts.slice(1).join('')}` : raw;
+      }
+      function fteValue(value) {
+        const n = cleanNumber(value);
+        if (!Number.isFinite(n) || n <= 0) return 0;
+        return Math.min(3, Math.round(n * 10) / 10);
+      }
       function updateFte(el) {
+        normalizeFteInput(el);
         const projectId = el.dataset.fteProject, personId = el.dataset.ftePerson, week = Number(el.dataset.fteWeek);
-        setState(st => {
-          const p = st.projects.find(x => x.id === projectId);
-          if (p) setProjectWeek(p, personId, week, el.value);
-        }, { silent: true });
+        const p = state.projects.find(x => x.id === projectId);
+        if (p) setProjectWeek(p, personId, week, fteValue(el.value));
+        el.classList.toggle('has-value', fteValue(el.value) > 0);
+        saveState(true);
+        updateMatrixTotals(projectId);
+      }
+      function formatFteInput(el) {
+        const value = fteValue(el.value);
+        el.value = value ? String(value) : '';
+        el.classList.toggle('has-value', value > 0);
+      }
+      function updateMatrixTotals(projectId) {
+        const project = getProject(projectId);
+        const table = document.querySelector(`[data-project-matrix="${projectId}"]`);
+        if (!project || !table) return;
+        const people = state.people;
+        const weeks = range(project.durationWeeks || 1);
+        people.forEach(person => {
+          const rowTotal = weeks.reduce((sum, w) => sum + projectWeekValue(project, person.id, w), 0);
+          const cell = table.querySelector(`[data-row-total="${person.id}"]`);
+          if (cell) cell.textContent = fmt(rowTotal, 1);
+        });
+        let grand = 0;
+        weeks.forEach(w => {
+          const total = people.reduce((sum, person) => sum + projectWeekValue(project, person.id, w), 0);
+          grand += total;
+          const cell = table.querySelector(`[data-col-total="${w}"]`);
+          if (cell) cell.textContent = fmt(total, 1);
+        });
+        const grandCell = table.querySelector('[data-grand-total]');
+        if (grandCell) grandCell.textContent = fmt(grand, 1);
+      }
+      function handleFteKeydown(e) {
+        const keys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Enter'];
+        if (!keys.includes(e.key)) return;
+        e.preventDefault();
+        const input = e.currentTarget;
+        updateFte(input);
+        const row = Number(input.dataset.fteRow || 0);
+        const col = Number(input.dataset.fteCol || 0);
+        const delta = e.key === 'ArrowRight' ? [0, 1] : e.key === 'ArrowLeft' ? [0, -1] : e.key === 'ArrowUp' ? [-1, 0] : [1, 0];
+        const next = document.querySelector(`[data-fte-project="${input.dataset.fteProject}"][data-fte-row="${row + delta[0]}"][data-fte-col="${col + delta[1]}"]`);
+        if (next) {
+          next.focus({ preventScroll: true });
+          next.select?.();
+          next.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
       }
       function shiftProject(id, weeks) {
         setState(st => {

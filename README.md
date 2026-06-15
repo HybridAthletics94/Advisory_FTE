@@ -52,17 +52,18 @@ El password de acceso no debe ser el token de GitHub. El token solo se usa para 
 
 ## Configurar la sincronización de datos
 
-En la pestaña **Datos y publicación** de la web, rellena:
+La pestaña **Datos y publicación** ya viene configurada para:
 
-- **Owner / organización:** usuario u organización de GitHub.
-- **Repositorio:** nombre del repo.
-- **Branch:** normalmente `main`.
-- **Ruta JSON:** `data/planner.json`.
-- **Token GitHub para publicar:** token personal fine-grained con permiso de escritura sobre contenidos.
+- **Owner / organización:** `hybridathletics94`
+- **Repositorio:** `Advisory_FTE`
+- **Branch:** `main`
+- **Ruta JSON:** `data/planner.json`
+
+Solo tienes que pegar el **Token GitHub para publicar**.
 
 Después:
 
-- Pulsa **Guardar configuración**.
+- Pulsa **Guardar token**.
 - Pulsa **Actualizar desde GitHub** para traer la versión publicada de `data/planner.json`.
 - Edita la planificación.
 - Pulsa **Publicar cambios** para guardar la planificación en GitHub con un commit.
@@ -89,3 +90,11 @@ Si dos personas editan a la vez, puede aparecer un conflicto. En ese caso: actua
 ## Nota de seguridad
 
 Este MVP usa GitHub Pages y un JSON publicado en el repo. Si el site o el repo son públicos, los datos también pueden ser visibles públicamente. Para datos reales de equipo/proyecto, usa repo privado y visibilidad privada de Pages si está disponible en la organización, o evoluciona el MVP a una solución con autenticación.
+
+
+## Cambios UX de esta versión
+
+- La matriz de FTEs usa campos de texto decimal, no `input type=number`, para evitar que las flechas del teclado suban/bajen el valor.
+- En la matriz de proyecto puedes moverte con `←`, `→`, `↑`, `↓` y `Enter` entre celdas.
+- Al editar FTEs no se vuelve a renderizar toda la tab de proyecto, así que el scroll horizontal se mantiene.
+- `data/planner.json` incluido en este paquete corresponde al estado publicado en GitHub en el momento de generar esta versión.
