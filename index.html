@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astara Intelligence · Advisory FTE Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #f2f4f6;
+      --bg-surface: #ffffff;
+      --bg-section-mid: #e8edf2;
+      --bg-card: #dce5ed;
+      --bg-card-hover: #cdd9e5;
+      --bg-footer: #0e2236;
+      --bg-footer-deep: #041425;
+      --fg-1: #0e2236;
+      --fg-2: #2e4a62;
+      --fg-3: #3f5f78; /* Contrast pass: readable on white, mid and card backgrounds */
+      --fg-footer-1: #f0f4f8;
+      --fg-footer-2: #cfe0f0;
+      --fg-footer-3: #7a9ab8;
+      --accent: #1a4d7a;
+      --accent-light: #8bcdff;
+      --accent-green: #b1c28c;
+      --accent-teal: #86bfc6;
+      --border: #c4d3df;
+      --border-light: #dce5ed;
+      --shadow-card: 0 4px 16px rgba(14, 34, 54, 0.08);
+      --shadow-strong: 0 18px 60px rgba(14, 34, 54, 0.16);
+      --font-display: 'Montserrat', sans-serif;
+      --font-editorial: 'Instrument Serif', Georgia, serif;
+      --font-ui: 'Montserrat', sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+      --nav-height: 58px;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg-primary); color: var(--fg-1); font-family: var(--font-ui); }
+    body { overflow-x: hidden; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .nav {
+      height: var(--nav-height); background: var(--bg-footer); color: var(--fg-footer-1);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 74px); position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(4,20,37,0.2);
+    }
+    .nav__brand { display: flex; align-items: center; gap: 18px; min-width: 0; }
+    .nav__logo { height: 17px; width: auto; opacity: .92; display: block; }
+    .nav__separator { width: 1px; height: 22px; background: rgba(240,244,248,0.15); }
+    .nav__title { font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(240,244,248,0.82); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav__meta { display: flex; align-items: center; gap: 12px; color: rgba(240,244,248,0.56); font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; }
+    .save-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 0 4px rgba(177,194,140,0.12); }
+
+    .hero {
+      padding: 46px clamp(20px, 5vw, 74px) 26px; background:
+        radial-gradient(circle at 15% 20%, rgba(139,205,255,0.22), transparent 34%),
+        linear-gradient(180deg, #0e2236 0%, #122b43 38%, #f2f4f6 39%);
+    }
+    .hero__inner { max-width: 1440px; margin: 0 auto; }
+    .eyebrow-editorial { display:block; font-family: var(--font-editorial); font-style: italic; font-size: 20px; color: #cfe0f0; margin-bottom: 8px; }
+    .h-display { margin: 0; font-family: var(--font-display); font-size: clamp(36px, 5vw, 62px); line-height: 1.02; letter-spacing: -0.03em; }
+    .title-base { font-weight: 600; color: var(--fg-footer-1); }
+    .title-accent { font-weight: 700; color: var(--accent-light); }
+    .hero__text { max-width: 780px; margin: 18px 0 0; color: var(--fg-footer-2); line-height: 1.7; font-size: 14px; }
+    .hero__panel {
+      margin-top: 28px; background: rgba(255,255,255,0.88); border: 1px solid rgba(196,211,223,0.9); border-radius: 18px;
+      box-shadow: var(--shadow-strong); backdrop-filter: blur(10px); overflow: hidden;
+    }
+
+    .tabs { display: flex; align-items: center; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border-light); overflow-x: auto; }
+    .tab-btn {
+      border: 1px solid var(--border); background: transparent; color: var(--accent); border-radius: var(--radius-pill); padding: 10px 20px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; white-space: nowrap; transition: .18s ease;
+    }
+    .tab-btn:hover { background: var(--bg-section-mid); }
+    .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tab-spacer { flex: 1; }
+    .tiny-status { font-size: 10px; color: var(--fg-3); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; white-space: nowrap; padding-right: 8px; }
+
+    .content { padding: 24px clamp(20px, 5vw, 74px) 54px; flex: 1; }
+    .content__inner { max-width: 1440px; margin: 0 auto; }
+
+    .view-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
+    .view-title { margin: 0; font-size: clamp(24px, 3vw, 40px); line-height: 1.08; letter-spacing: -0.02em; }
+    .view-title .title-base { color: var(--fg-1); }
+    .view-title .title-accent { color: var(--accent); }
+    .view-subtitle { max-width: 760px; margin: 9px 0 0; color: var(--fg-2); font-size: 13px; line-height: 1.65; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
+    .actions--left { justify-content: flex-start; }
+
+    .btn {
+      border: 1px solid var(--border); background: #fff; color: var(--accent); border-radius: var(--radius-pill); padding: 9px 15px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; transition: .18s ease;
+    }
+    .btn:hover { background: var(--bg-section-mid); transform: translateY(-1px); }
+    .btn--primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn--primary:hover { background: #123d61; }
+    .btn--green { background: var(--accent-green); color: var(--fg-1); border-color: var(--accent-green); }
+    .btn--ghost { background: transparent; }
+    .btn--small { padding: 7px 11px; font-size: 9px; }
+    .btn--quiet { border-color: transparent; background: transparent; color: var(--fg-3); }
+
+    .grid { display: grid; gap: 14px; }
+    .grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); overflow: hidden; }
+    .card__body { padding: 18px; }
+    .card__head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 16px 18px; border-bottom: 1px solid var(--border-light); background: rgba(232,237,242,0.62); }
+    .card__title { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--fg-1); }
+    .card__hint { margin: 0; color: var(--fg-3); font-size: 11px; line-height: 1.5; }
+
+    .kpi { padding: 16px; background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+    .kpi__label { font-size: 9px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; color: var(--fg-3); }
+    .kpi__value { margin-top: 8px; font-size: 30px; font-weight: 700; color: var(--fg-1); letter-spacing: -0.03em; }
+    .kpi__note { margin-top: 4px; font-size: 11px; color: var(--fg-2); line-height: 1.45; }
+    .kpi--health { position: relative; overflow: hidden; border-left: 4px solid var(--border); }
+    .kpi--health.usage--none { border-left-color: #8aa2b6; }
+    .kpi--health.usage--low { border-left-color: var(--accent-light); }
+    .kpi--health.usage--good { border-left-color: var(--accent-green); }
+    .kpi--health.usage--high { border-left-color: var(--accent-teal); }
+    .kpi--health.usage--over { border-left-color: var(--bg-footer); }
+    .kpi__status { margin-top: 12px; align-self: flex-start; }
+
+    .controls-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+    .field--wide { min-width: 240px; flex: 1; }
+    .label { font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--fg-3); }
+    input, select, textarea {
+      border: 1px solid var(--border); background: #fff; border-radius: 10px; padding: 10px 11px; color: var(--fg-1); outline: none; min-height: 38px;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,77,122,0.1); }
+    textarea { resize: vertical; min-height: 96px; line-height: 1.45; }
+    input[type="number"] { text-align: right; }
+
+    .table-scroll { overflow: auto; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .matrix-table, .summary-table, .plain-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
+    th { position: relative; text-align: left; background: var(--bg-footer); color: #dce5ed; font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; padding: 11px 12px; border-right: 1px solid rgba(255,255,255,0.08); vertical-align: bottom; }
+    td { background: #fff; border-right: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); padding: 9px 10px; color: var(--fg-2); }
+    tbody tr:hover td { background: #f8fafc; }
+    .sticky-col { position: sticky; left: 0; z-index: 4; box-shadow: 7px 0 16px rgba(14,34,54,0.06); }
+    th.sticky-col { z-index: 6; background: var(--bg-footer); }
+    td.sticky-col { background: #fff; color: var(--fg-1); font-weight: 600; min-width: 190px; }
+    tfoot td { background: var(--bg-section-mid); font-weight: 700; color: var(--fg-1); }
+
+    .week-head { min-width: 86px; text-align: center; }
+    .week-head__num { display:block; color: #dce5ed; font-size: 10px; }
+    .week-head__date { display:block; color: rgba(220,229,237,0.62); font-size: 9px; margin-top: 4px; letter-spacing: .9px; }
+    .fte-input { width: 70px; padding: 8px 8px; min-height: 32px; border-radius: 8px; text-align: center !important; font-size: 12px; }
+    .fte-input:not([value=""]), .fte-input.has-value { background: rgba(139,205,255,0.16); border-color: rgba(26,77,122,0.34); color: var(--fg-1); font-weight: 600; }
+    .cell-total { text-align:center; font-weight: 700; color: var(--accent); }
+    .muted { color: var(--fg-3); }
+    .strong { color: var(--fg-1); font-weight: 700; }
+    .mono { font-variant-numeric: tabular-nums; }
+
+    .project-tabs { display:flex; align-items:center; gap:8px; overflow-x:auto; padding: 10px 0 16px; margin-bottom: 2px; }
+    .project-chip {
+      border: 1px solid var(--border); background: #fff; color: var(--fg-2); border-radius: 14px; padding: 10px 14px; min-width: 172px;
+      text-align: left; transition: .18s ease; flex-shrink: 0;
+    }
+    .project-chip:hover { transform: translateY(-1px); box-shadow: var(--shadow-card); }
+    .project-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .project-chip.active .project-chip__name { color: #fff; }
+    .project-chip.active .project-chip__meta { color: rgba(255,255,255,0.9); }
+    .project-chip__name { display:block; font-size: 11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .project-chip__meta { display:block; margin-top: 4px; font-size: 10px; color: var(--fg-3); opacity: 1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .project-layout { display:grid; grid-template-columns: 360px minmax(0,1fr); gap: 14px; align-items:start; }
+    .meta-form { display: grid; gap: 12px; }
+    .status-pill { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 10px; background: var(--bg-section-mid); color: var(--fg-2); font-size: 10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; }
+    .status-dot { width:7px; height:7px; border-radius:50%; background: var(--accent-teal); }
+    .status-dot.active { background: var(--accent-green); }
+
+    .summary-heat { display: flex; align-items: center; gap: 8px; min-width: 112px; }
+    .heat-bar { height: 7px; flex: 1; background: var(--bg-section-mid); border-radius: 999px; overflow: hidden; }
+    .heat-bar__fill { height: 100%; background: var(--accent); border-radius: inherit; min-width: 1px; }
+    .heat-bar__fill.light { background: var(--accent-light); }
+    .heat-bar__fill.green { background: var(--accent-green); }
+
+    .person-name { display:flex; align-items:center; gap:9px; }
+    .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size: 10px; flex-shrink:0; }
+    .avatar.inactive { background: var(--bg-card-hover); color: var(--fg-3); }
+    .person-sub { font-size: 10px; color: var(--fg-3); margin-top: 2px; }
+
+    .empty { padding: 42px 24px; text-align:center; color: var(--fg-3); }
+    .empty h3 { margin: 0 0 8px; color: var(--fg-1); font-size: 18px; }
+    .empty p { margin:0 auto 18px; max-width: 520px; line-height: 1.6; }
+
+    .data-box { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; color: var(--fg-2); }
+
+    .sync-card { grid-column: 1 / -1; }
+    .sync-grid { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 12px; align-items: end; }
+    .sync-grid .field--token { grid-column: span 2; }
+    .sync-note { margin: 12px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--bg-section-mid); color: var(--fg-2); font-size: 12px; line-height: 1.55; }
+    .sync-note strong { color: var(--fg-1); }
+    .sync-status { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:7px 10px; background:#fff; border:1px solid var(--border-light); color:var(--fg-2); font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; }
+    .sync-status::before { content:''; width:7px; height:7px; border-radius:50%; background:var(--accent-teal); }
+    .sync-status.is-error::before { background:var(--bg-footer); }
+    .sync-status.is-ok::before { background:var(--accent-green); }
+    .sync-status.is-local::before { background:var(--accent-light); }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 80; background: var(--bg-footer); color: var(--fg-footer-1); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow-strong); opacity: 0; transform: translateY(12px); pointer-events:none; transition: .24s var(--ease-out-expo); font-size: 12px; }
+    .toast.show { opacity: 1; transform: none; }
+
+    .footer { margin-top: auto; background: var(--bg-footer); color: var(--fg-footer-3); padding: 22px clamp(20px, 5vw, 74px); font-size: 10px; letter-spacing: 1.1px; text-transform: uppercase; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+
+
+
+    /* UX audit pass · visual stability and cleaner scanning */
+    .hero { padding-bottom: 22px; }
+    .hero__inner { display: grid; grid-template-columns: minmax(0, 1fr); }
+    .hero__panel { margin-top: 24px; border-radius: 16px; }
+    .tabs {
+      min-height: 58px;
+      scrollbar-width: thin;
+      background: rgba(255,255,255,0.72);
+    }
+    .tabs::-webkit-scrollbar,
+    .project-tabs::-webkit-scrollbar,
+    .table-scroll::-webkit-scrollbar { height: 9px; width: 9px; }
+    .tabs::-webkit-scrollbar-thumb,
+    .project-tabs::-webkit-scrollbar-thumb,
+    .table-scroll::-webkit-scrollbar-thumb { background: rgba(90,122,148,0.28); border-radius: 999px; }
+    .tabs::-webkit-scrollbar-track,
+    .project-tabs::-webkit-scrollbar-track,
+    .table-scroll::-webkit-scrollbar-track { background: rgba(220,229,237,0.45); border-radius: 999px; }
+
+    .content { padding-top: 22px; }
+    .view-header {
+      min-height: 96px;
+      padding: 2px 0 4px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+    }
+    .view-header > div:first-child { min-width: 0; }
+    .view-title { min-height: 44px; max-width: 920px; }
+    .view-subtitle { max-width: 820px; min-height: 42px; }
+    .actions { flex-shrink: 0; }
+    .btn { min-height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn--small { min-height: 31px; }
+
+    .card { min-width: 0; }
+    .card__head {
+      min-height: 76px;
+      align-items: flex-start;
+    }
+    .card__head > div { min-width: 0; }
+    .card__title {
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card__hint { max-width: 780px; }
+    .kpi { min-height: 132px; display: flex; flex-direction: column; justify-content: space-between; }
+    .kpi__value { font-variant-numeric: tabular-nums; }
+
+    .project-tabs {
+      position: relative;
+      min-height: 62px;
+      padding: 2px 0 14px;
+      margin-bottom: 10px;
+      scrollbar-width: thin;
+      scroll-snap-type: x proximity;
+    }
+    .project-chip {
+      width: 214px;
+      min-width: 214px;
+      min-height: 52px;
+      scroll-snap-align: start;
+    }
+    .project-chip.active { box-shadow: 0 8px 24px rgba(26,77,122,0.16); }
+
+    .project-layout {
+      grid-template-columns: minmax(300px, 340px) minmax(0,1fr);
+      gap: 16px;
+    }
+    .project-layout > .card { min-width: 0; }
+    .meta-form .grid--2 { gap: 10px; }
+    .meta-form .field { min-width: 0; }
+    .status-pill { vertical-align: middle; }
+
+    input, select, textarea { width: 100%; }
+    input[type="number"] { font-variant-numeric: tabular-nums; }
+    textarea { display: block; }
+    .data-box { min-height: 420px; width: 100%; white-space: pre; overflow: auto; }
+
+    .table-scroll {
+      position: relative;
+      max-width: 100%;
+      border-top: 1px solid var(--border-light);
+      scrollbar-width: thin;
+    }
+    .matrix-table,
+    .summary-table { width: max-content; min-width: 100%; }
+    .plain-table { min-width: 760px; table-layout: auto; }
+    .matrix-table th,
+    .summary-table th { position: sticky; top: 0; z-index: 5; }
+    .matrix-table th.sticky-col,
+    .summary-table th.sticky-col { z-index: 8; }
+    .matrix-table td,
+    .summary-table td { height: 50px; }
+    .week-head { min-width: 92px; width: 92px; }
+    .matrix-table th:last-child,
+    .matrix-table td:last-child,
+    .summary-table th:last-child,
+    .summary-table td:last-child { min-width: 86px; text-align: center; }
+    .fte-input { width: 66px; height: 34px; margin: 0 auto; }
+    .person-name { min-width: 0; }
+    .person-name > span:last-child { min-width: 0; }
+    .person-name .strong,
+    .person-sub {
+      display: block;
+      max-width: 210px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    td.sticky-col { min-width: 220px; width: 220px; }
+    tfoot td { position: sticky; bottom: 0; z-index: 4; }
+    tfoot td.sticky-col { z-index: 7; }
+
+    .summary-heat { width: 100%; }
+    .heat-bar { min-width: 54px; }
+    .empty { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .toast { min-width: 210px; text-align: center; }
+
+
+
+    /* Header contrast + summary grouping + capacity semaphores */
+    .hero {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(139,205,255,0.34), transparent 32%),
+        radial-gradient(circle at 88% 18%, rgba(134,191,198,0.18), transparent 28%),
+        linear-gradient(180deg, #e8edf2 0%, #f2f4f6 100%);
+    }
+    .hero .eyebrow-editorial { color: var(--accent); }
+    .hero .title-base { color: var(--fg-1); }
+    .hero .title-accent { color: var(--accent); }
+    .hero__text { color: var(--fg-1); font-weight: 500; }
+    .hero__panel { background: rgba(255,255,255,0.94); }
+
+    .segmented {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px; background: #e8edf2; border: 1px solid var(--border);
+      border-radius: var(--radius-pill); min-height: 38px;
+    }
+    .segmented__btn {
+      border: 0; background: transparent; color: var(--fg-2); border-radius: var(--radius-pill);
+      padding: 8px 12px; min-height: 30px; font-size: 9px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; white-space: nowrap;
+    }
+    .segmented__btn:hover { background: rgba(255,255,255,0.62); }
+    .segmented__btn.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(26,77,122,0.18); }
+
+    .usage-cell { display: flex; align-items: center; justify-content: center; gap: 8px; min-width: 86px; }
+    .usage-cell__stack { display: flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1.1; }
+    .usage-cell__label { font-size: 8px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--fg-3); white-space: nowrap; }
+    .usage-cell.usage--over .usage-cell__label { color: var(--fg-1); }
+    .usage-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--border); box-shadow: 0 0 0 4px rgba(196,211,223,0.18); }
+    .usage--none .usage-dot, .usage-dot.usage--none { background: #8aa2b6; box-shadow: 0 0 0 4px rgba(138,162,182,0.16); }
+    .usage--low .usage-dot, .usage-dot.usage--low { background: var(--accent-light); box-shadow: 0 0 0 4px rgba(139,205,255,0.2); }
+    .usage--good .usage-dot, .usage-dot.usage--good { background: var(--accent-green); box-shadow: 0 0 0 4px rgba(177,194,140,0.22); }
+    .usage--high .usage-dot, .usage-dot.usage--high { background: var(--accent-teal); box-shadow: 0 0 0 4px rgba(134,191,198,0.22); }
+    .usage--over .usage-dot, .usage-dot.usage--over { background: var(--bg-footer); box-shadow: 0 0 0 4px rgba(14,34,54,0.13); }
+
+    .usage-badge {
+      display:inline-flex; align-items:center; gap:7px; border-radius:999px; padding:5px 9px;
+      font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase;
+      border:1px solid var(--border); color: var(--fg-1); white-space:nowrap;
+    }
+    .usage-badge.usage--none { background:#f2f4f6; color:var(--fg-3); }
+    .usage-badge.usage--low { background:rgba(139,205,255,0.22); border-color:rgba(26,77,122,0.24); color:var(--accent); }
+    .usage-badge.usage--good { background:rgba(177,194,140,0.26); border-color:rgba(95,115,72,0.26); color:#31421f; }
+    .usage-badge.usage--high { background:rgba(134,191,198,0.24); border-color:rgba(26,77,122,0.22); color:var(--accent); }
+    .usage-badge.usage--over { background:var(--bg-footer); border-color:var(--bg-footer); color:#fff; }
+
+    .usage-meter { display:flex; align-items:center; gap:8px; min-width:118px; }
+    .usage-meter__bar { height:7px; flex:1; min-width:54px; background:var(--bg-section-mid); border-radius:999px; overflow:hidden; }
+    .usage-meter__fill { height:100%; border-radius:inherit; background:var(--accent-light); min-width:1px; }
+    .usage--good .usage-meter__fill { background:var(--accent-green); }
+    .usage--high .usage-meter__fill { background:var(--accent-teal); }
+    .usage--over .usage-meter__fill { background:var(--bg-footer); }
+    .usage--none .usage-meter__fill { background:#8aa2b6; }
+
+    .legend { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .legend .usage-badge { font-size:8px; padding:4px 8px; }
+
+    @media (min-width: 1101px) {
+      .summary-table .sticky-col { min-width: 160px; width: 160px; }
+      .matrix-table .table-scroll { max-height: 620px; }
+    }
+
+    @media (max-width: 1100px) {
+      .grid--4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .project-layout { grid-template-columns: 1fr; }
+      .view-header { align-items:flex-start; grid-template-columns: 1fr; min-height: auto; }
+      .actions { justify-content:flex-start; }
+      .view-subtitle { min-height: auto; }
+    }
+    @media (max-width: 720px) {
+      .nav__meta { display:none; }
+      .grid--4, .grid--3, .grid--2, .sync-grid { grid-template-columns: 1fr; }
+      .sync-grid .field--token { grid-column: auto; }
+      .hero { padding-top: 30px; }
+      .tabs { padding: 10px; }
+      .tab-btn { padding: 9px 14px; }
+    }
+    @media print {
+      .nav, .tabs, .actions, .footer, .btn, .toast { display: none !important; }
+      .hero { background: #fff; padding: 20px; }
+      .hero__text, .eyebrow-editorial, .title-base, .title-accent { color: #0e2236 !important; }
+      .content { padding: 0; }
+      .card { box-shadow: none; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="nav">
+      <div class="nav__brand">
+        <img class="nav__logo" src="data:image/png;base64,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" alt="Astara Intelligence" />
+        <span class="nav__separator"></span>
+        <span class="nav__title">Advisory Team · FTE Planner</span>
+      </div>
+      <div class="nav__meta"><span class="save-dot"></span><span id="saveState">Guardado local</span></div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero__inner">
+        <span class="eyebrow-editorial">Astara Intelligence Advisory</span>
+        <h1 class="h-display"><span class="title-base">Planificación de equipo</span><br><span class="title-accent">por proyecto y semana</span></h1>
+        <p class="hero__text">Imputa FTEs por persona, proyecto y semana; mueve fechas de inicio sin perder la planificación relativa; y revisa capacidad, carga total y recap por persona desde un resumen agregado.</p>
+        <section class="hero__panel">
+          <div class="tabs" id="primaryTabs"></div>
+        </section>
+      </div>
+    </header>
+
+    <main class="content"><div class="content__inner" id="app"></div></main>
+    <footer class="footer"><span>Astara Intelligence · Advisory Planning Tool</span><span>Datos locales + sincronización opcional con GitHub Pages</span></footer>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'astara-advisory-fte-planner-v1';
+      const GITHUB_CONFIG_KEY = 'astara-advisory-fte-github-config-v1';
+      const GITHUB_TOKEN_KEY = 'astara-advisory-fte-github-token-session';
+      const TABS = [
+        { id: 'summary', label: 'Resumen' },
+        { id: 'projects', label: 'Proyectos' },
+        { id: 'people', label: 'Personas' },
+        { id: 'data', label: 'Datos' }
+      ];
+      const STATUS_OPTIONS = ['Activo', 'En propuesta', 'En espera', 'Cerrado'];
+      const ROLE_OPTIONS = ['Partner / Lead', 'Project Manager', 'Senior Consultant', 'Consultant', 'Data Analyst', 'UX / Product', 'Operations'];
+      const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      let ui = { tab: 'summary', selectedProjectId: null, importText: '' };
+      let github = { config: loadGithubConfig(), token: sessionStorage.getItem(GITHUB_TOKEN_KEY) || '', sha: null, status: 'local', statusText: 'Sin sincronizar' };
+      let state = loadState();
+      if (!ui.selectedProjectId && state.projects[0]) ui.selectedProjectId = state.projects[0].id;
+
+      function seedState() {
+        const p1 = uid('person'), p2 = uid('person'), p3 = uid('person'), p4 = uid('person'), p5 = uid('person');
+        const pr1 = uid('project'), pr2 = uid('project'), pr3 = uid('project');
+        return {
+          settings: { portfolioStartDate: '2026-06-15', horizonWeeks: 26, summaryGranularity: 'week' },
+          people: [
+            { id: p1, name: 'Carolina', role: 'Project Manager', capacity: 1, active: true },
+            { id: p2, name: 'Ana', role: 'Senior Consultant', capacity: 1, active: true },
+            { id: p3, name: 'Luis', role: 'Data Analyst', capacity: 1, active: true },
+            { id: p4, name: 'Marta', role: 'Consultant', capacity: 1, active: true },
+            { id: p5, name: 'Sofía', role: 'UX / Product', capacity: 0.8, active: true }
+          ],
+          projects: [
+            {
+              id: pr1,
+              name: 'PMST Experience Center', client: 'Astara', status: 'Activo',
+              startDate: '2026-06-15', durationWeeks: 12,
+              notes: 'Plan de movilidad corporativa: diagnóstico, medidas potenciales y documentación final.',
+              plan: {
+                [p1]: {0: .4, 1: .5, 2: .5, 3: .4, 4: .3, 5: .2, 8: .2, 9: .2},
+                [p2]: {0: .6, 1: .8, 2: .8, 3: .6, 4: .4, 5: .2},
+                [p3]: {0: .5, 1: .7, 2: .7, 3: .4, 4: .2},
+                [p5]: {3: .3, 4: .4, 5: .4, 6: .3, 7: .2}
+              }
+            },
+            {
+              id: pr2,
+              name: 'Metro Bilbao · PMST', client: 'Metro Bilbao', status: 'En propuesta',
+              startDate: '2026-07-06', durationWeeks: 10,
+              notes: 'Acompañamiento para diagnóstico, lectura de movilidad y preparación de PMST.',
+              plan: {
+                [p1]: {0: .2, 1: .3, 2: .3, 3: .2, 8: .2},
+                [p2]: {1: .4, 2: .5, 3: .5, 4: .4},
+                [p3]: {0: .6, 1: .7, 2: .7, 3: .5, 4: .3},
+                [p4]: {2: .3, 3: .3, 4: .3, 5: .2}
+              }
+            },
+            {
+              id: pr3,
+              name: 'Playas Bizkaia · Aforos', client: 'Bizkaia', status: 'En espera',
+              startDate: '2026-08-03', durationWeeks: 8,
+              notes: 'Visor y análisis de demanda para aforos, escenarios de acceso y medidas operativas.',
+              plan: {
+                [p1]: {0: .2, 1: .2, 2: .2},
+                [p3]: {0: .5, 1: .6, 2: .5, 3: .3},
+                [p4]: {1: .4, 2: .5, 3: .4, 4: .2},
+                [p5]: {2: .3, 3: .4, 4: .4, 5: .2}
+              }
+            }
+          ]
+        };
+      }
+
+      function uid(prefix) { return `${prefix}_${Math.random().toString(36).slice(2, 9)}`; }
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return seedState();
+          const parsed = JSON.parse(raw);
+          if (!parsed.people || !parsed.projects || !parsed.settings) return seedState();
+          parsed.settings.summaryGranularity = parsed.settings.summaryGranularity === 'month' ? 'month' : 'week';
+          return parsed;
+        } catch { return seedState(); }
+      }
+      function loadGithubConfig() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(GITHUB_CONFIG_KEY) || '{}');
+          return {
+            owner: saved.owner || '',
+            repo: saved.repo || '',
+            branch: saved.branch || 'main',
+            path: saved.path || 'data/planner.json'
+          };
+        } catch {
+          return { owner: '', repo: '', branch: 'main', path: 'data/planner.json' };
+        }
+      }
+      function saveGithubConfigFromDom() {
+        const cfg = {
+          owner: document.querySelector('[data-github-field="owner"]')?.value.trim() || '',
+          repo: document.querySelector('[data-github-field="repo"]')?.value.trim() || '',
+          branch: document.querySelector('[data-github-field="branch"]')?.value.trim() || 'main',
+          path: document.querySelector('[data-github-field="path"]')?.value.trim() || 'data/planner.json'
+        };
+        github.config = cfg;
+        localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(cfg));
+        github.token = document.querySelector('[data-github-field="token"]')?.value.trim() || github.token || '';
+        if (github.token) sessionStorage.setItem(GITHUB_TOKEN_KEY, github.token);
+        updateGithubStatus('local', 'Configuración guardada');
+        saveState(true);
+        toast('Configuración GitHub guardada');
+        render();
+      }
+      function updateGithubStatus(status, text) {
+        github.status = status || 'local';
+        github.statusText = text || 'Sin sincronizar';
+        const el = document.getElementById('githubSyncStatus');
+        if (el) {
+          el.textContent = github.statusText;
+          el.classList.toggle('is-ok', github.status === 'ok');
+          el.classList.toggle('is-error', github.status === 'error');
+          el.classList.toggle('is-local', github.status === 'local');
+        }
+      }
+      function githubApiUrl() {
+        const { owner, repo, path } = github.config;
+        if (!owner || !repo || !path) throw new Error('Completa owner, repo y path');
+        return `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path.split('/').map(encodeURIComponent).join('/')}`;
+      }
+      function githubHeaders(auth = false) {
+        const headers = { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+        if (auth) {
+          if (!github.token) throw new Error('Introduce un token de GitHub para publicar');
+          headers.Authorization = `Bearer ${github.token}`;
+        }
+        return headers;
+      }
+      function encodeBase64Utf8(text) {
+        const bytes = new TextEncoder().encode(text);
+        let binary = '';
+        bytes.forEach(b => binary += String.fromCharCode(b));
+        return btoa(binary);
+      }
+      function decodeBase64Utf8(base64) {
+        const binary = atob(String(base64 || '').replace(/\n/g, ''));
+        const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+        return new TextDecoder().decode(bytes);
+      }
+      async function fetchGithubFile(auth = false) {
+        const url = `${githubApiUrl()}?ref=${encodeURIComponent(github.config.branch || 'main')}&_=${Date.now()}`;
+        const res = await fetch(url, { headers: githubHeaders(auth), cache: 'no-store' });
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`GitHub respondió ${res.status}`);
+        return res.json();
+      }
+      async function loadFromGithub() {
+        try {
+          saveGithubConfigFromInputsOnly();
+          updateGithubStatus('local', 'Actualizando desde GitHub…');
+          const file = await fetchGithubFile(false);
+          if (!file || !file.content) throw new Error('No existe el fichero JSON publicado');
+          const parsed = JSON.parse(decodeBase64Utf8(file.content));
+          if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('El JSON publicado no tiene formato válido');
+          github.sha = file.sha;
+          state = parsed;
+          saveState(true);
+          ui.selectedProjectId = state.projects[0]?.id || null;
+          updateGithubStatus('ok', 'Datos actualizados desde GitHub');
+          toast('Datos actualizados desde GitHub');
+          render();
+        } catch (err) {
+          updateGithubStatus('error', 'Error al cargar GitHub');
+          toast(err.message || 'No se pudo cargar desde GitHub');
+        }
+      }
+      function saveGithubConfigFromInputsOnly() {
+        const cfg = {
+          owner: document.querySelector('[data-github-field="owner"]')?.value.trim() || github.config.owner || '',
+          repo: document.querySelector('[data-github-field="repo"]')?.value.trim() || github.config.repo || '',
+          branch: document.querySelector('[data-github-field="branch"]')?.value.trim() || github.config.branch || 'main',
+          path: document.querySelector('[data-github-field="path"]')?.value.trim() || github.config.path || 'data/planner.json'
+        };
+        github.config = cfg;
+        localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(cfg));
+        const tokenInput = document.querySelector('[data-github-field="token"]')?.value.trim();
+        if (tokenInput) {
+          github.token = tokenInput;
+          sessionStorage.setItem(GITHUB_TOKEN_KEY, github.token);
+        }
+      }
+      async function publishToGithub() {
+        try {
+          saveGithubConfigFromInputsOnly();
+          updateGithubStatus('local', 'Publicando cambios…');
+          let sha = github.sha;
+          if (!sha) {
+            const current = await fetchGithubFile(true);
+            sha = current?.sha || null;
+          }
+          const body = {
+            message: `Update advisory FTE planner data · ${new Date().toISOString().slice(0, 10)}`,
+            content: encodeBase64Utf8(JSON.stringify(state, null, 2)),
+            branch: github.config.branch || 'main'
+          };
+          if (sha) body.sha = sha;
+          const res = await fetch(githubApiUrl(), { method: 'PUT', headers: { ...githubHeaders(true), 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+          if (res.status === 409) throw new Error('Conflicto: alguien publicó cambios antes. Carga desde GitHub y vuelve a publicar.');
+          if (!res.ok) throw new Error(`GitHub respondió ${res.status}`);
+          const json = await res.json();
+          github.sha = json.content?.sha || null;
+          updateGithubStatus('ok', 'Publicado en GitHub');
+          document.getElementById('saveState').textContent = 'Publicado en GitHub';
+          toast('Cambios publicados en GitHub');
+          render();
+        } catch (err) {
+          updateGithubStatus('error', 'Error al publicar');
+          toast(err.message || 'No se pudo publicar en GitHub');
+        }
+      }
+
+      function saveState(silent = false) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        document.getElementById('saveState').textContent = github?.config?.repo ? 'Guardado local · pendiente publicar' : 'Guardado local';
+        if (!silent) toast('Cambios guardados');
+      }
+      function setState(mutator, opts = {}) {
+        mutator(state);
+        saveState(opts.silent);
+        render();
+      }
+      function toast(message) {
+        const el = document.getElementById('toast');
+        el.textContent = message;
+        el.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => el.classList.remove('show'), 1800);
+      }
+
+      function parseDate(str) {
+        const [y,m,d] = String(str || '').split('-').map(Number);
+        if (!y || !m || !d) return new Date(2026, 5, 15);
+        return new Date(y, m - 1, d);
+      }
+      function formatISO(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+      function addWeeks(dateStr, weeks) {
+        const d = parseDate(dateStr);
+        d.setDate(d.getDate() + (Number(weeks) || 0) * 7);
+        return formatISO(d);
+      }
+      function diffWeeks(startDateStr, targetDateStr) {
+        const a = parseDate(startDateStr), b = parseDate(targetDateStr);
+        return Math.round((b - a) / (7 * 24 * 60 * 60 * 1000));
+      }
+      function labelWeek(dateStr) {
+        const d = parseDate(dateStr);
+        return `${String(d.getDate()).padStart(2, '0')} ${MONTHS[d.getMonth()]}`;
+      }
+      function fmt(n, digits = 1) {
+        const x = Number(n) || 0;
+        return x.toLocaleString('es-ES', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+      }
+      function esc(v) {
+        return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+      }
+      function initials(name) {
+        return String(name || '?').split(/\s+/).filter(Boolean).slice(0,2).map(p => p[0]?.toUpperCase()).join('') || '?';
+      }
+      function activePeople() { return state.people.filter(p => p.active); }
+      function getPerson(id) { return state.people.find(p => p.id === id); }
+      function getProject(id) { return state.projects.find(p => p.id === id); }
+      function cleanNumber(value) {
+        const n = Number(String(value).replace(',', '.'));
+        if (!Number.isFinite(n) || n < 0) return 0;
+        return Math.round(n * 10) / 10;
+      }
+      function range(n) { return Array.from({length: Math.max(0, Number(n) || 0)}, (_,i)=>i); }
+
+      function projectWeekValue(project, personId, week) {
+        return Number(project.plan?.[personId]?.[week] || 0);
+      }
+      function setProjectWeek(project, personId, week, value) {
+        project.plan ||= {};
+        project.plan[personId] ||= {};
+        const n = cleanNumber(value);
+        if (n > 0) project.plan[personId][week] = n;
+        else delete project.plan[personId][week];
+      }
+
+      function computeSummary() {
+        const horizon = Number(state.settings.horizonWeeks) || 26;
+        const start = state.settings.portfolioStartDate || '2026-06-15';
+        const weeks = range(horizon).map(i => ({ index: i, date: addWeeks(start, i), label: labelWeek(addWeeks(start, i)) }));
+        const people = state.people;
+        const personWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
+        const projectWeekly = Object.fromEntries(state.projects.map(p => [p.id, Array(horizon).fill(0)]));
+        const weeklyTotal = Array(horizon).fill(0);
+        for (const project of state.projects) {
+          for (const [personId, weekMap] of Object.entries(project.plan || {})) {
+            for (const [relWeek, value] of Object.entries(weekMap || {})) {
+              const actual = addWeeks(project.startDate, Number(relWeek));
+              const idx = diffWeeks(start, actual);
+              const fte = Number(value) || 0;
+              if (idx >= 0 && idx < horizon) {
+                weeklyTotal[idx] += fte;
+                projectWeekly[project.id][idx] += fte;
+                if (personWeekly[personId]) personWeekly[personId][idx] += fte;
+              }
+            }
+          }
+        }
+        const teamCapacity = people.filter(p => p.active).reduce((sum,p) => sum + (Number(p.capacity) || 0), 0);
+        const totalFteWeeks = weeklyTotal.reduce((a,b)=>a+b, 0);
+        const peakWeekly = Math.max(0, ...weeklyTotal);
+        const personRecap = people.map(p => {
+          const arr = personWeekly[p.id] || Array(horizon).fill(0);
+          const total = arr.reduce((a,b)=>a+b, 0);
+          const peak = Math.max(0, ...arr);
+          const avg = horizon ? total / horizon : 0;
+          const projectCount = state.projects.filter(pr => Object.values(pr.plan?.[p.id] || {}).some(v => Number(v) > 0)).length;
+          return { ...p, total, avg, peak, utilization: p.capacity ? avg / Number(p.capacity) : 0, projectCount };
+        });
+        const projectRecap = state.projects.map(project => {
+          const arr = projectWeekly[project.id] || Array(horizon).fill(0);
+          const total = arr.reduce((a,b)=>a+b, 0);
+          const peak = Math.max(0, ...arr);
+          const avg = horizon ? total / horizon : 0;
+          const assignedPeople = Object.entries(project.plan || {}).filter(([,m]) => Object.values(m || {}).some(v => Number(v) > 0)).length;
+          return { ...project, total, peak, avg, assignedPeople };
+        });
+        return { weeks, weeklyTotal, teamCapacity, totalFteWeeks, peakWeekly, personWeekly, projectWeekly, personRecap, projectRecap };
+      }
+
+      function summaryGranularity() {
+        return state.settings.summaryGranularity === 'month' ? 'month' : 'week';
+      }
+      function monthKey(dateStr) {
+        const d = parseDate(dateStr);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      }
+      function labelMonthKey(key) {
+        const [year, month] = String(key).split('-').map(Number);
+        return `${MONTHS[(month || 1) - 1]} ${String(year).slice(2)}`;
+      }
+      function summaryPeriods(s) {
+        if (summaryGranularity() === 'week') {
+          return s.weeks.map((w, i) => {
+            const total = s.weeklyTotal[i] || 0;
+            const capacity = s.teamCapacity || 0;
+            return {
+              key: w.date,
+              head: `S${w.index + 1}`,
+              label: w.label,
+              weekIndexes: [i],
+              total,
+              capacity,
+              balance: capacity - total,
+              utilization: capacity ? total / capacity : 0
+            };
+          });
+        }
+        const groups = [];
+        const byKey = new Map();
+        s.weeks.forEach((w, i) => {
+          const key = monthKey(w.date);
+          if (!byKey.has(key)) {
+            const g = { key, head: labelMonthKey(key).toUpperCase(), label: '0 sem.', weekIndexes: [], total: 0, capacity: 0, balance: 0, utilization: 0 };
+            byKey.set(key, g);
+            groups.push(g);
+          }
+          byKey.get(key).weekIndexes.push(i);
+        });
+        groups.forEach(g => {
+          g.total = g.weekIndexes.reduce((sum, i) => sum + (s.weeklyTotal[i] || 0), 0);
+          g.capacity = (s.teamCapacity || 0) * g.weekIndexes.length;
+          g.balance = g.capacity - g.total;
+          g.utilization = g.capacity ? g.total / g.capacity : 0;
+          g.label = `${g.weekIndexes.length} sem.`;
+        });
+        return groups;
+      }
+      function usageClass(ratio, capacity = 1) {
+        if (!capacity || ratio <= 0) return 'usage--none';
+        if (ratio > 1.1) return 'usage--over';
+        if (ratio >= .95) return 'usage--high';
+        if (ratio >= .70) return 'usage--good';
+        return 'usage--low';
+      }
+      function usageLabel(ratio, capacity = 1) {
+        if (!capacity || ratio <= 0) return 'Sin carga';
+        if (ratio > 1.1) return 'Sobrecarga';
+        if (ratio >= .95) return 'Alta';
+        if (ratio >= .70) return 'Óptima';
+        return 'Baja';
+      }
+      function usageBadge(ratio, capacity = 1) {
+        const cls = usageClass(ratio, capacity);
+        return `<span class="usage-badge ${cls}"><span class="usage-dot"></span>${usageLabel(ratio, capacity)}</span>`;
+      }
+      function usageMeter(ratio, capacity = 1) {
+        const cls = usageClass(ratio, capacity);
+        const pct = capacity ? Math.max(0, ratio * 100) : 0;
+        return `<div class="usage-meter ${cls}"><span class="mono">${capacity ? fmt(pct,0) + '%' : '—'}</span><span class="usage-meter__bar"><span class="usage-meter__fill" style="width:${Math.min(100, pct)}%"></span></span>${usageBadge(ratio, capacity)}</div>`;
+      }
+      function pctLabel(ratio, capacity = 1) {
+        return capacity ? `${fmt(Math.max(0, ratio) * 100, 0)}%` : '—';
+      }
+      function usageCell(ratio, capacity = 1, compact = false, title = '') {
+        const cls = usageClass(ratio, capacity);
+        const label = usageLabel(ratio, capacity);
+        const attr = title ? ` title="${esc(title)}"` : '';
+        return `<div class="usage-cell ${cls}"${attr}><span class="usage-dot"></span><span class="usage-cell__stack"><span class="mono strong">${pctLabel(ratio, capacity)}</span>${compact ? '' : `<span class="usage-cell__label">${label}</span>`}</span></div>`;
+      }
+      function healthKpi(label, value, note, ratio, capacity = 1) {
+        const cls = usageClass(ratio, capacity);
+        return `<div class="kpi kpi--health ${cls}"><div><div class="kpi__label">${esc(label)}</div><div class="kpi__value">${esc(value)}</div><div class="kpi__note">${note}</div></div><div class="kpi__status">${usageBadge(ratio, capacity)}</div></div>`;
+      }
+
+      function renderTabs() {
+        const tabs = document.getElementById('primaryTabs');
+        tabs.innerHTML = `${TABS.map(t => `<button class="tab-btn ${ui.tab === t.id ? 'active' : ''}" data-tab="${t.id}">${t.label}</button>`).join('')}<span class="tab-spacer"></span><span class="tiny-status">${esc(state.projects.length)} proyectos · ${esc(activePeople().length)} personas activas</span>`;
+        tabs.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => { ui.tab = btn.dataset.tab; render(); }));
+      }
+
+      function render() {
+        renderTabs();
+        const app = document.getElementById('app');
+        if (ui.tab === 'summary') app.innerHTML = viewSummary();
+        if (ui.tab === 'projects') app.innerHTML = viewProjects();
+        if (ui.tab === 'people') app.innerHTML = viewPeople();
+        if (ui.tab === 'data') app.innerHTML = viewData();
+        bindEvents(app);
+      }
+
+      function viewSummary() {
+        const s = computeSummary();
+        const horizon = s.weeks.length || 1;
+        const avgLoad = s.totalFteWeeks / horizon;
+        const avgUtilization = s.teamCapacity ? avgLoad / s.teamCapacity : 0;
+        let peakIndex = 0;
+        s.weeklyTotal.forEach((value, i) => { if (value > (s.weeklyTotal[peakIndex] || 0)) peakIndex = i; });
+        const peakLoad = s.weeklyTotal[peakIndex] || 0;
+        const peakUtilization = s.teamCapacity ? peakLoad / s.teamCapacity : 0;
+        const criticalWeeks = s.weeklyTotal.filter(v => s.teamCapacity && v / s.teamCapacity >= .95).length;
+        const overloadWeeks = s.weeklyTotal.filter(v => s.teamCapacity && v / s.teamCapacity > 1).length;
+        const peopleWithPeak = state.people.filter(p => p.active).map(p => {
+          const capacity = Number(p.capacity) || 0;
+          const peak = Math.max(0, ...(s.personWeekly[p.id] || []));
+          return { ...p, capacity, peak, ratio: capacity ? peak / capacity : 0 };
+        });
+        const tensionedPeople = peopleWithPeak.filter(p => p.capacity && p.ratio > 1).length;
+        const maxPersonPeak = Math.max(0, ...peopleWithPeak.map(p => p.ratio));
+        const riskRatio = overloadWeeks ? 1.12 : criticalWeeks ? .98 : avgUtilization;
+        const peakLabel = s.weeks[peakIndex]?.label || '—';
+        return `
+          <section>
+            <div class="view-header">
+              <div>
+                <h2 class="view-title"><span class="title-base">Resumen</span><span class="title-accent"> de capacidad</span></h2>
+                <p class="view-subtitle">Vista consolidada para entender si el equipo está equilibrado, dónde aparecen picos de demanda y qué personas pueden quedar tensionadas.</p>
+              </div>
+              <div class="actions"><button class="btn" data-action="print">Imprimir / PDF</button><button class="btn btn--primary" data-action="go-projects">Editar proyectos</button></div>
+            </div>
+
+            <div class="card" style="margin-bottom:14px"><div class="card__body">
+              <div class="controls-row">
+                <label class="field"><span class="label">Inicio resumen</span><input type="date" value="${esc(state.settings.portfolioStartDate)}" data-bind="settings.portfolioStartDate"></label>
+                <label class="field"><span class="label">Horizonte semanas</span><input type="number" min="4" max="104" step="1" value="${esc(state.settings.horizonWeeks)}" data-bind="settings.horizonWeeks"></label>
+                <div class="field"><span class="label">Agrupar por</span><div class="segmented" role="group" aria-label="Agrupar resumen"><button type="button" class="segmented__btn ${summaryGranularity() === 'week' ? 'active' : ''}" data-summary-granularity="week">Semana</button><button type="button" class="segmented__btn ${summaryGranularity() === 'month' ? 'active' : ''}" data-summary-granularity="month">Mes</button></div></div>
+                <div class="field field--wide"><span class="label">Lectura</span><span class="card__hint">El resumen mide salud de capacidad. El detalle de volumen queda en tablas y recaps para evitar KPIs redundantes.</span></div>
+              </div>
+            </div></div>
+
+            <div class="grid grid--4" style="margin-bottom:14px">
+              ${healthKpi('Uso medio equipo', pctLabel(avgUtilization, s.teamCapacity), `${fmt(avgLoad,1)} FTE/semana sobre ${fmt(s.teamCapacity,1)} FTE disponibles.`, avgUtilization, s.teamCapacity)}
+              ${healthKpi('Pico de demanda', pctLabel(peakUtilization, s.teamCapacity), `${fmt(peakLoad,1)} FTE en ${esc(peakLabel)}.`, peakUtilization, s.teamCapacity)}
+              ${healthKpi('Semanas críticas', String(criticalWeeks), `${overloadWeeks} sobre capacidad · ${criticalWeeks} por encima del 95%.`, riskRatio, s.teamCapacity)}
+              ${healthKpi('Personas tensionadas', String(tensionedPeople), `Superan el 100% de su capacidad en alguna semana. Pico individual: ${pctLabel(maxPersonPeak, 1)}.`, maxPersonPeak, 1)}
+            </div>
+
+            ${summaryTimelineTable(s)}
+            ${personUtilizationMatrix(s)}
+            <div class="grid grid--2" style="margin-top:14px">
+              ${personRecapTable(s)}
+              ${projectRecapTable(s)}
+            </div>
+          </section>`;
+      }
+
+      function summaryTimelineTable(s) {
+        const periods = summaryPeriods(s);
+        const mode = summaryGranularity() === 'month' ? 'mensual' : 'semanal';
+        return `<div class="card">
+          <div class="card__head"><div><h3 class="card__title">Resumen ${mode}</h3><p class="card__hint">Carga total, capacidad disponible y uso en porcentaje. Se eliminan balance e intensidad porque repetían esta misma lectura.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
+          <div class="table-scroll"><table class="summary-table">
+            <thead><tr><th class="sticky-col">Métrica</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
+            <tbody>
+              <tr><td class="sticky-col">FTE planificado</td>${periods.map(p => `<td class="cell-total mono" title="Demanda total imputada en el periodo">${fmt(p.total,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Capacidad disponible</td>${periods.map(p => `<td class="cell-total mono" title="Capacidad activa del equipo en el periodo">${fmt(p.capacity,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Uso capacidad</td>${periods.map(p => `<td>${usageCell(p.utilization, p.capacity, false, `${fmt(p.total,1)} FTE / ${fmt(p.capacity,1)} capacidad`)}</td>`).join('')}</tr>
+            </tbody>
+          </table></div>
+        </div>`;
+      }
+
+      function personUtilizationMatrix(s) {
+        const periods = summaryPeriods(s);
+        const mode = summaryGranularity() === 'month' ? 'mes' : 'semana';
+        return `<div class="card" style="margin-top:14px">
+          <div class="card__head"><div><h3 class="card__title">Uso por persona y ${mode}</h3><p class="card__hint">Porcentaje de capacidad individual utilizada en cada periodo. La capacidad base es el FTE semanal definido en Personas.</p></div></div>
+          <div class="table-scroll"><table class="summary-table">
+            <thead><tr><th class="sticky-col">Persona</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
+            <tbody>
+              ${state.people.map(person => {
+                const arr = s.personWeekly[person.id] || [];
+                return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">cap. ${fmt(person.capacity,1)} FTE · ${esc(person.role)}</div></span></div></td>${periods.map(period => {
+                  const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
+                  const capacity = (Number(person.capacity) || 0) * period.weekIndexes.length;
+                  const ratio = capacity ? total / capacity : 0;
+                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad`)}</td>`;
+                }).join('')}</tr>`;
+              }).join('')}
+            </tbody>
+          </table></div>
+        </div>`;
+      }
+
+      function personRecapTable(s) {
+        return `<div class="card">
+          <div class="card__head"><div><h3 class="card__title">Recap por persona</h3><p class="card__hint">Carga individual acumulada y riesgo medio frente a capacidad semanal.</p></div></div>
+          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Persona</th><th>Total</th><th>Media</th><th>Pico</th><th>Uso medio</th></tr></thead><tbody>
+            ${s.personRecap.map(p => `<tr>
+              <td><div class="person-name"><span class="avatar ${p.active ? '' : 'inactive'}">${esc(initials(p.name))}</span><span><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.role)} · ${p.projectCount} proyectos</div></span></div></td>
+              <td class="mono strong">${fmt(p.total,1)}</td><td class="mono">${fmt(p.avg,1)}</td><td class="mono">${fmt(p.peak,1)}</td>
+              <td>${usageMeter(p.utilization, Number(p.capacity) || 0)}</td>
+            </tr>`).join('')}
+          </tbody></table></div>
+        </div>`;
+      }
+
+      function projectRecapTable(s) {
+        const maxTotal = Math.max(1, ...s.projectRecap.map(p => p.total));
+        return `<div class="card">
+          <div class="card__head"><div><h3 class="card__title">Recap por proyecto</h3><p class="card__hint">Volumen imputado, pico operativo y número de personas involucradas.</p></div></div>
+          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Proyecto</th><th>Inicio</th><th>Total</th><th>Pico</th><th>Equipo</th></tr></thead><tbody>
+            ${s.projectRecap.map(p => `<tr>
+              <td><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.client)} · ${esc(p.status)}</div></td>
+              <td class="mono">${labelWeek(p.startDate)}</td><td class="mono strong">${fmt(p.total,1)}</td><td class="mono">${fmt(p.peak,1)}</td>
+              <td><div class="summary-heat"><span>${p.assignedPeople}</span><span class="heat-bar"><span class="heat-bar__fill light" style="width:${Math.min(100, (p.total/maxTotal)*100)}%"></span></span></div></td>
+            </tr>`).join('')}
+          </tbody></table></div>
+        </div>`;
+      }
+
+      function viewProjects() {
+        if (!state.projects.length) return emptyProjects();
+        if (!getProject(ui.selectedProjectId)) ui.selectedProjectId = state.projects[0]?.id;
+        const project = getProject(ui.selectedProjectId);
+        return `
+          <section>
+            <div class="view-header">
+              <div>
+                <h2 class="view-title"><span class="title-base">Proyectos</span><span class="title-accent"> y planificación FTE</span></h2>
+                <p class="view-subtitle">Cada subtab corresponde a un proyecto. La matriz se edita en FTE por persona y semana.</p>
+              </div>
+              <div class="actions"><button class="btn btn--green" data-action="add-project">+ Crear proyecto</button></div>
+            </div>
+            <div class="project-tabs">
+              ${state.projects.map(p => `<button class="project-chip ${p.id === ui.selectedProjectId ? 'active' : ''}" data-select-project="${p.id}"><span class="project-chip__name">${esc(p.name)}</span><span class="project-chip__meta">${esc(p.client || 'Sin cliente')} · ${labelWeek(p.startDate)}</span></button>`).join('')}
+            </div>
+            ${project ? projectDetail(project) : ''}
+          </section>`;
+      }
+
+      function emptyProjects() {
+        return `<div class="card"><div class="empty"><h3>No hay proyectos todavía</h3><p>Crea un primer proyecto para empezar a imputar FTEs por persona y semana.</p><button class="btn btn--primary" data-action="add-project">Crear proyecto</button></div></div>`;
+      }
+
+      function projectDetail(project) {
+        return `<div class="project-layout">
+          <aside class="card">
+            <div class="card__head"><div><h3 class="card__title">Configuración</h3><p class="card__hint">Al cambiar la fecha de inicio, se mueve la planificación completa.</p></div></div>
+            <div class="card__body meta-form">
+              <label class="field field--wide"><span class="label">Nombre proyecto</span><input value="${esc(project.name)}" data-project-field="name" data-project-id="${project.id}"></label>
+              <label class="field field--wide"><span class="label">Cliente / ámbito</span><input value="${esc(project.client || '')}" data-project-field="client" data-project-id="${project.id}"></label>
+              <div class="grid grid--2">
+                <label class="field"><span class="label">Estado</span><select data-project-field="status" data-project-id="${project.id}">${STATUS_OPTIONS.map(o => `<option ${project.status === o ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
+                <label class="field"><span class="label">Duración semanas</span><input type="number" min="1" max="104" step="1" value="${esc(project.durationWeeks)}" data-project-field="durationWeeks" data-project-id="${project.id}"></label>
+              </div>
+              <label class="field"><span class="label">Fecha de inicio</span><input type="date" value="${esc(project.startDate)}" data-project-field="startDate" data-project-id="${project.id}"></label>
+              <div class="actions actions--left">
+                <button class="btn btn--small" data-shift-project="-1" data-project-id="${project.id}">Mover -1 sem.</button>
+                <button class="btn btn--small" data-shift-project="1" data-project-id="${project.id}">Mover +1 sem.</button>
+                <button class="btn btn--small" data-extend-project="4" data-project-id="${project.id}">Ampliar +4 sem.</button>
+              </div>
+              <label class="field field--wide"><span class="label">Notas</span><textarea data-project-field="notes" data-project-id="${project.id}">${esc(project.notes || '')}</textarea></label>
+              <div class="actions actions--left"><button class="btn btn--quiet" data-action="delete-project" data-project-id="${project.id}">Eliminar proyecto</button></div>
+            </div>
+          </aside>
+          <div class="card">
+            <div class="card__head">
+              <div><h3 class="card__title">${esc(project.name)}</h3><p class="card__hint"><span class="status-pill"><span class="status-dot ${project.status === 'Activo' ? 'active' : ''}"></span>${esc(project.status)}</span> · inicio ${labelWeek(project.startDate)} · ${project.durationWeeks} semanas</p></div>
+              <div class="actions"><button class="btn btn--small" data-action="clear-project" data-project-id="${project.id}">Vaciar matriz</button></div>
+            </div>
+            ${projectMatrix(project)}
+          </div>
+        </div>`;
+      }
+
+      function projectMatrix(project) {
+        const people = state.people;
+        if (!people.length) return `<div class="empty"><h3>No hay personas creadas</h3><p>Crea personas del equipo para poder imputar FTEs en el proyecto.</p><button class="btn btn--primary" data-action="go-people">Crear personas</button></div>`;
+        const weeks = range(project.durationWeeks || 1);
+        const colTotals = weeks.map(w => people.reduce((sum, p) => sum + projectWeekValue(project, p.id, w), 0));
+        return `<div class="table-scroll"><table class="matrix-table">
+          <thead><tr><th class="sticky-col">Persona</th>${weeks.map(w => `<th class="week-head"><span class="week-head__num">S${w+1}</span><span class="week-head__date">${labelWeek(addWeeks(project.startDate, w))}</span></th>`).join('')}<th>Total</th></tr></thead>
+          <tbody>
+            ${people.map(person => {
+              const rowTotal = weeks.reduce((sum,w)=>sum + projectWeekValue(project, person.id, w), 0);
+              return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">${esc(person.role)} · cap. ${fmt(person.capacity,1)}</div></span></div></td>${weeks.map(w => {
+                const val = projectWeekValue(project, person.id, w);
+                return `<td style="text-align:center"><input class="fte-input ${val ? 'has-value' : ''}" type="number" min="0" max="3" step="0.1" value="${val ? esc(val) : ''}" data-fte-project="${project.id}" data-fte-person="${person.id}" data-fte-week="${w}" aria-label="FTE ${esc(person.name)} semana ${w+1}"></td>`;
+              }).join('')}<td class="cell-total mono">${fmt(rowTotal,1)}</td></tr>`;
+            }).join('')}
+          </tbody>
+          <tfoot><tr><td class="sticky-col">Total semanal</td>${colTotals.map(v => `<td class="cell-total mono">${fmt(v,1)}</td>`).join('')}<td class="cell-total mono">${fmt(colTotals.reduce((a,b)=>a+b,0),1)}</td></tr></tfoot>
+        </table></div>`;
+      }
+
+      function viewPeople() {
+        return `<section>
+          <div class="view-header">
+            <div>
+              <h2 class="view-title"><span class="title-base">Personas</span><span class="title-accent"> del equipo</span></h2>
+              <p class="view-subtitle">Define equipo, rol y capacidad semanal. Las personas inactivas se mantienen en histórico, pero no suman capacidad disponible.</p>
+            </div>
+            <div class="actions"><button class="btn btn--green" data-action="add-person">+ Crear persona</button></div>
+          </div>
+          <div class="card">
+            <div class="card__head"><div><h3 class="card__title">Equipo Advisory</h3><p class="card__hint">Edita directamente las celdas. Los cambios se guardan automáticamente.</p></div></div>
+            <div class="table-scroll"><table class="plain-table"><thead><tr><th>Persona</th><th>Rol</th><th>Capacidad FTE</th><th>Activa</th><th></th></tr></thead><tbody>
+              ${state.people.map(p => `<tr>
+                <td><div class="person-name"><span class="avatar ${p.active ? '' : 'inactive'}">${esc(initials(p.name))}</span><input value="${esc(p.name)}" data-person-field="name" data-person-id="${p.id}" style="min-width:180px"></div></td>
+                <td><select data-person-field="role" data-person-id="${p.id}">${ROLE_OPTIONS.map(o => `<option ${p.role === o ? 'selected' : ''}>${o}</option>`).join('')}</select></td>
+                <td><input type="number" min="0" max="2" step="0.1" value="${esc(p.capacity)}" data-person-field="capacity" data-person-id="${p.id}" style="width:110px"></td>
+                <td><select data-person-field="active" data-person-id="${p.id}"><option value="true" ${p.active ? 'selected' : ''}>Sí</option><option value="false" ${!p.active ? 'selected' : ''}>No</option></select></td>
+                <td><button class="btn btn--small btn--quiet" data-delete-person="${p.id}">Eliminar</button></td>
+              </tr>`).join('')}
+            </tbody></table></div>
+          </div>
+        </section>`;
+      }
+
+      function viewData() {
+        const data = JSON.stringify(state, null, 2);
+        const cfg = github.config || {};
+        const tokenValue = github.token ? '••••••••••••' : '';
+        return `<section>
+          <div class="view-header">
+            <div>
+              <h2 class="view-title"><span class="title-base">Datos</span><span class="title-accent"> y publicación</span></h2>
+              <p class="view-subtitle">Exporta backups, importa datos manualmente o sincroniza el fichero <strong>data/planner.json</strong> con un repositorio publicado en GitHub Pages.</p>
+            </div>
+            <div class="actions"><button class="btn" data-action="download-json">Descargar JSON</button><button class="btn btn--primary" data-action="copy-json">Copiar JSON</button></div>
+          </div>
+          <div class="grid grid--2">
+            <div class="card sync-card">
+              <div class="card__head">
+                <div><h3 class="card__title">Sincronización GitHub Pages</h3><p class="card__hint">Modo equipo: la web lee y publica un JSON versionado dentro del repo.</p></div>
+                <span class="sync-status ${github.status === 'ok' ? 'is-ok' : github.status === 'error' ? 'is-error' : 'is-local'}" id="githubSyncStatus">${esc(github.statusText || 'Sin sincronizar')}</span>
+              </div>
+              <div class="card__body">
+                <div class="sync-grid">
+                  <label class="field"><span class="label">Owner / organización</span><input value="${esc(cfg.owner || '')}" data-github-field="owner" placeholder="astara-intelligence"></label>
+                  <label class="field"><span class="label">Repositorio</span><input value="${esc(cfg.repo || '')}" data-github-field="repo" placeholder="advisory-fte-planner"></label>
+                  <label class="field"><span class="label">Branch</span><input value="${esc(cfg.branch || 'main')}" data-github-field="branch" placeholder="main"></label>
+                  <label class="field"><span class="label">Ruta JSON</span><input value="${esc(cfg.path || 'data/planner.json')}" data-github-field="path" placeholder="data/planner.json"></label>
+                  <label class="field field--token"><span class="label">Token GitHub para publicar</span><input type="password" value="${esc(tokenValue)}" data-github-field="token" placeholder="Fine-grained PAT · Contents: Read/Write"></label>
+                </div>
+                <div class="actions actions--left" style="margin-top:14px">
+                  <button class="btn" data-action="save-github-config">Guardar configuración</button>
+                  <button class="btn" data-action="load-github">Actualizar desde GitHub</button>
+                  <button class="btn btn--primary" data-action="publish-github">Publicar cambios</button>
+                </div>
+                <p class="sync-note"><strong>Recomendación:</strong> usa un token fine-grained limitado a este repositorio, con permiso <strong>Contents: Read and Write</strong>. El token solo se mantiene en la sesión del navegador; no se exporta dentro del JSON.</p>
+              </div>
+            </div>
+            <div class="card"><div class="card__head"><div><h3 class="card__title">Export actual</h3><p class="card__hint">Copia local de la planificación visible en esta sesión.</p></div></div><div class="card__body"><textarea class="data-box" readonly>${esc(data)}</textarea></div></div>
+            <div class="card"><div class="card__head"><div><h3 class="card__title">Importar planificación</h3><p class="card__hint">Pega un JSON exportado desde esta herramienta.</p></div></div><div class="card__body"><textarea class="data-box" data-import-text placeholder="Pega aquí el JSON..."></textarea><div class="actions actions--left" style="margin-top:12px"><button class="btn btn--primary" data-action="import-json">Importar</button><button class="btn" data-action="reset-demo">Restaurar demo</button></div></div></div>
+          </div>
+        </section>`;
+      }
+
+      function bindEvents(root) {
+        root.querySelectorAll('[data-bind]').forEach(el => {
+          el.addEventListener('change', e => {
+            const path = e.currentTarget.dataset.bind;
+            const value = e.currentTarget.type === 'number' ? cleanNumber(e.currentTarget.value) : e.currentTarget.value;
+            setState(st => {
+              const [group, key] = path.split('.');
+              st[group][key] = value;
+            }, { silent: true });
+          });
+        });
+        root.querySelectorAll('[data-project-field]').forEach(el => {
+          el.addEventListener('change', e => updateProjectField(e.currentTarget));
+        });
+        root.querySelectorAll('[data-person-field]').forEach(el => {
+          el.addEventListener('change', e => updatePersonField(e.currentTarget));
+        });
+        root.querySelectorAll('[data-fte-project]').forEach(el => {
+          el.addEventListener('input', e => e.currentTarget.classList.toggle('has-value', cleanNumber(e.currentTarget.value) > 0));
+          el.addEventListener('change', e => updateFte(e.currentTarget));
+        });
+        root.querySelectorAll('[data-select-project]').forEach(el => el.addEventListener('click', e => { ui.selectedProjectId = e.currentTarget.dataset.selectProject; render(); }));
+        root.querySelectorAll('[data-summary-granularity]').forEach(el => el.addEventListener('click', e => {
+          const value = e.currentTarget.dataset.summaryGranularity === 'month' ? 'month' : 'week';
+          setState(st => { st.settings.summaryGranularity = value; }, { silent: true });
+        }));
+        root.querySelectorAll('[data-action]').forEach(el => el.addEventListener('click', e => handleAction(e.currentTarget.dataset.action, e.currentTarget)));
+        root.querySelectorAll('[data-shift-project]').forEach(el => el.addEventListener('click', e => shiftProject(e.currentTarget.dataset.projectId, Number(e.currentTarget.dataset.shiftProject))));
+        root.querySelectorAll('[data-extend-project]').forEach(el => el.addEventListener('click', e => extendProject(e.currentTarget.dataset.projectId, Number(e.currentTarget.dataset.extendProject))));
+        root.querySelectorAll('[data-delete-person]').forEach(el => el.addEventListener('click', e => deletePerson(e.currentTarget.dataset.deletePerson)));
+      }
+
+      function updateProjectField(el) {
+        const id = el.dataset.projectId, field = el.dataset.projectField;
+        setState(st => {
+          const p = st.projects.find(x => x.id === id);
+          if (!p) return;
+          let value = el.type === 'number' ? Math.max(1, Math.round(cleanNumber(el.value))) : el.value;
+          if (field === 'durationWeeks') value = Math.max(1, Math.min(104, value));
+          p[field] = value;
+        }, { silent: true });
+      }
+      function updatePersonField(el) {
+        const id = el.dataset.personId, field = el.dataset.personField;
+        setState(st => {
+          const p = st.people.find(x => x.id === id);
+          if (!p) return;
+          let value = el.value;
+          if (field === 'capacity') value = cleanNumber(value);
+          if (field === 'active') value = value === 'true';
+          p[field] = value;
+        }, { silent: true });
+      }
+      function updateFte(el) {
+        const projectId = el.dataset.fteProject, personId = el.dataset.ftePerson, week = Number(el.dataset.fteWeek);
+        setState(st => {
+          const p = st.projects.find(x => x.id === projectId);
+          if (p) setProjectWeek(p, personId, week, el.value);
+        }, { silent: true });
+      }
+      function shiftProject(id, weeks) {
+        setState(st => {
+          const p = st.projects.find(x => x.id === id);
+          if (p) p.startDate = addWeeks(p.startDate, weeks);
+        });
+        toast(weeks > 0 ? 'Proyecto movido una semana adelante' : 'Proyecto movido una semana atrás');
+      }
+      function extendProject(id, weeks) {
+        setState(st => {
+          const p = st.projects.find(x => x.id === id);
+          if (p) p.durationWeeks = Math.min(104, Math.max(1, Number(p.durationWeeks || 1) + weeks));
+        });
+      }
+      function addProject() {
+        const id = uid('project');
+        setState(st => {
+          st.projects.push({ id, name: `Nuevo proyecto ${st.projects.length + 1}`, client: 'Astara Intelligence', status: 'En propuesta', startDate: st.settings.portfolioStartDate || formatISO(new Date()), durationWeeks: 12, notes: '', plan: {} });
+        });
+        ui.selectedProjectId = id; ui.tab = 'projects'; render();
+      }
+      function deleteProject(id) {
+        const project = getProject(id);
+        if (!project) return;
+        if (!confirm(`¿Eliminar el proyecto "${project.name}"? Esta acción borra su matriz de FTEs.`)) return;
+        setState(st => { st.projects = st.projects.filter(p => p.id !== id); });
+        ui.selectedProjectId = state.projects[0]?.id || null;
+        render();
+      }
+      function clearProject(id) {
+        const project = getProject(id);
+        if (!project) return;
+        if (!confirm(`¿Vaciar todos los FTEs de "${project.name}"?`)) return;
+        setState(st => { const p = st.projects.find(x => x.id === id); if (p) p.plan = {}; });
+      }
+      function addPerson() {
+        const id = uid('person');
+        setState(st => { st.people.push({ id, name: `Nueva persona ${st.people.length + 1}`, role: 'Consultant', capacity: 1, active: true }); });
+        ui.tab = 'people'; render();
+      }
+      function deletePerson(id) {
+        const person = getPerson(id);
+        if (!person) return;
+        if (!confirm(`¿Eliminar a "${person.name}"? También se eliminarán sus FTEs en todos los proyectos.`)) return;
+        setState(st => {
+          st.people = st.people.filter(p => p.id !== id);
+          st.projects.forEach(pr => { if (pr.plan) delete pr.plan[id]; });
+        });
+      }
+      function handleAction(action, el) {
+        if (action === 'add-project') addProject();
+        if (action === 'delete-project') deleteProject(el.dataset.projectId);
+        if (action === 'clear-project') clearProject(el.dataset.projectId);
+        if (action === 'add-person') addPerson();
+        if (action === 'go-people') { ui.tab = 'people'; render(); }
+        if (action === 'go-projects') { ui.tab = 'projects'; render(); }
+        if (action === 'print') window.print();
+        if (action === 'copy-json') copyJson();
+        if (action === 'download-json') downloadJson();
+        if (action === 'import-json') importJson();
+        if (action === 'reset-demo') resetDemo();
+        if (action === 'save-github-config') saveGithubConfigFromDom();
+        if (action === 'load-github') loadFromGithub();
+        if (action === 'publish-github') publishToGithub();
+      }
+      async function copyJson() {
+        try { await navigator.clipboard.writeText(JSON.stringify(state, null, 2)); toast('JSON copiado'); }
+        catch { toast('No se pudo copiar. Selecciona el texto manualmente.'); }
+      }
+      function downloadJson() {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'astara_advisory_fte_planner.json'; a.click();
+        URL.revokeObjectURL(url);
+      }
+      function importJson() {
+        const text = document.querySelector('[data-import-text]')?.value || '';
+        try {
+          const parsed = JSON.parse(text);
+          if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('Formato no válido');
+          state = parsed;
+          saveState();
+          ui.selectedProjectId = state.projects[0]?.id || null;
+          toast('Planificación importada');
+          render();
+        } catch (err) { toast('JSON no válido'); }
+      }
+      function resetDemo() {
+        if (!confirm('¿Restaurar los datos demo? Se perderán los cambios guardados en este navegador.')) return;
+        state = seedState(); ui.selectedProjectId = state.projects[0]?.id || null; saveState(); render();
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>
