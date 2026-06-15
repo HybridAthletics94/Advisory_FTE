@@ -34,6 +34,22 @@ advisory-fte-planner-mvp/
 5. Elige branch `main` y carpeta `/ (root)`.
 6. Guarda y abre la URL de GitHub Pages cuando esté publicada.
 
+
+## Barrera básica de acceso
+
+Este MVP incluye una landing inicial con password manual. La clave no se guarda en texto plano en el HTML: se compara mediante un hash SHA-256 en cliente.
+
+Importante: esto es una barrera básica para evitar accesos casuales, no una autenticación real. Si GitHub Pages o el repositorio son públicos, una persona con conocimientos técnicos podría inspeccionar el código o acceder directamente al JSON publicado.
+
+Para cambiar la clave:
+
+1. Calcula el hash SHA-256 de la nueva clave.
+2. Abre `index.html`.
+3. Sustituye el valor de `ACCESS_PASSWORD_HASH`.
+4. Sube el cambio a GitHub.
+
+El password de acceso no debe ser el token de GitHub. El token solo se usa para publicar cambios en `data/planner.json`.
+
 ## Configurar la sincronización de datos
 
 En la pestaña **Datos y publicación** de la web, rellena:
