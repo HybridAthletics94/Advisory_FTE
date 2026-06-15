@@ -1186,11 +1186,12 @@
       function pctLabel(ratio, capacity = 1) {
         return capacity ? `${fmt(Math.max(0, ratio) * 100, 0)}%` : '—';
       }
-      function usageCell(ratio, capacity = 1, compact = false, title = '') {
+      function usageCell(ratio, capacity = 1, compact = false, title = '', displayValue = null) {
         const cls = usageClass(ratio, capacity);
         const label = usageLabel(ratio, capacity);
         const attr = title ? ` title="${esc(title)}"` : '';
-        return `<div class="usage-cell ${cls}"${attr}><span class="usage-dot"></span><span class="usage-cell__stack"><span class="mono strong">${pctLabel(ratio, capacity)}</span>${compact ? '' : `<span class="usage-cell__label">${label}</span>`}</span></div>`;
+        const visibleValue = displayValue === null ? pctLabel(ratio, capacity) : displayValue;
+        return `<div class="usage-cell ${cls}"${attr}><span class="usage-dot"></span><span class="usage-cell__stack"><span class="mono strong">${esc(visibleValue)}</span>${compact ? '' : `<span class="usage-cell__label">${label}</span>`}</span></div>`;
       }
       function healthKpi(label, value, note, ratio, capacity = 1) {
         const cls = usageClass(ratio, capacity);
@@ -1261,6 +1262,7 @@
 
             ${summaryTimelineTable(s)}
             ${personUtilizationMatrix(s)}
+            ${projectUtilizationMatrix(s)}
             <div class="grid grid--2" style="margin-top:14px">
               ${personRecapTable(s)}
               ${projectRecapTable(s)}
@@ -1288,7 +1290,7 @@
         const periods = summaryPeriods(s);
         const mode = summaryGranularity() === 'month' ? 'mes' : 'semana';
         return `<div class="card" style="margin-top:14px">
-          <div class="card__head"><div><h3 class="card__title">Uso por persona y ${mode}</h3><p class="card__hint">Porcentaje de capacidad individual utilizada en cada periodo. La capacidad base es el FTE semanal definido en Personas.</p></div></div>
+          <div class="card__head"><div><h3 class="card__title">Uso por persona y ${mode}</h3><p class="card__hint">FTE imputado por persona en cada periodo. El color indica el porcentaje de su capacidad individual utilizada.</p></div></div>
           <div class="table-scroll"><table class="summary-table">
             <thead><tr><th class="sticky-col">Persona</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
             <tbody>
@@ -1298,7 +1300,29 @@
                   const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
                   const capacity = (Number(person.capacity) || 0) * period.weekIndexes.length;
                   const ratio = capacity ? total / capacity : 0;
-                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad`)}</td>`;
+                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
+                }).join('')}</tr>`;
+              }).join('')}
+            </tbody>
+          </table></div>
+        </div>`;
+      }
+
+      function projectUtilizationMatrix(s) {
+        const periods = summaryPeriods(s);
+        const mode = summaryGranularity() === 'month' ? 'mes' : 'semana';
+        return `<div class="card" style="margin-top:14px">
+          <div class="card__head"><div><h3 class="card__title">Uso por proyecto y ${mode}</h3><p class="card__hint">FTE imputado por proyecto en cada periodo. El color indica el porcentaje de capacidad total del equipo absorbida.</p></div></div>
+          <div class="table-scroll"><table class="summary-table">
+            <thead><tr><th class="sticky-col">Proyecto</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
+            <tbody>
+              ${state.projects.map(project => {
+                const arr = s.projectWeekly[project.id] || [];
+                return `<tr><td class="sticky-col"><span class="strong">${esc(project.name)}</span><div class="person-sub">${esc(project.client || 'Cliente sin definir')} · ${esc(project.status || 'Sin estado')}</div></td>${periods.map(period => {
+                  const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
+                  const capacity = (s.teamCapacity || 0) * period.weekIndexes.length;
+                  const ratio = capacity ? total / capacity : 0;
+                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad equipo · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
                 }).join('')}</tr>`;
               }).join('')}
             </tbody>
@@ -1434,36 +1458,29 @@
 
       function viewData() {
         const data = JSON.stringify(state, null, 2);
-        const cfg = github.config || {};
         const tokenValue = github.token ? '••••••••••••' : '';
         return `<section>
           <div class="view-header">
             <div>
               <h2 class="view-title"><span class="title-base">Datos</span><span class="title-accent"> y publicación</span></h2>
-              <p class="view-subtitle">Exporta backups, importa datos manualmente o sincroniza el fichero <strong>data/planner.json</strong> con un repositorio publicado en GitHub Pages.</p>
+              <p class="view-subtitle">El repositorio está definido internamente. Para publicar cambios solo necesitas pegar un token fine-grained con permiso <strong>Contents: Read and write</strong>.</p>
             </div>
             <div class="actions"><button class="btn" data-action="download-json">Descargar JSON</button><button class="btn btn--primary" data-action="copy-json">Copiar JSON</button></div>
           </div>
           <div class="grid grid--2">
             <div class="card sync-card">
               <div class="card__head">
-                <div><h3 class="card__title">Sincronización GitHub Pages</h3><p class="card__hint">Modo equipo: la web lee y publica un JSON versionado dentro del repo.</p></div>
+                <div><h3 class="card__title">Sincronización GitHub Pages</h3><p class="card__hint">Configuración fija: <strong>hybridathletics94 / Advisory_FTE / main / data/planner.json</strong>.</p></div>
                 <span class="sync-status ${github.status === 'ok' ? 'is-ok' : github.status === 'error' ? 'is-error' : 'is-local'}" id="githubSyncStatus">${esc(github.statusText || 'Sin sincronizar')}</span>
               </div>
               <div class="card__body">
-                <div class="sync-grid">
-                  <label class="field"><span class="label">Owner / organización</span><input value="hybridathletics94" readonly></label>
-                  <label class="field"><span class="label">Repositorio</span><input value="Advisory_FTE" readonly></label>
-                  <label class="field"><span class="label">Branch</span><input value="main" readonly></label>
-                  <label class="field"><span class="label">Ruta JSON</span><input value="data/planner.json" readonly></label>
-                  <label class="field field--token"><span class="label">Token GitHub para publicar</span><input type="password" value="${esc(tokenValue)}" data-github-field="token" placeholder="Fine-grained PAT · Contents: Read/Write"></label>
-                </div>
+                <label class="field field--token field--full"><span class="label">Token GitHub para publicar</span><input type="password" value="${esc(tokenValue)}" data-github-field="token" placeholder="Pega aquí tu fine-grained PAT"></label>
                 <div class="actions actions--left" style="margin-top:14px">
                   <button class="btn" data-action="save-github-config">Guardar token</button>
                   <button class="btn" data-action="load-github">Actualizar desde GitHub</button>
                   <button class="btn btn--primary" data-action="publish-github">Publicar cambios</button>
                 </div>
-                <p class="sync-note"><strong>Repositorio fijado:</strong> la publicación apunta siempre a <strong>hybridathletics94 / Advisory_FTE / main / data/planner.json</strong>. Solo necesitas pegar el token de GitHub para publicar cambios.</p>
+                <p class="sync-note">El token no se publica ni se guarda en el JSON: queda solo en esta sesión del navegador. Si cierras la pestaña, tendrás que pegarlo de nuevo.</p>
               </div>
             </div>
             <div class="card"><div class="card__head"><div><h3 class="card__title">Export actual</h3><p class="card__hint">Copia local de la planificación visible en esta sesión.</p></div></div><div class="card__body"><textarea class="data-box" readonly>${esc(data)}</textarea></div></div>
