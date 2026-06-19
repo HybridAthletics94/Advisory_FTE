@@ -398,6 +398,23 @@
     .legend { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
     .legend .usage-badge { font-size:8px; padding:4px 8px; }
 
+
+
+    /* Project activities + richer portfolio controls */
+    .filter-note { font-size: 10px; color: var(--fg-3); line-height: 1.45; max-width: 280px; }
+    .activity-stack { display: flex; flex-direction: column; gap: 14px; padding: 14px; background: #f7f9fb; }
+    .activity-card { background: #fff; border: 1px solid var(--border-light); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(14,34,54,0.05); }
+    .activity-card__head { display: grid; grid-template-columns: minmax(220px, 1fr) auto; gap: 12px; align-items: end; padding: 14px 16px; background: rgba(232,237,242,0.66); border-bottom: 1px solid var(--border-light); }
+    .activity-title-input { font-size: 13px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+    .activity-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top: 7px; }
+    .activity-meta .field { min-width: 190px; }
+    .activity-total-pill { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); border-radius:999px; padding:7px 10px; background:#fff; color:var(--fg-1); font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; white-space:nowrap; }
+    .activity-card .table-scroll { border-top: 0; }
+    .owner-pill { display:inline-flex; align-items:center; gap:6px; border-radius:999px; background:#fff; border:1px solid var(--border); padding:5px 9px; color:var(--fg-2); font-size:10px; font-weight:700; letter-spacing:.7px; text-transform:uppercase; }
+    .status-selects { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+    .project-chip__meta .owner-inline { color: inherit; opacity: .9; }
+    .summary-table .status-pill { padding: 5px 8px; font-size: 9px; }
+
     @media (min-width: 1101px) {
       .summary-table .sticky-col { min-width: 160px; width: 160px; }
       .matrix-table .table-scroll { max-height: 620px; }
@@ -417,6 +434,38 @@
       .hero { padding-top: 30px; }
       .tabs { padding: 10px; }
       .tab-btn { padding: 9px 14px; }
+    }
+
+
+    /* Final UX pass · publication state, timestamps and clearer project hierarchy */
+    .nav__meta.is-pending { color: rgba(240,244,248,0.92); }
+    .nav__meta.is-published { color: rgba(240,244,248,0.72); }
+    .nav__meta.is-local-only { color: rgba(240,244,248,0.64); }
+    .save-dot.is-pending { background: var(--accent-light); box-shadow: 0 0 0 4px rgba(139,205,255,0.18); }
+    .save-dot.is-published { background: var(--accent-green); box-shadow: 0 0 0 4px rgba(177,194,140,0.16); }
+    .save-dot.is-local-only { background: #8aa2b6; box-shadow: 0 0 0 4px rgba(138,162,182,0.16); }
+    .sync-meta-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:10px; margin-top:14px; }
+    .sync-meta-item { border:1px solid var(--border-light); background:#f8fafc; border-radius:12px; padding:11px 12px; min-width:0; }
+    .sync-meta-item__label { display:block; color:var(--fg-3); font-size:8px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:5px; }
+    .sync-meta-item__value { display:block; color:var(--fg-1); font-size:11px; font-weight:700; line-height:1.35; }
+    .project-planner-card > .card__head { background: linear-gradient(90deg, rgba(232,237,242,0.95), rgba(255,255,255,0.92)); }
+    .project-title-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .project-summary-bar { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:10px; padding:12px 14px; background:#fff; border-bottom:1px solid var(--border-light); }
+    .project-summary-stat { border:1px solid var(--border-light); border-radius:12px; padding:10px 12px; background:#f8fafc; min-width:0; }
+    .project-summary-stat__label { display:block; color:var(--fg-3); font-size:8px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:5px; }
+    .project-summary-stat__value { display:block; color:var(--fg-1); font-size:15px; font-weight:700; letter-spacing:-.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .activity-stack { background: linear-gradient(180deg, #f7f9fb 0%, #f2f4f6 100%); }
+    .activity-card { border-left: 4px solid var(--accent); }
+    .activity-card__head { align-items: start; background: linear-gradient(90deg, rgba(232,237,242,0.88), rgba(248,250,252,0.92)); }
+    .activity-heading { display:grid; grid-template-columns:auto minmax(0,1fr); gap:10px; align-items:start; }
+    .activity-index-badge { width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--accent); color:#fff; font-size:10px; font-weight:700; letter-spacing:.8px; flex-shrink:0; margin-top:20px; }
+    .activity-heading .field { min-width:0; }
+    .activity-total-pill strong { color:var(--fg-1); font-size:12px; }
+    .matrix-table tfoot td { background:#edf2f6; color:var(--fg-1); font-weight:700; }
+    .matrix-table tfoot .sticky-col { text-transform:uppercase; letter-spacing:.8px; font-size:10px; }
+    @media (max-width: 900px) {
+      .sync-meta-grid, .project-summary-bar { grid-template-columns: 1fr; }
+      .activity-card__head { grid-template-columns: 1fr; }
     }
 
 
@@ -589,299 +638,405 @@
       const STORAGE_KEY = 'astara-advisory-fte-planner-v1';
       const GITHUB_CONFIG_KEY = 'astara-advisory-fte-github-config-v1';
       const GITHUB_TOKEN_KEY = 'astara-advisory-fte-github-token-session';
+      const SYNC_META_KEY = 'astara-advisory-fte-sync-meta-v1';
       const TABS = [
         { id: 'summary', label: 'Resumen' },
         { id: 'projects', label: 'Proyectos' },
         { id: 'people', label: 'Personas' },
         { id: 'data', label: 'Datos' }
       ];
-      const STATUS_OPTIONS = ['Activo', 'En propuesta', 'En espera', 'Cerrado'];
+      const STATUS_OPTIONS = ['Pipeline', 'En propuesta', 'Propuesta enviada', 'Ganado / pendiente inicio', 'Activo', 'En pausa', 'En riesgo', 'En espera', 'Cerrado', 'Cancelado', 'No go'];
       const ROLE_OPTIONS = ['Partner / Lead', 'Project Manager', 'Senior Consultant', 'Consultant', 'Data Analyst', 'UX / Product', 'Operations'];
       const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
       const FIXED_GITHUB_CONFIG = Object.freeze({ owner: 'hybridathletics94', repo: 'Advisory_FTE', branch: 'main', path: 'data/planner.json' });
       const DEFAULT_DATA = {
-              "settings": {
-                      "portfolioStartDate": "2026-06-15",
-                      "horizonWeeks": 26,
-                      "summaryGranularity": "week"
-              },
-              "people": [
-                      {
-                              "id": "person_qk3xdgo",
-                              "name": "Natalia",
-                              "role": "Partner / Lead",
-                              "capacity": 1,
-                              "active": true
-                      },
-                      {
-                              "id": "person_9bzn2pf",
-                              "name": "Javi",
-                              "role": "Senior Consultant",
-                              "capacity": 1,
-                              "active": true
-                      },
-                      {
-                              "id": "person_sxydvxl",
-                              "name": "Carlos",
-                              "role": "Senior Consultant",
-                              "capacity": 1,
-                              "active": true
-                      },
-                      {
-                              "id": "person_ld8htvs",
-                              "name": "Pedro",
-                              "role": "Consultant",
-                              "capacity": 1,
-                              "active": true
-                      }
-              ],
-              "projects": [
-                      {
-                              "id": "project_ygr40ky",
-                              "name": "PMST - Astara",
-                              "client": "Astara",
-                              "status": "Activo",
-                              "startDate": "2026-06-15",
-                              "durationWeeks": 12,
-                              "notes": "Plan de movilidad corporativa: diagnóstico, medidas potenciales y documentación final.",
-                              "plan": {
-                                      "person_ld8htvs": {
-                                              "0": 0.5,
-                                              "1": 0.5,
-                                              "2": 0.5,
-                                              "3": 0.5,
-                                              "4": 0.5,
-                                              "5": 0.5,
-                                              "6": 0.5,
-                                              "7": 0.5,
-                                              "8": 0.5,
-                                              "9": 0.5,
-                                              "10": 0.5,
-                                              "11": 0.5
-                                      },
-                                      "person_sxydvxl": {
-                                              "0": 0.5,
-                                              "1": 0.5,
-                                              "2": 0.5,
-                                              "3": 0.5,
-                                              "4": 0.5,
-                                              "5": 0.5,
-                                              "6": 0.5,
-                                              "7": 0.5,
-                                              "8": 0.5,
-                                              "9": 0.5,
-                                              "10": 0.5,
-                                              "11": 0.5
-                                      }
-                              }
-                      },
-                      {
-                              "id": "project_jr8ckuq",
-                              "name": "PMST - Metro Bilbao",
-                              "client": "Metro Bilbao",
-                              "status": "Activo",
-                              "startDate": "2026-07-06",
-                              "durationWeeks": 12,
-                              "notes": "Acompañamiento para diagnóstico, lectura de movilidad y preparación de PMST.",
-                              "plan": {
-                                      "person_ld8htvs": {
-                                              "0": 0.5,
-                                              "1": 0.5,
-                                              "2": 0.5,
-                                              "3": 0.5,
-                                              "4": 0.5,
-                                              "5": 0.5,
-                                              "6": 0.5,
-                                              "7": 0.5,
-                                              "8": 0.5,
-                                              "9": 0.5,
-                                              "10": 0.5,
-                                              "11": 0.5
-                                      },
-                                      "person_sxydvxl": {
-                                              "0": 0.5,
-                                              "1": 0.5,
-                                              "2": 0.5,
-                                              "3": 0.5,
-                                              "4": 0.5,
-                                              "5": 0.5,
-                                              "6": 0.5,
-                                              "7": 0.5,
-                                              "8": 0.5,
-                                              "9": 0.5,
-                                              "10": 0.5,
-                                              "11": 0.5
-                                      }
-                              }
-                      },
-                      {
-                              "id": "project_3wly82r",
-                              "name": "Diriyah",
-                              "client": "Bizkaia",
-                              "status": "En espera",
-                              "startDate": "2026-08-03",
-                              "durationWeeks": 16,
-                              "notes": "NA",
-                              "plan": {
-                                      "person_sxydvxl": {
-                                              "0": 0.5,
-                                              "1": 0.5,
-                                              "2": 0.5,
-                                              "3": 0.5,
-                                              "4": 0.5,
-                                              "5": 0.5,
-                                              "6": 0.5,
-                                              "7": 0.5,
-                                              "8": 0.5,
-                                              "9": 0.5,
-                                              "10": 0.5,
-                                              "11": 0.5,
-                                              "12": 0.5,
-                                              "13": 0.5,
-                                              "14": 0.5,
-                                              "15": 0.5
-                                      },
-                                      "person_qk3xdgo": {
-                                              "0": 1,
-                                              "1": 1,
-                                              "2": 1,
-                                              "3": 1,
-                                              "4": 1,
-                                              "5": 1,
-                                              "6": 1,
-                                              "7": 1,
-                                              "8": 1,
-                                              "9": 1,
-                                              "10": 1,
-                                              "11": 1,
-                                              "12": 1,
-                                              "13": 1,
-                                              "14": 1,
-                                              "15": 1
-                                      },
-                                      "person_9bzn2pf": {
-                                              "0": 0.5,
-                                              "1": 0.5,
-                                              "2": 0.5,
-                                              "3": 0.5,
-                                              "4": 0.5,
-                                              "5": 0.5,
-                                              "6": 0.5,
-                                              "7": 0.5,
-                                              "8": 0.5,
-                                              "9": 0.5,
-                                              "10": 0.5,
-                                              "11": 0.5,
-                                              "12": 0.5,
-                                              "13": 0.5,
-                                              "14": 0.5,
-                                              "15": 0.5
-                                      }
-                              }
-                      },
-                      {
-                              "id": "project_imc301n",
-                              "name": "Plan Director de Movilidad",
-                              "client": "Bizkaia",
-                              "status": "En espera",
-                              "startDate": "2026-09-06",
-                              "durationWeeks": 32,
-                              "notes": "",
-                              "plan": {
-                                      "person_9bzn2pf": {
-                                              "0": 1,
-                                              "1": 1,
-                                              "2": 1,
-                                              "3": 1,
-                                              "4": 1,
-                                              "5": 1,
-                                              "6": 1,
-                                              "7": 1,
-                                              "8": 1,
-                                              "9": 1,
-                                              "10": 1,
-                                              "11": 1,
-                                              "12": 1,
-                                              "13": 1,
-                                              "14": 1,
-                                              "15": 1,
-                                              "16": 1,
-                                              "17": 1,
-                                              "18": 1,
-                                              "19": 1,
-                                              "20": 1,
-                                              "21": 1,
-                                              "22": 1,
-                                              "23": 1,
-                                              "24": 1,
-                                              "25": 1,
-                                              "26": 1,
-                                              "27": 1,
-                                              "28": 1,
-                                              "29": 1,
-                                              "30": 1,
-                                              "31": 1
-                                      },
-                                      "person_sxydvxl": {
-                                              "0": 0.5,
-                                              "1": 0.5,
-                                              "2": 0.5,
-                                              "3": 0.5,
-                                              "4": 0.5,
-                                              "5": 0.5,
-                                              "6": 0.5,
-                                              "7": 0.5,
-                                              "8": 0.5,
-                                              "9": 0.5,
-                                              "10": 0.5,
-                                              "11": 0.5,
-                                              "12": 0.5,
-                                              "13": 0.5,
-                                              "14": 0.5,
-                                              "15": 0.5,
-                                              "16": 0.5,
-                                              "17": 0.5,
-                                              "18": 0.5,
-                                              "19": 0.5,
-                                              "20": 0.5,
-                                              "21": 0.5,
-                                              "22": 0.5,
-                                              "23": 0.5,
-                                              "24": 0.5,
-                                              "25": 0.5,
-                                              "26": 0.5,
-                                              "27": 0.5,
-                                              "28": 0.5,
-                                              "29": 0.5,
-                                              "30": 0.5,
-                                              "31": 0.5
-                                      }
-                              }
-                      }
-              ]
-      };
+        "settings": {
+                "portfolioStartDate": "2026-06-15",
+                "horizonWeeks": 26,
+                "summaryGranularity": "week",
+                "summaryProjectStatus": "all",
+                "summaryProjectSort": "status"
+        },
+        "people": [
+                {
+                        "id": "person_qk3xdgo",
+                        "name": "Natalia",
+                        "role": "Partner / Lead",
+                        "capacity": 1,
+                        "active": true
+                },
+                {
+                        "id": "person_9bzn2pf",
+                        "name": "Javi",
+                        "role": "Senior Consultant",
+                        "capacity": 1,
+                        "active": true
+                },
+                {
+                        "id": "person_sxydvxl",
+                        "name": "Carlos",
+                        "role": "Senior Consultant",
+                        "capacity": 1,
+                        "active": true
+                },
+                {
+                        "id": "person_ld8htvs",
+                        "name": "Pedro",
+                        "role": "Consultant",
+                        "capacity": 1,
+                        "active": true
+                }
+        ],
+        "projects": [
+                {
+                        "id": "project_ygr40ky",
+                        "name": "PMST - Astara",
+                        "client": "Astara",
+                        "status": "Activo",
+                        "startDate": "2026-06-15",
+                        "durationWeeks": 12,
+                        "notes": "Plan de movilidad corporativa: diagnóstico, medidas potenciales y documentación final.",
+                        "ownerId": "person_qk3xdgo",
+                        "activities": [
+                                {
+                                        "id": "activity_r2367pu",
+                                        "name": "Planificación general",
+                                        "notes": "",
+                                        "plan": {
+                                                "person_ld8htvs": {
+                                                        "0": 0.5,
+                                                        "1": 0.5,
+                                                        "2": 0.5,
+                                                        "3": 0.5,
+                                                        "4": 0.5,
+                                                        "5": 0.5,
+                                                        "6": 0.5,
+                                                        "7": 0.5,
+                                                        "8": 0.5,
+                                                        "9": 0.5,
+                                                        "10": 0.5,
+                                                        "11": 0.5
+                                                },
+                                                "person_sxydvxl": {
+                                                        "0": 0.5,
+                                                        "1": 0.5,
+                                                        "2": 0.5,
+                                                        "3": 0.5,
+                                                        "4": 0.5,
+                                                        "5": 0.5,
+                                                        "6": 0.5,
+                                                        "7": 0.5,
+                                                        "8": 0.5,
+                                                        "9": 0.5,
+                                                        "10": 0.5,
+                                                        "11": 0.5
+                                                }
+                                        }
+                                }
+                        ]
+                },
+                {
+                        "id": "project_jr8ckuq",
+                        "name": "PMST - Metro Bilbao",
+                        "client": "Metro Bilbao",
+                        "status": "Activo",
+                        "startDate": "2026-07-06",
+                        "durationWeeks": 12,
+                        "notes": "Acompañamiento para diagnóstico, lectura de movilidad y preparación de PMST.",
+                        "ownerId": "person_qk3xdgo",
+                        "activities": [
+                                {
+                                        "id": "activity_lmjnt9y",
+                                        "name": "Planificación general",
+                                        "notes": "",
+                                        "plan": {
+                                                "person_ld8htvs": {
+                                                        "0": 0.5,
+                                                        "1": 0.5,
+                                                        "2": 0.5,
+                                                        "3": 0.5,
+                                                        "4": 0.5,
+                                                        "5": 0.5,
+                                                        "6": 0.5,
+                                                        "7": 0.5,
+                                                        "8": 0.5,
+                                                        "9": 0.5,
+                                                        "10": 0.5,
+                                                        "11": 0.5
+                                                },
+                                                "person_sxydvxl": {
+                                                        "0": 0.5,
+                                                        "1": 0.5,
+                                                        "2": 0.5,
+                                                        "3": 0.5,
+                                                        "4": 0.5,
+                                                        "5": 0.5,
+                                                        "6": 0.5,
+                                                        "7": 0.5,
+                                                        "8": 0.5,
+                                                        "9": 0.5,
+                                                        "10": 0.5,
+                                                        "11": 0.5
+                                                }
+                                        }
+                                }
+                        ]
+                },
+                {
+                        "id": "project_3wly82r",
+                        "name": "Diriyah",
+                        "client": "Bizkaia",
+                        "status": "En espera",
+                        "startDate": "2026-08-03",
+                        "durationWeeks": 16,
+                        "notes": "NA",
+                        "ownerId": "person_qk3xdgo",
+                        "activities": [
+                                {
+                                        "id": "activity_kagut76",
+                                        "name": "Planificación general",
+                                        "notes": "",
+                                        "plan": {
+                                                "person_sxydvxl": {
+                                                        "0": 0.5,
+                                                        "1": 0.5,
+                                                        "2": 0.5,
+                                                        "3": 0.5,
+                                                        "4": 0.5,
+                                                        "5": 0.5,
+                                                        "6": 0.5,
+                                                        "7": 0.5,
+                                                        "8": 0.5,
+                                                        "9": 0.5,
+                                                        "10": 0.5,
+                                                        "11": 0.5,
+                                                        "12": 0.5,
+                                                        "13": 0.5,
+                                                        "14": 0.5,
+                                                        "15": 0.5
+                                                },
+                                                "person_qk3xdgo": {
+                                                        "0": 1,
+                                                        "1": 1,
+                                                        "2": 1,
+                                                        "3": 1,
+                                                        "4": 1,
+                                                        "5": 1,
+                                                        "6": 1,
+                                                        "7": 1,
+                                                        "8": 1,
+                                                        "9": 1,
+                                                        "10": 1,
+                                                        "11": 1,
+                                                        "12": 1,
+                                                        "13": 1,
+                                                        "14": 1,
+                                                        "15": 1
+                                                },
+                                                "person_9bzn2pf": {
+                                                        "0": 0.5,
+                                                        "1": 0.5,
+                                                        "2": 0.5,
+                                                        "3": 0.5,
+                                                        "4": 0.5,
+                                                        "5": 0.5,
+                                                        "6": 0.5,
+                                                        "7": 0.5,
+                                                        "8": 0.5,
+                                                        "9": 0.5,
+                                                        "10": 0.5,
+                                                        "11": 0.5,
+                                                        "12": 0.5,
+                                                        "13": 0.5,
+                                                        "14": 0.5,
+                                                        "15": 0.5
+                                                }
+                                        }
+                                }
+                        ]
+                },
+                {
+                        "id": "project_imc301n",
+                        "name": "Plan Director de Movilidad",
+                        "client": "Bizkaia",
+                        "status": "En espera",
+                        "startDate": "2026-09-06",
+                        "durationWeeks": 32,
+                        "notes": "",
+                        "ownerId": "person_qk3xdgo",
+                        "activities": [
+                                {
+                                        "id": "activity_z9exad8",
+                                        "name": "Planificación general",
+                                        "notes": "",
+                                        "plan": {
+                                                "person_9bzn2pf": {
+                                                        "0": 1,
+                                                        "1": 1,
+                                                        "2": 1,
+                                                        "3": 1,
+                                                        "4": 1,
+                                                        "5": 1,
+                                                        "6": 1,
+                                                        "7": 1,
+                                                        "8": 1,
+                                                        "9": 1,
+                                                        "10": 1,
+                                                        "11": 1,
+                                                        "12": 1,
+                                                        "13": 1,
+                                                        "14": 1,
+                                                        "15": 1,
+                                                        "16": 1,
+                                                        "17": 1,
+                                                        "18": 1,
+                                                        "19": 1,
+                                                        "20": 1,
+                                                        "21": 1,
+                                                        "22": 1,
+                                                        "23": 1,
+                                                        "24": 1,
+                                                        "25": 1,
+                                                        "26": 1,
+                                                        "27": 1,
+                                                        "28": 1,
+                                                        "29": 1,
+                                                        "30": 1,
+                                                        "31": 1
+                                                },
+                                                "person_sxydvxl": {
+                                                        "0": 0.5,
+                                                        "1": 0.5,
+                                                        "2": 0.5,
+                                                        "3": 0.5,
+                                                        "4": 0.5,
+                                                        "5": 0.5,
+                                                        "6": 0.5,
+                                                        "7": 0.5,
+                                                        "8": 0.5,
+                                                        "9": 0.5,
+                                                        "10": 0.5,
+                                                        "11": 0.5,
+                                                        "12": 0.5,
+                                                        "13": 0.5,
+                                                        "14": 0.5,
+                                                        "15": 0.5,
+                                                        "16": 0.5,
+                                                        "17": 0.5,
+                                                        "18": 0.5,
+                                                        "19": 0.5,
+                                                        "20": 0.5,
+                                                        "21": 0.5,
+                                                        "22": 0.5,
+                                                        "23": 0.5,
+                                                        "24": 0.5,
+                                                        "25": 0.5,
+                                                        "26": 0.5,
+                                                        "27": 0.5,
+                                                        "28": 0.5,
+                                                        "29": 0.5,
+                                                        "30": 0.5,
+                                                        "31": 0.5
+                                                }
+                                        }
+                                }
+                        ]
+                }
+        ]
+};
       let ui = { tab: 'summary', selectedProjectId: null, importText: '' };
       let github = { config: loadGithubConfig(), token: sessionStorage.getItem(GITHUB_TOKEN_KEY) || '', sha: null, status: 'local', statusText: 'Sin sincronizar' };
+      let syncMeta = loadSyncMeta();
       let state = loadState();
       if (!ui.selectedProjectId && state.projects[0]) ui.selectedProjectId = state.projects[0].id;
 
       function seedState() {
-        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        return normalizeState(JSON.parse(JSON.stringify(DEFAULT_DATA)));
       }
 
       function uid(prefix) { return `${prefix}_${Math.random().toString(36).slice(2, 9)}`; }
+
+      function normalizeState(data) {
+        const st = data && typeof data === 'object' ? data : JSON.parse(JSON.stringify(DEFAULT_DATA));
+        st.settings ||= {};
+        st.people = Array.isArray(st.people) ? st.people : [];
+        st.projects = Array.isArray(st.projects) ? st.projects : [];
+        st.settings.summaryGranularity = st.settings.summaryGranularity === 'month' ? 'month' : 'week';
+        st.settings.summaryProjectStatus ||= 'all';
+        st.settings.summaryProjectSort ||= 'status';
+        st.projects.forEach(project => {
+          project.status ||= 'En propuesta';
+          project.ownerId ||= st.people.find(p => p.active)?.id || st.people[0]?.id || '';
+          project.durationWeeks = Math.max(1, Math.min(104, Math.round(Number(project.durationWeeks) || 12)));
+          if (!Array.isArray(project.activities) || !project.activities.length) {
+            project.activities = [{ id: uid('activity'), name: 'Planificación general', notes: '', plan: project.plan || {} }];
+          }
+          project.activities.forEach((activity, i) => {
+            activity.id ||= uid('activity');
+            activity.name ||= i === 0 ? 'Planificación general' : `Actividad ${i + 1}`;
+            activity.notes ||= '';
+            activity.plan ||= {};
+          });
+        });
+        return st;
+      }
+
       function loadState() {
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return seedState();
           const parsed = JSON.parse(raw);
           if (!parsed.people || !parsed.projects || !parsed.settings) return seedState();
-          parsed.settings.summaryGranularity = parsed.settings.summaryGranularity === 'month' ? 'month' : 'week';
-          return parsed;
+          return normalizeState(parsed);
         } catch { return seedState(); }
       }
       function loadGithubConfig() {
         return { ...FIXED_GITHUB_CONFIG };
+      }
+      function loadSyncMeta() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(SYNC_META_KEY) || '{}');
+          return {
+            hasPendingChanges: Boolean(parsed.hasPendingChanges),
+            lastGithubLoadAt: parsed.lastGithubLoadAt || '',
+            lastGithubPublishAt: parsed.lastGithubPublishAt || '',
+            lastLocalChangeAt: parsed.lastLocalChangeAt || ''
+          };
+        } catch {
+          return { hasPendingChanges: false, lastGithubLoadAt: '', lastGithubPublishAt: '', lastLocalChangeAt: '' };
+        }
+      }
+      function saveSyncMeta() {
+        localStorage.setItem(SYNC_META_KEY, JSON.stringify(syncMeta));
+      }
+      function nowIso() { return new Date().toISOString(); }
+      function formatDateTime(value) {
+        if (!value) return '—';
+        const d = new Date(value);
+        if (Number.isNaN(d.getTime())) return '—';
+        return d.toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+      }
+      function saveStateLabel() {
+        if (syncMeta.hasPendingChanges) return 'Cambios locales pendientes de publicar';
+        if (syncMeta.lastGithubPublishAt) return `Publicado · ${formatDateTime(syncMeta.lastGithubPublishAt)}`;
+        if (syncMeta.lastGithubLoadAt) return `Actualizado · ${formatDateTime(syncMeta.lastGithubLoadAt)}`;
+        return 'Sin cambios pendientes';
+      }
+      function updateSaveIndicator() {
+        const label = document.getElementById('saveState');
+        const dot = document.querySelector('.save-dot');
+        const meta = document.querySelector('.nav__meta');
+        if (label) label.textContent = saveStateLabel();
+        if (dot) {
+          dot.classList.toggle('is-pending', Boolean(syncMeta.hasPendingChanges));
+          dot.classList.toggle('is-published', !syncMeta.hasPendingChanges && Boolean(syncMeta.lastGithubPublishAt));
+          dot.classList.toggle('is-local-only', !syncMeta.hasPendingChanges && !syncMeta.lastGithubPublishAt);
+        }
+        if (meta) {
+          meta.classList.toggle('is-pending', Boolean(syncMeta.hasPendingChanges));
+          meta.classList.toggle('is-published', !syncMeta.hasPendingChanges && Boolean(syncMeta.lastGithubPublishAt));
+          meta.classList.toggle('is-local-only', !syncMeta.hasPendingChanges && !syncMeta.lastGithubPublishAt);
+        }
       }
       function saveGithubConfigFromDom() {
         github.config = { ...FIXED_GITHUB_CONFIG };
@@ -891,7 +1046,7 @@
           sessionStorage.setItem(GITHUB_TOKEN_KEY, github.token);
         }
         updateGithubStatus('local', github.token ? 'Token guardado en sesión' : 'Introduce token para publicar');
-        saveState(true);
+        saveState(true, false);
         toast(github.token ? 'Token GitHub guardado en sesión' : 'Config fija aplicada; falta token');
         render();
       }
@@ -905,6 +1060,7 @@
           el.classList.toggle('is-error', github.status === 'error');
           el.classList.toggle('is-local', github.status === 'local');
         }
+        updateSaveIndicator();
       }
       function githubApiUrl() {
         const { owner, repo, path } = github.config;
@@ -946,10 +1102,13 @@
           const parsed = JSON.parse(decodeBase64Utf8(file.content));
           if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('El JSON publicado no tiene formato válido');
           github.sha = file.sha;
-          state = parsed;
-          saveState(true);
+          state = normalizeState(parsed);
+          syncMeta.hasPendingChanges = false;
+          syncMeta.lastGithubLoadAt = nowIso();
+          saveSyncMeta();
+          saveState(true, false);
           ui.selectedProjectId = state.projects[0]?.id || null;
-          updateGithubStatus('ok', 'Datos actualizados desde GitHub');
+          updateGithubStatus('ok', `Datos actualizados · ${formatDateTime(syncMeta.lastGithubLoadAt)}`);
           toast('Datos actualizados desde GitHub');
           render();
         } catch (err) {
@@ -985,8 +1144,10 @@
           if (!res.ok) throw new Error(`GitHub respondió ${res.status}`);
           const json = await res.json();
           github.sha = json.content?.sha || null;
-          updateGithubStatus('ok', 'Publicado en GitHub');
-          document.getElementById('saveState').textContent = 'Publicado en GitHub';
+          syncMeta.hasPendingChanges = false;
+          syncMeta.lastGithubPublishAt = nowIso();
+          saveSyncMeta();
+          updateGithubStatus('ok', `Publicado · ${formatDateTime(syncMeta.lastGithubPublishAt)}`);
           toast('Cambios publicados en GitHub');
           render();
         } catch (err) {
@@ -995,9 +1156,15 @@
         }
       }
 
-      function saveState(silent = false) {
+      function saveState(silent = false, markDirty = true) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        document.getElementById('saveState').textContent = github?.config?.repo ? 'Guardado local · pendiente publicar' : 'Guardado local';
+        if (markDirty) {
+          syncMeta.hasPendingChanges = true;
+          syncMeta.lastLocalChangeAt = nowIso();
+          saveSyncMeta();
+          if (github?.config?.repo) github.statusText = 'Cambios locales pendientes';
+        }
+        updateSaveIndicator();
         if (!silent) toast('Cambios guardados');
       }
       function setState(mutator, opts = {}) {
@@ -1057,15 +1224,50 @@
       }
       function range(n) { return Array.from({length: Math.max(0, Number(n) || 0)}, (_,i)=>i); }
 
-      function projectWeekValue(project, personId, week) {
-        return Number(project.plan?.[personId]?.[week] || 0);
+      function projectActivities(project) {
+        if (!project.activities || !project.activities.length) normalizeState(state);
+        return project.activities || [];
       }
-      function setProjectWeek(project, personId, week, value) {
-        project.plan ||= {};
-        project.plan[personId] ||= {};
+      function activityWeekValue(activity, personId, week) {
+        return Number(activity?.plan?.[personId]?.[week] || 0);
+      }
+      function projectWeekValue(project, personId, week) {
+        return projectActivities(project).reduce((sum, activity) => sum + activityWeekValue(activity, personId, week), 0);
+      }
+      function activityTotal(activity) {
+        return Object.values(activity?.plan || {}).reduce((sum, weekMap) => sum + Object.values(weekMap || {}).reduce((a, v) => a + (Number(v) || 0), 0), 0);
+      }
+      function projectTotal(project) {
+        return projectActivities(project).reduce((sum, activity) => sum + activityTotal(activity), 0);
+      }
+      function setActivityWeek(activity, personId, week, value) {
+        activity.plan ||= {};
+        activity.plan[personId] ||= {};
         const n = cleanNumber(value);
-        if (n > 0) project.plan[personId][week] = n;
-        else delete project.plan[personId][week];
+        if (n > 0) activity.plan[personId][week] = n;
+        else delete activity.plan[personId][week];
+      }
+      function getOwnerName(project) {
+        return getPerson(project.ownerId)?.name || 'Sin owner';
+      }
+      function summaryProjectStatusFilter() {
+        return state.settings.summaryProjectStatus || 'all';
+      }
+      function summaryProjectSort() {
+        return state.settings.summaryProjectSort || 'status';
+      }
+      function filteredProjectsForSummary() {
+        const filter = summaryProjectStatusFilter();
+        let projects = state.projects.filter(p => filter === 'all' || (p.status || 'Sin estado') === filter);
+        const sort = summaryProjectSort();
+        projects = [...projects].sort((a, b) => {
+          if (sort === 'load') return projectTotal(b) - projectTotal(a);
+          if (sort === 'start') return parseDate(a.startDate) - parseDate(b.startDate);
+          if (sort === 'owner') return getOwnerName(a).localeCompare(getOwnerName(b), 'es');
+          if (sort === 'name') return String(a.name || '').localeCompare(String(b.name || ''), 'es');
+          return String(a.status || '').localeCompare(String(b.status || ''), 'es') || String(a.name || '').localeCompare(String(b.name || ''), 'es');
+        });
+        return projects;
       }
 
       function computeSummary() {
@@ -1073,19 +1275,22 @@
         const start = state.settings.portfolioStartDate || '2026-06-15';
         const weeks = range(horizon).map(i => ({ index: i, date: addWeeks(start, i), label: labelWeek(addWeeks(start, i)) }));
         const people = state.people;
+        const projects = filteredProjectsForSummary();
         const personWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
-        const projectWeekly = Object.fromEntries(state.projects.map(p => [p.id, Array(horizon).fill(0)]));
+        const projectWeekly = Object.fromEntries(projects.map(p => [p.id, Array(horizon).fill(0)]));
         const weeklyTotal = Array(horizon).fill(0);
-        for (const project of state.projects) {
-          for (const [personId, weekMap] of Object.entries(project.plan || {})) {
-            for (const [relWeek, value] of Object.entries(weekMap || {})) {
-              const actual = addWeeks(project.startDate, Number(relWeek));
-              const idx = diffWeeks(start, actual);
-              const fte = Number(value) || 0;
-              if (idx >= 0 && idx < horizon) {
-                weeklyTotal[idx] += fte;
-                projectWeekly[project.id][idx] += fte;
-                if (personWeekly[personId]) personWeekly[personId][idx] += fte;
+        for (const project of projects) {
+          for (const activity of projectActivities(project)) {
+            for (const [personId, weekMap] of Object.entries(activity.plan || {})) {
+              for (const [relWeek, value] of Object.entries(weekMap || {})) {
+                const actual = addWeeks(project.startDate, Number(relWeek));
+                const idx = diffWeeks(start, actual);
+                const fte = Number(value) || 0;
+                if (idx >= 0 && idx < horizon) {
+                  weeklyTotal[idx] += fte;
+                  projectWeekly[project.id][idx] += fte;
+                  if (personWeekly[personId]) personWeekly[personId][idx] += fte;
+                }
               }
             }
           }
@@ -1098,18 +1303,21 @@
           const total = arr.reduce((a,b)=>a+b, 0);
           const peak = Math.max(0, ...arr);
           const avg = horizon ? total / horizon : 0;
-          const projectCount = state.projects.filter(pr => Object.values(pr.plan?.[p.id] || {}).some(v => Number(v) > 0)).length;
+          const projectCount = projects.filter(pr => projectActivities(pr).some(activity => Object.values(activity.plan?.[p.id] || {}).some(v => Number(v) > 0))).length;
           return { ...p, total, avg, peak, utilization: p.capacity ? avg / Number(p.capacity) : 0, projectCount };
         });
-        const projectRecap = state.projects.map(project => {
+        const projectRecap = projects.map(project => {
           const arr = projectWeekly[project.id] || Array(horizon).fill(0);
           const total = arr.reduce((a,b)=>a+b, 0);
           const peak = Math.max(0, ...arr);
           const avg = horizon ? total / horizon : 0;
-          const assignedPeople = Object.entries(project.plan || {}).filter(([,m]) => Object.values(m || {}).some(v => Number(v) > 0)).length;
-          return { ...project, total, peak, avg, assignedPeople };
+          const assignedPeople = new Set();
+          projectActivities(project).forEach(activity => Object.entries(activity.plan || {}).forEach(([personId, m]) => {
+            if (Object.values(m || {}).some(v => Number(v) > 0)) assignedPeople.add(personId);
+          }));
+          return { ...project, total, peak, avg, assignedPeople: assignedPeople.size, ownerName: getOwnerName(project), activityCount: projectActivities(project).length };
         });
-        return { weeks, weeklyTotal, teamCapacity, totalFteWeeks, peakWeekly, personWeekly, projectWeekly, personRecap, projectRecap };
+        return { weeks, weeklyTotal, teamCapacity, totalFteWeeks, peakWeekly, personWeekly, projectWeekly, personRecap, projectRecap, projects };
       }
 
       function summaryGranularity() {
@@ -1212,6 +1420,7 @@
         if (ui.tab === 'people') app.innerHTML = viewPeople();
         if (ui.tab === 'data') app.innerHTML = viewData();
         bindEvents(app);
+        updateSaveIndicator();
       }
 
       function viewSummary() {
@@ -1249,7 +1458,9 @@
                 <label class="field"><span class="label">Inicio resumen</span><input type="date" value="${esc(state.settings.portfolioStartDate)}" data-bind="settings.portfolioStartDate"></label>
                 <label class="field"><span class="label">Horizonte semanas</span><input type="number" min="4" max="104" step="1" value="${esc(state.settings.horizonWeeks)}" data-bind="settings.horizonWeeks"></label>
                 <div class="field"><span class="label">Agrupar por</span><div class="segmented" role="group" aria-label="Agrupar resumen"><button type="button" class="segmented__btn ${summaryGranularity() === 'week' ? 'active' : ''}" data-summary-granularity="week">Semana</button><button type="button" class="segmented__btn ${summaryGranularity() === 'month' ? 'active' : ''}" data-summary-granularity="month">Mes</button></div></div>
-                <div class="field field--wide"><span class="label">Lectura</span><span class="card__hint">El resumen mide salud de capacidad. El detalle de volumen queda en tablas y recaps para evitar KPIs redundantes.</span></div>
+                <label class="field"><span class="label">Estado proyecto</span><select data-bind="settings.summaryProjectStatus"><option value="all" ${summaryProjectStatusFilter() === 'all' ? 'selected' : ''}>Todos</option>${STATUS_OPTIONS.map(o => `<option value="${esc(o)}" ${summaryProjectStatusFilter() === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>
+                <label class="field"><span class="label">Orden proyectos</span><select data-bind="settings.summaryProjectSort"><option value="status" ${summaryProjectSort() === 'status' ? 'selected' : ''}>Estado</option><option value="load" ${summaryProjectSort() === 'load' ? 'selected' : ''}>Mayor carga</option><option value="start" ${summaryProjectSort() === 'start' ? 'selected' : ''}>Inicio</option><option value="owner" ${summaryProjectSort() === 'owner' ? 'selected' : ''}>Owner</option><option value="name" ${summaryProjectSort() === 'name' ? 'selected' : ''}>Nombre</option></select></label>
+                <div class="field field--wide"><span class="label">Lectura</span><span class="card__hint">El resumen puede filtrar por estado. Las tablas de personas y proyectos se recalculan con los proyectos visibles.</span></div>
               </div>
             </div></div>
 
@@ -1316,9 +1527,9 @@
           <div class="table-scroll"><table class="summary-table">
             <thead><tr><th class="sticky-col">Proyecto</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
             <tbody>
-              ${state.projects.map(project => {
+              ${s.projectRecap.map(project => {
                 const arr = s.projectWeekly[project.id] || [];
-                return `<tr><td class="sticky-col"><span class="strong">${esc(project.name)}</span><div class="person-sub">${esc(project.client || 'Cliente sin definir')} · ${esc(project.status || 'Sin estado')}</div></td>${periods.map(period => {
+                return `<tr><td class="sticky-col"><span class="strong">${esc(project.name)}</span><div class="person-sub">${esc(project.client || 'Cliente sin definir')} · ${esc(project.status || 'Sin estado')} · ${esc(project.ownerName || 'Sin owner')}</div></td>${periods.map(period => {
                   const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
                   const capacity = (s.teamCapacity || 0) * period.weekIndexes.length;
                   const ratio = capacity ? total / capacity : 0;
@@ -1346,10 +1557,12 @@
       function projectRecapTable(s) {
         const maxTotal = Math.max(1, ...s.projectRecap.map(p => p.total));
         return `<div class="card">
-          <div class="card__head"><div><h3 class="card__title">Recap por proyecto</h3><p class="card__hint">Volumen imputado, pico operativo y número de personas involucradas.</p></div></div>
-          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Proyecto</th><th>Inicio</th><th>Total</th><th>Pico</th><th>Equipo</th></tr></thead><tbody>
+          <div class="card__head"><div><h3 class="card__title">Recap por proyecto</h3><p class="card__hint">Volumen imputado, estado, owner interno y número de actividades/personas involucradas.</p></div></div>
+          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Proyecto</th><th>Estado</th><th>Owner</th><th>Inicio</th><th>Total</th><th>Pico</th><th>Equipo</th></tr></thead><tbody>
             ${s.projectRecap.map(p => `<tr>
-              <td><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.client)} · ${esc(p.status)}</div></td>
+              <td><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.client)} · ${p.activityCount} actividades</div></td>
+              <td><span class="status-pill"><span class="status-dot ${p.status === 'Activo' ? 'active' : ''}"></span>${esc(p.status)}</span></td>
+              <td><span class="owner-pill">${esc(p.ownerName || 'Sin owner')}</span></td>
               <td class="mono">${labelWeek(p.startDate)}</td><td class="mono strong">${fmt(p.total,1)}</td><td class="mono">${fmt(p.peak,1)}</td>
               <td><div class="summary-heat"><span>${p.assignedPeople}</span><span class="heat-bar"><span class="heat-bar__fill light" style="width:${Math.min(100, (p.total/maxTotal)*100)}%"></span></span></div></td>
             </tr>`).join('')}
@@ -1365,34 +1578,40 @@
           <section>
             <div class="view-header">
               <div>
-                <h2 class="view-title"><span class="title-base">Proyectos</span><span class="title-accent"> y planificación FTE</span></h2>
-                <p class="view-subtitle">Cada subtab corresponde a un proyecto. La matriz se edita en FTE por persona y semana.</p>
+                <h2 class="view-title"><span class="title-base">Proyectos</span><span class="title-accent"> y actividades</span></h2>
+                <p class="view-subtitle">Cada proyecto puede desglosarse en varias actividades. Cada actividad tiene su propio cronograma FTE por persona y semana.</p>
               </div>
               <div class="actions"><button class="btn btn--green" data-action="add-project">+ Crear proyecto</button></div>
             </div>
             <div class="project-tabs">
-              ${state.projects.map(p => `<button class="project-chip ${p.id === ui.selectedProjectId ? 'active' : ''}" data-select-project="${p.id}"><span class="project-chip__name">${esc(p.name)}</span><span class="project-chip__meta">${esc(p.client || 'Sin cliente')} · ${labelWeek(p.startDate)}</span></button>`).join('')}
+              ${state.projects.map(p => `<button class="project-chip ${p.id === ui.selectedProjectId ? 'active' : ''}" data-select-project="${p.id}"><span class="project-chip__name">${esc(p.name)}</span><span class="project-chip__meta">${esc(p.client || 'Sin cliente')} · ${esc(p.status || 'Sin estado')} · <span class="owner-inline">${esc(getOwnerName(p))}</span></span></button>`).join('')}
             </div>
             ${project ? projectDetail(project) : ''}
           </section>`;
       }
 
       function emptyProjects() {
-        return `<div class="card"><div class="empty"><h3>No hay proyectos todavía</h3><p>Crea un primer proyecto para empezar a imputar FTEs por persona y semana.</p><button class="btn btn--primary" data-action="add-project">Crear proyecto</button></div></div>`;
+        return `<div class="card"><div class="empty"><h3>No hay proyectos todavía</h3><p>Crea un primer proyecto para empezar a imputar FTEs por actividad, persona y semana.</p><button class="btn btn--primary" data-action="add-project">Crear proyecto</button></div></div>`;
       }
 
       function projectDetail(project) {
+        const ownerOptions = state.people.map(person => `<option value="${person.id}" ${project.ownerId === person.id ? 'selected' : ''}>${esc(person.name)}</option>`).join('');
+        const projectGrandTotal = projectTotal(project);
+        const projectWeeklyPeak = Math.max(0, ...range(project.durationWeeks || 1).map(w => state.people.reduce((sum, person) => sum + projectWeekValue(project, person.id, w), 0)));
         return `<div class="project-layout">
           <aside class="card">
-            <div class="card__head"><div><h3 class="card__title">Configuración</h3><p class="card__hint">Al cambiar la fecha de inicio, se mueve la planificación completa.</p></div></div>
+            <div class="card__head"><div><h3 class="card__title">Configuración</h3><p class="card__hint">Al cambiar la fecha de inicio, se mueve la planificación completa del proyecto.</p></div></div>
             <div class="card__body meta-form">
               <label class="field field--wide"><span class="label">Nombre proyecto</span><input value="${esc(project.name)}" data-project-field="name" data-project-id="${project.id}"></label>
               <label class="field field--wide"><span class="label">Cliente / ámbito</span><input value="${esc(project.client || '')}" data-project-field="client" data-project-id="${project.id}"></label>
               <div class="grid grid--2">
-                <label class="field"><span class="label">Estado</span><select data-project-field="status" data-project-id="${project.id}">${STATUS_OPTIONS.map(o => `<option ${project.status === o ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
+                <label class="field"><span class="label">Estado</span><select data-project-field="status" data-project-id="${project.id}">${STATUS_OPTIONS.map(o => `<option ${project.status === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>
+                <label class="field"><span class="label">Owner interno</span><select data-project-field="ownerId" data-project-id="${project.id}"><option value="">Sin owner</option>${ownerOptions}</select></label>
+              </div>
+              <div class="grid grid--2">
+                <label class="field"><span class="label">Fecha de inicio</span><input type="date" value="${esc(project.startDate)}" data-project-field="startDate" data-project-id="${project.id}"></label>
                 <label class="field"><span class="label">Duración semanas</span><input type="number" min="1" max="104" step="1" value="${esc(project.durationWeeks)}" data-project-field="durationWeeks" data-project-id="${project.id}"></label>
               </div>
-              <label class="field"><span class="label">Fecha de inicio</span><input type="date" value="${esc(project.startDate)}" data-project-field="startDate" data-project-id="${project.id}"></label>
               <div class="actions actions--left">
                 <button class="btn btn--small" data-shift-project="-1" data-project-id="${project.id}">Mover -1 sem.</button>
                 <button class="btn btn--small" data-shift-project="1" data-project-id="${project.id}">Mover +1 sem.</button>
@@ -1402,33 +1621,72 @@
               <div class="actions actions--left"><button class="btn btn--quiet" data-action="delete-project" data-project-id="${project.id}">Eliminar proyecto</button></div>
             </div>
           </aside>
-          <div class="card">
+          <div class="card project-planner-card">
             <div class="card__head">
-              <div><h3 class="card__title">${esc(project.name)}</h3><p class="card__hint"><span class="status-pill"><span class="status-dot ${project.status === 'Activo' ? 'active' : ''}"></span>${esc(project.status)}</span> · inicio ${labelWeek(project.startDate)} · ${project.durationWeeks} semanas</p></div>
-              <div class="actions"><button class="btn btn--small" data-action="clear-project" data-project-id="${project.id}">Vaciar matriz</button></div>
+              <div>
+                <div class="project-title-row"><h3 class="card__title">${esc(project.name)}</h3><span class="status-pill"><span class="status-dot ${project.status === 'Activo' ? 'active' : ''}"></span>${esc(project.status)}</span><span class="owner-pill">${esc(getOwnerName(project))}</span></div>
+                <p class="card__hint">Imputa FTEs a nivel de actividad. El resumen agrega automáticamente por proyecto, persona y periodo.</p>
+              </div>
+              <div class="actions"><button class="btn btn--green btn--small" data-action="add-activity" data-project-id="${project.id}">+ Añadir actividad</button><button class="btn btn--small" data-action="clear-project" data-project-id="${project.id}">Vaciar proyecto</button></div>
             </div>
-            ${projectMatrix(project)}
+            <div class="project-summary-bar">
+              <div class="project-summary-stat"><span class="project-summary-stat__label">Total proyecto</span><span class="project-summary-stat__value" data-project-grand-total="${project.id}">${fmt(projectGrandTotal,1)} FTE</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">Pico semanal</span><span class="project-summary-stat__value" data-project-weekly-peak="${project.id}">${fmt(projectWeeklyPeak,1)} FTE</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">Inicio / duración</span><span class="project-summary-stat__value">${labelWeek(project.startDate)} · ${project.durationWeeks} sem.</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">Actividades</span><span class="project-summary-stat__value">${projectActivities(project).length}</span></div>
+            </div>
+            ${projectActivitiesStack(project)}
           </div>
         </div>`;
       }
 
-      function projectMatrix(project) {
+      function projectActivitiesStack(project) {
         const people = state.people;
         if (!people.length) return `<div class="empty"><h3>No hay personas creadas</h3><p>Crea personas del equipo para poder imputar FTEs en el proyecto.</p><button class="btn btn--primary" data-action="go-people">Crear personas</button></div>`;
+        return `<div class="activity-stack">
+          ${projectActivities(project).map((activity, index) => activityCard(project, activity, index)).join('')}
+        </div>`;
+      }
+
+      function activityCard(project, activity, index) {
+        const total = activityTotal(activity);
+        return `<div class="activity-card" data-activity-card="${activity.id}">
+          <div class="activity-card__head">
+            <div class="activity-heading">
+              <span class="activity-index-badge">${String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <label class="field field--wide"><span class="label">Actividad ${index + 1}</span><input class="activity-title-input" value="${esc(activity.name)}" data-activity-field="name" data-project-id="${project.id}" data-activity-id="${activity.id}"></label>
+                <div class="activity-meta">
+                  <label class="field field--wide"><span class="label">Notas actividad</span><input value="${esc(activity.notes || '')}" data-activity-field="notes" data-project-id="${project.id}" data-activity-id="${activity.id}" placeholder="Ej. Diagnóstico, reuniones, modelización..."></label>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <span class="activity-total-pill"><span class="usage-dot usage--low"></span><strong data-activity-grand-total="${activity.id}">${fmt(total,1)}</strong> FTE actividad</span>
+              <button class="btn btn--small" data-action="clear-activity" data-project-id="${project.id}" data-activity-id="${activity.id}">Vaciar</button>
+              <button class="btn btn--small btn--quiet" data-action="delete-activity" data-project-id="${project.id}" data-activity-id="${activity.id}">Eliminar</button>
+            </div>
+          </div>
+          ${activityMatrix(project, activity)}
+        </div>`;
+      }
+
+      function activityMatrix(project, activity) {
+        const people = state.people;
         const weeks = range(project.durationWeeks || 1);
-        const colTotals = weeks.map(w => people.reduce((sum, p) => sum + projectWeekValue(project, p.id, w), 0));
-        return `<div class="table-scroll" data-project-matrix-wrap="${project.id}"><table class="matrix-table" data-project-matrix="${project.id}">
+        const colTotals = weeks.map(w => people.reduce((sum, p) => sum + activityWeekValue(activity, p.id, w), 0));
+        return `<div class="table-scroll" data-activity-matrix-wrap="${activity.id}"><table class="matrix-table" data-activity-matrix="${activity.id}" data-project-matrix="${project.id}">
           <thead><tr><th class="sticky-col">Persona</th>${weeks.map(w => `<th class="week-head"><span class="week-head__num">S${w+1}</span><span class="week-head__date">${labelWeek(addWeeks(project.startDate, w))}</span></th>`).join('')}<th>Total</th></tr></thead>
           <tbody>
             ${people.map((person, rowIndex) => {
-              const rowTotal = weeks.reduce((sum,w)=>sum + projectWeekValue(project, person.id, w), 0);
+              const rowTotal = weeks.reduce((sum,w)=>sum + activityWeekValue(activity, person.id, w), 0);
               return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">${esc(person.role)} · cap. ${fmt(person.capacity,1)}</div></span></div></td>${weeks.map((w, colIndex) => {
-                const val = projectWeekValue(project, person.id, w);
-                return `<td style="text-align:center"><input class="fte-input ${val ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${val ? esc(val) : ''}" data-fte-project="${project.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="FTE ${esc(person.name)} semana ${w+1}"></td>`;
-              }).join('')}<td class="cell-total mono" data-row-total="${person.id}">${fmt(rowTotal,1)}</td></tr>`;
+                const val = activityWeekValue(activity, person.id, w);
+                return `<td style="text-align:center"><input class="fte-input ${val ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${val ? esc(val) : ''}" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="FTE ${esc(person.name)} actividad ${esc(activity.name)} semana ${w+1}"></td>`;
+              }).join('')}<td class="cell-total mono" data-row-total="${activity.id}:${person.id}">${fmt(rowTotal,1)}</td></tr>`;
             }).join('')}
           </tbody>
-          <tfoot><tr><td class="sticky-col">Total semanal</td>${colTotals.map((v, w) => `<td class="cell-total mono" data-col-total="${w}">${fmt(v,1)}</td>`).join('')}<td class="cell-total mono" data-grand-total>${fmt(colTotals.reduce((a,b)=>a+b,0),1)}</td></tr></tfoot>
+          <tfoot><tr><td class="sticky-col">Total actividad</td>${colTotals.map((v, w) => `<td class="cell-total mono" data-col-total="${activity.id}:${w}">${fmt(v,1)}</td>`).join('')}<td class="cell-total mono" data-grand-total="${activity.id}">${fmt(colTotals.reduce((a,b)=>a+b,0),1)}</td></tr></tfoot>
         </table></div>`;
       }
 
@@ -1481,6 +1739,11 @@
                   <button class="btn btn--primary" data-action="publish-github">Publicar cambios</button>
                 </div>
                 <p class="sync-note">El token no se publica ni se guarda en el JSON: queda solo en esta sesión del navegador. Si cierras la pestaña, tendrás que pegarlo de nuevo.</p>
+                <div class="sync-meta-grid">
+                  <div class="sync-meta-item"><span class="sync-meta-item__label">Estado local</span><span class="sync-meta-item__value">${syncMeta.hasPendingChanges ? 'Cambios pendientes de publicar' : 'Sin cambios pendientes'}</span></div>
+                  <div class="sync-meta-item"><span class="sync-meta-item__label">Última actualización</span><span class="sync-meta-item__value">${formatDateTime(syncMeta.lastGithubLoadAt)}</span></div>
+                  <div class="sync-meta-item"><span class="sync-meta-item__label">Última publicación</span><span class="sync-meta-item__value">${formatDateTime(syncMeta.lastGithubPublishAt)}</span></div>
+                </div>
               </div>
             </div>
             <div class="card"><div class="card__head"><div><h3 class="card__title">Export actual</h3><p class="card__hint">Copia local de la planificación visible en esta sesión.</p></div></div><div class="card__body"><textarea class="data-box" readonly>${esc(data)}</textarea></div></div>
@@ -1502,6 +1765,9 @@
         });
         root.querySelectorAll('[data-project-field]').forEach(el => {
           el.addEventListener('change', e => updateProjectField(e.currentTarget));
+        });
+        root.querySelectorAll('[data-activity-field]').forEach(el => {
+          el.addEventListener('change', e => updateActivityField(e.currentTarget));
         });
         root.querySelectorAll('[data-person-field]').forEach(el => {
           el.addEventListener('change', e => updatePersonField(e.currentTarget));
@@ -1532,6 +1798,15 @@
           p[field] = value;
         }, { silent: true });
       }
+      function updateActivityField(el) {
+        const projectId = el.dataset.projectId, activityId = el.dataset.activityId, field = el.dataset.activityField;
+        setState(st => {
+          const p = st.projects.find(x => x.id === projectId);
+          const activity = p ? projectActivities(p).find(a => a.id === activityId) : null;
+          if (!activity) return;
+          activity[field] = el.value;
+        }, { silent: true });
+      }
       function updatePersonField(el) {
         const id = el.dataset.personId, field = el.dataset.personField;
         setState(st => {
@@ -1555,38 +1830,48 @@
       }
       function updateFte(el) {
         normalizeFteInput(el);
-        const projectId = el.dataset.fteProject, personId = el.dataset.ftePerson, week = Number(el.dataset.fteWeek);
+        const projectId = el.dataset.fteProject, activityId = el.dataset.fteActivity, personId = el.dataset.ftePerson, week = Number(el.dataset.fteWeek);
         const p = state.projects.find(x => x.id === projectId);
-        if (p) setProjectWeek(p, personId, week, fteValue(el.value));
+        const activity = p ? projectActivities(p).find(a => a.id === activityId) : null;
+        if (activity) setActivityWeek(activity, personId, week, fteValue(el.value));
         el.classList.toggle('has-value', fteValue(el.value) > 0);
         saveState(true);
-        updateMatrixTotals(projectId);
+        updateMatrixTotals(projectId, activityId);
       }
       function formatFteInput(el) {
         const value = fteValue(el.value);
         el.value = value ? String(value) : '';
         el.classList.toggle('has-value', value > 0);
       }
-      function updateMatrixTotals(projectId) {
+      function updateMatrixTotals(projectId, activityId) {
         const project = getProject(projectId);
-        const table = document.querySelector(`[data-project-matrix="${projectId}"]`);
-        if (!project || !table) return;
+        const activity = project ? projectActivities(project).find(a => a.id === activityId) : null;
+        const table = document.querySelector(`[data-activity-matrix="${activityId}"]`);
+        if (!project || !activity || !table) return;
         const people = state.people;
         const weeks = range(project.durationWeeks || 1);
         people.forEach(person => {
-          const rowTotal = weeks.reduce((sum, w) => sum + projectWeekValue(project, person.id, w), 0);
-          const cell = table.querySelector(`[data-row-total="${person.id}"]`);
+          const rowTotal = weeks.reduce((sum, w) => sum + activityWeekValue(activity, person.id, w), 0);
+          const cell = table.querySelector(`[data-row-total="${activityId}:${person.id}"]`);
           if (cell) cell.textContent = fmt(rowTotal, 1);
         });
         let grand = 0;
         weeks.forEach(w => {
-          const total = people.reduce((sum, person) => sum + projectWeekValue(project, person.id, w), 0);
+          const total = people.reduce((sum, person) => sum + activityWeekValue(activity, person.id, w), 0);
           grand += total;
-          const cell = table.querySelector(`[data-col-total="${w}"]`);
+          const cell = table.querySelector(`[data-col-total="${activityId}:${w}"]`);
           if (cell) cell.textContent = fmt(total, 1);
         });
-        const grandCell = table.querySelector('[data-grand-total]');
+        const grandCell = table.querySelector(`[data-grand-total="${activityId}"]`);
         if (grandCell) grandCell.textContent = fmt(grand, 1);
+        const pill = document.querySelector(`[data-activity-grand-total="${activityId}"]`);
+        if (pill) pill.textContent = fmt(grand, 1);
+        const projectGrand = projectTotal(project);
+        const projectGrandCell = document.querySelector(`[data-project-grand-total="${projectId}"]`);
+        if (projectGrandCell) projectGrandCell.textContent = `${fmt(projectGrand, 1)} FTE`;
+        const projectWeeklyPeak = Math.max(0, ...range(project.durationWeeks || 1).map(w => people.reduce((sum, person) => sum + projectWeekValue(project, person.id, w), 0)));
+        const projectPeakCell = document.querySelector(`[data-project-weekly-peak="${projectId}"]`);
+        if (projectPeakCell) projectPeakCell.textContent = `${fmt(projectWeeklyPeak, 1)} FTE`;
       }
       function handleFteKeydown(e) {
         const keys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Enter'];
@@ -1597,13 +1882,14 @@
         const row = Number(input.dataset.fteRow || 0);
         const col = Number(input.dataset.fteCol || 0);
         const delta = e.key === 'ArrowRight' ? [0, 1] : e.key === 'ArrowLeft' ? [0, -1] : e.key === 'ArrowUp' ? [-1, 0] : [1, 0];
-        const next = document.querySelector(`[data-fte-project="${input.dataset.fteProject}"][data-fte-row="${row + delta[0]}"][data-fte-col="${col + delta[1]}"]`);
+        const next = document.querySelector(`[data-fte-project="${input.dataset.fteProject}"][data-fte-activity="${input.dataset.fteActivity}"][data-fte-row="${row + delta[0]}"][data-fte-col="${col + delta[1]}"]`);
         if (next) {
           next.focus({ preventScroll: true });
           next.select?.();
           next.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         }
       }
+
       function shiftProject(id, weeks) {
         setState(st => {
           const p = st.projects.find(x => x.id === id);
@@ -1619,8 +1905,10 @@
       }
       function addProject() {
         const id = uid('project');
+        const activityId = uid('activity');
         setState(st => {
-          st.projects.push({ id, name: `Nuevo proyecto ${st.projects.length + 1}`, client: 'Astara Intelligence', status: 'En propuesta', startDate: st.settings.portfolioStartDate || formatISO(new Date()), durationWeeks: 12, notes: '', plan: {} });
+          const ownerId = st.people.find(p => p.active)?.id || st.people[0]?.id || '';
+          st.projects.push({ id, name: `Nuevo proyecto ${st.projects.length + 1}`, client: 'Astara Intelligence', status: 'Pipeline', ownerId, startDate: st.settings.portfolioStartDate || formatISO(new Date()), durationWeeks: 12, notes: '', activities: [{ id: activityId, name: 'Planificación general', notes: '', plan: {} }] });
         });
         ui.selectedProjectId = id; ui.tab = 'projects'; render();
       }
@@ -1636,7 +1924,36 @@
         const project = getProject(id);
         if (!project) return;
         if (!confirm(`¿Vaciar todos los FTEs de "${project.name}"?`)) return;
-        setState(st => { const p = st.projects.find(x => x.id === id); if (p) p.plan = {}; });
+        setState(st => { const p = st.projects.find(x => x.id === id); if (p) projectActivities(p).forEach(activity => { activity.plan = {}; }); });
+      }
+      function addActivity(projectId) {
+        setState(st => {
+          const p = st.projects.find(x => x.id === projectId);
+          if (!p) return;
+          projectActivities(p).push({ id: uid('activity'), name: `Nueva actividad ${projectActivities(p).length + 1}`, notes: '', plan: {} });
+        });
+      }
+      function clearActivity(projectId, activityId) {
+        const project = getProject(projectId);
+        const activity = project ? projectActivities(project).find(a => a.id === activityId) : null;
+        if (!activity) return;
+        if (!confirm(`¿Vaciar la actividad "${activity.name}"?`)) return;
+        setState(st => {
+          const p = st.projects.find(x => x.id === projectId);
+          const a = p ? projectActivities(p).find(x => x.id === activityId) : null;
+          if (a) a.plan = {};
+        });
+      }
+      function deleteActivity(projectId, activityId) {
+        const project = getProject(projectId);
+        const activity = project ? projectActivities(project).find(a => a.id === activityId) : null;
+        if (!project || !activity) return;
+        if (projectActivities(project).length <= 1) { toast('El proyecto debe tener al menos una actividad'); return; }
+        if (!confirm(`¿Eliminar la actividad "${activity.name}"? También se borran sus FTEs.`)) return;
+        setState(st => {
+          const p = st.projects.find(x => x.id === projectId);
+          if (p) p.activities = projectActivities(p).filter(a => a.id !== activityId);
+        });
       }
       function addPerson() {
         const id = uid('person');
@@ -1649,13 +1966,19 @@
         if (!confirm(`¿Eliminar a "${person.name}"? También se eliminarán sus FTEs en todos los proyectos.`)) return;
         setState(st => {
           st.people = st.people.filter(p => p.id !== id);
-          st.projects.forEach(pr => { if (pr.plan) delete pr.plan[id]; });
+          st.projects.forEach(pr => {
+            if (pr.plan) delete pr.plan[id];
+            projectActivities(pr).forEach(activity => { if (activity.plan) delete activity.plan[id]; });
+          });
         });
       }
       function handleAction(action, el) {
         if (action === 'add-project') addProject();
         if (action === 'delete-project') deleteProject(el.dataset.projectId);
         if (action === 'clear-project') clearProject(el.dataset.projectId);
+        if (action === 'add-activity') addActivity(el.dataset.projectId);
+        if (action === 'clear-activity') clearActivity(el.dataset.projectId, el.dataset.activityId);
+        if (action === 'delete-activity') deleteActivity(el.dataset.projectId, el.dataset.activityId);
         if (action === 'add-person') addPerson();
         if (action === 'go-people') { ui.tab = 'people'; render(); }
         if (action === 'go-projects') { ui.tab = 'projects'; render(); }
@@ -1682,9 +2005,10 @@
       function importJson() {
         const text = document.querySelector('[data-import-text]')?.value || '';
         try {
+          if (!confirm('¿Importar este JSON? Se reemplazará la planificación guardada en este navegador.')) return;
           const parsed = JSON.parse(text);
           if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('Formato no válido');
-          state = parsed;
+          state = normalizeState(parsed);
           saveState();
           ui.selectedProjectId = state.projects[0]?.id || null;
           toast('Planificación importada');
