@@ -318,6 +318,18 @@
     .summary-table th:last-child,
     .summary-table td:last-child { min-width: 86px; text-align: center; }
     .fte-input { width: 66px; height: 34px; margin: 0 auto; }
+    .fte-cell { min-width: 92px; display: grid; grid-template-columns: 1fr; gap: 4px; align-items: center; justify-items: center; }
+    .fte-mini { display: grid; grid-template-columns: 16px 1fr; gap: 4px; align-items: center; width: 86px; }
+    .fte-mini__label { font-size: 8px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--fg-3); text-align: right; }
+    .fte-mini--actual .fte-mini__label { color: var(--accent); }
+    .fte-input.fte-input--mini { width: 58px; height: 25px; padding: 4px 6px; font-size: 11px; border-radius: 7px; }
+    .fte-input.fte-input--actual.has-value { background: rgba(26,77,122,0.14); border-color: rgba(26,77,122,0.45); color: var(--accent); }
+    .fte-cell.has-actual { background: rgba(26,77,122,0.045); border-radius: 10px; padding: 4px 2px; }
+    .fte-cell.has-forecast:not(.has-actual) { background: rgba(139,205,255,0.08); border-radius: 10px; padding: 4px 2px; }
+    .project-chip.is-vacation, .project-planner-card.is-vacation { border-color: rgba(134,191,198,0.75); }
+    .project-chip.is-vacation.active { background: #e0f0f3; color: var(--fg-1); border-color: #86bfc6; }
+    .activity-card.is-vacation { border-left-color: #86bfc6; }
+    .vacation-note { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(134,191,198,0.16); color: var(--fg-2); font-size: 11px; line-height: 1.45; border: 1px solid rgba(134,191,198,0.35); }
     .person-name { min-width: 0; }
     .person-name > span:last-child { min-width: 0; }
     .person-name .strong,
@@ -649,6 +661,9 @@
       const ROLE_OPTIONS = ['Partner / Lead', 'Project Manager', 'Senior Consultant', 'Consultant', 'Data Analyst', 'UX / Product', 'Operations'];
       const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
       const FIXED_GITHUB_CONFIG = Object.freeze({ owner: 'hybridathletics94', repo: 'Advisory_FTE', branch: 'main', path: 'data/planner.json' });
+      const VACATION_PROJECT_ID = 'project_vacaciones_equipo';
+      const VACATION_PROJECT_NAME = 'Vacaciones equipo';
+      const VACATION_ACTIVITY_NAME = 'Vacaciones / ausencias';
       const DEFAULT_DATA = {
         "settings": {
                 "portfolioStartDate": "2026-06-15",
@@ -958,15 +973,45 @@
 
       function normalizeState(data) {
         const st = data && typeof data === 'object' ? data : JSON.parse(JSON.stringify(DEFAULT_DATA));
+        const cleanCellNumber = value => {
+          const n = Number(String(value ?? '').replace(',', '.'));
+          if (!Number.isFinite(n) || n < 0) return 0;
+          return Math.round(n * 10) / 10;
+        };
+        const normalizeCell = value => {
+          if (value && typeof value === 'object' && !Array.isArray(value)) {
+            const forecast = cleanCellNumber(value.forecast ?? value.plan ?? value.value ?? 0);
+            const actual = cleanCellNumber(value.actual ?? value.real ?? 0);
+            const cell = {};
+            if (forecast > 0) cell.forecast = forecast;
+            if (actual > 0) cell.actual = actual;
+            return Object.keys(cell).length ? cell : null;
+          }
+          const forecast = cleanCellNumber(value);
+          return forecast > 0 ? { forecast } : null;
+        };
+        const normalizePlan = plan => {
+          const out = {};
+          Object.entries(plan || {}).forEach(([personId, weekMap]) => {
+            const personWeeks = {};
+            Object.entries(weekMap || {}).forEach(([week, value]) => {
+              const cell = normalizeCell(value);
+              if (cell) personWeeks[week] = cell;
+            });
+            if (Object.keys(personWeeks).length) out[personId] = personWeeks;
+          });
+          return out;
+        };
         st.settings ||= {};
         st.people = Array.isArray(st.people) ? st.people : [];
         st.projects = Array.isArray(st.projects) ? st.projects : [];
         st.settings.summaryGranularity = st.settings.summaryGranularity === 'month' ? 'month' : 'week';
         st.settings.summaryProjectStatus ||= 'all';
         st.settings.summaryProjectSort ||= 'status';
+        const defaultOwnerId = st.people.find(p => p.active)?.id || st.people[0]?.id || '';
         st.projects.forEach(project => {
           project.status ||= 'En propuesta';
-          project.ownerId ||= st.people.find(p => p.active)?.id || st.people[0]?.id || '';
+          project.ownerId ||= defaultOwnerId;
           project.durationWeeks = Math.max(1, Math.min(104, Math.round(Number(project.durationWeeks) || 12)));
           if (!Array.isArray(project.activities) || !project.activities.length) {
             project.activities = [{ id: uid('activity'), name: 'Planificación general', notes: '', plan: project.plan || {} }];
@@ -975,9 +1020,43 @@
             activity.id ||= uid('activity');
             activity.name ||= i === 0 ? 'Planificación general' : `Actividad ${i + 1}`;
             activity.notes ||= '';
-            activity.plan ||= {};
+            activity.plan = normalizePlan(activity.plan || {});
           });
+          delete project.plan;
         });
+        let vacation = st.projects.find(p => p.id === VACATION_PROJECT_ID || p.capacityMode === 'vacation' || String(p.name || '').trim().toLowerCase() === VACATION_PROJECT_NAME.toLowerCase());
+        if (!vacation) {
+          vacation = {
+            id: VACATION_PROJECT_ID,
+            name: VACATION_PROJECT_NAME,
+            client: 'Equipo Advisory',
+            status: 'Activo',
+            capacityMode: 'vacation',
+            ownerId: defaultOwnerId,
+            startDate: st.settings.portfolioStartDate || '2026-06-15',
+            durationWeeks: Number(st.settings.horizonWeeks) || 26,
+            notes: 'Proyecto técnico para registrar vacaciones y ausencias. No suma carga: resta capacidad disponible en el resumen.',
+            activities: [{ id: 'activity_vacaciones_equipo', name: VACATION_ACTIVITY_NAME, notes: '', plan: {} }]
+          };
+          st.projects.unshift(vacation);
+        }
+        vacation.id = VACATION_PROJECT_ID;
+        vacation.name = VACATION_PROJECT_NAME;
+        vacation.client ||= 'Equipo Advisory';
+        vacation.status ||= 'Activo';
+        vacation.capacityMode = 'vacation';
+        vacation.ownerId ||= defaultOwnerId;
+        vacation.startDate ||= st.settings.portfolioStartDate || '2026-06-15';
+        vacation.durationWeeks = Math.max(Number(vacation.durationWeeks) || 0, Number(st.settings.horizonWeeks) || 26, 12);
+        vacation.notes ||= 'Proyecto técnico para registrar vacaciones y ausencias. No suma carga: resta capacidad disponible en el resumen.';
+        if (!Array.isArray(vacation.activities) || !vacation.activities.length) vacation.activities = [{ id: 'activity_vacaciones_equipo', name: VACATION_ACTIVITY_NAME, notes: '', plan: {} }];
+        vacation.activities.forEach((activity, i) => {
+          activity.id ||= i === 0 ? 'activity_vacaciones_equipo' : uid('activity');
+          activity.name ||= i === 0 ? VACATION_ACTIVITY_NAME : `Ausencia ${i + 1}`;
+          activity.notes ||= '';
+          activity.plan = normalizePlan(activity.plan || {});
+        });
+        st.projects = [vacation, ...st.projects.filter(p => p !== vacation)];
         return st;
       }
 
@@ -1224,28 +1303,54 @@
       }
       function range(n) { return Array.from({length: Math.max(0, Number(n) || 0)}, (_,i)=>i); }
 
+      function isVacationProject(project) {
+        return Boolean(project && (project.capacityMode === 'vacation' || project.id === VACATION_PROJECT_ID || String(project.name || '').trim().toLowerCase() === VACATION_PROJECT_NAME.toLowerCase()));
+      }
       function projectActivities(project) {
         if (!project.activities || !project.activities.length) normalizeState(state);
         return project.activities || [];
       }
+      function fteCellParts(value) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          return { forecast: Number(value.forecast || 0), actual: Number(value.actual || 0) };
+        }
+        return { forecast: Number(value || 0), actual: 0 };
+      }
+      function activityWeekForecast(activity, personId, week) {
+        return fteCellParts(activity?.plan?.[personId]?.[week]).forecast || 0;
+      }
+      function activityWeekActual(activity, personId, week) {
+        return fteCellParts(activity?.plan?.[personId]?.[week]).actual || 0;
+      }
       function activityWeekValue(activity, personId, week) {
-        return Number(activity?.plan?.[personId]?.[week] || 0);
+        const cell = fteCellParts(activity?.plan?.[personId]?.[week]);
+        return cell.actual > 0 ? cell.actual : (cell.forecast || 0);
       }
       function projectWeekValue(project, personId, week) {
         return projectActivities(project).reduce((sum, activity) => sum + activityWeekValue(activity, personId, week), 0);
       }
       function activityTotal(activity) {
-        return Object.values(activity?.plan || {}).reduce((sum, weekMap) => sum + Object.values(weekMap || {}).reduce((a, v) => a + (Number(v) || 0), 0), 0);
+        let total = 0;
+        Object.entries(activity?.plan || {}).forEach(([personId, weekMap]) => {
+          Object.keys(weekMap || {}).forEach(week => { total += activityWeekValue(activity, personId, week); });
+        });
+        return total;
       }
       function projectTotal(project) {
         return projectActivities(project).reduce((sum, activity) => sum + activityTotal(activity), 0);
       }
-      function setActivityWeek(activity, personId, week, value) {
+      function setActivityWeek(activity, personId, week, kind, value) {
         activity.plan ||= {};
         activity.plan[personId] ||= {};
-        const n = cleanNumber(value);
-        if (n > 0) activity.plan[personId][week] = n;
+        const current = fteCellParts(activity.plan[personId][week]);
+        const n = fteValue(value);
+        current[kind === 'actual' ? 'actual' : 'forecast'] = n;
+        const cell = {};
+        if (current.forecast > 0) cell.forecast = current.forecast;
+        if (current.actual > 0) cell.actual = current.actual;
+        if (Object.keys(cell).length) activity.plan[personId][week] = cell;
         else delete activity.plan[personId][week];
+        if (!Object.keys(activity.plan[personId] || {}).length) delete activity.plan[personId];
       }
       function getOwnerName(project) {
         return getPerson(project.ownerId)?.name || 'Sin owner';
@@ -1258,7 +1363,7 @@
       }
       function filteredProjectsForSummary() {
         const filter = summaryProjectStatusFilter();
-        let projects = state.projects.filter(p => filter === 'all' || (p.status || 'Sin estado') === filter);
+        let projects = state.projects.filter(p => !isVacationProject(p) && (filter === 'all' || (p.status || 'Sin estado') === filter));
         const sort = summaryProjectSort();
         projects = [...projects].sort((a, b) => {
           if (sort === 'load') return projectTotal(b) - projectTotal(a);
@@ -1276,16 +1381,18 @@
         const weeks = range(horizon).map(i => ({ index: i, date: addWeeks(start, i), label: labelWeek(addWeeks(start, i)) }));
         const people = state.people;
         const projects = filteredProjectsForSummary();
+        const vacationProjects = state.projects.filter(isVacationProject);
         const personWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
         const projectWeekly = Object.fromEntries(projects.map(p => [p.id, Array(horizon).fill(0)]));
+        const vacationPersonWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
         const weeklyTotal = Array(horizon).fill(0);
         for (const project of projects) {
           for (const activity of projectActivities(project)) {
             for (const [personId, weekMap] of Object.entries(activity.plan || {})) {
-              for (const [relWeek, value] of Object.entries(weekMap || {})) {
-                const actual = addWeeks(project.startDate, Number(relWeek));
-                const idx = diffWeeks(start, actual);
-                const fte = Number(value) || 0;
+              for (const [relWeek] of Object.entries(weekMap || {})) {
+                const actualDate = addWeeks(project.startDate, Number(relWeek));
+                const idx = diffWeeks(start, actualDate);
+                const fte = activityWeekValue(activity, personId, relWeek);
                 if (idx >= 0 && idx < horizon) {
                   weeklyTotal[idx] += fte;
                   projectWeekly[project.id][idx] += fte;
@@ -1295,16 +1402,50 @@
             }
           }
         }
-        const teamCapacity = people.filter(p => p.active).reduce((sum,p) => sum + (Number(p.capacity) || 0), 0);
+        for (const project of vacationProjects) {
+          for (const activity of projectActivities(project)) {
+            for (const [personId, weekMap] of Object.entries(activity.plan || {})) {
+              for (const [relWeek] of Object.entries(weekMap || {})) {
+                const actualDate = addWeeks(project.startDate, Number(relWeek));
+                const idx = diffWeeks(start, actualDate);
+                const fte = activityWeekValue(activity, personId, relWeek);
+                if (idx >= 0 && idx < horizon && vacationPersonWeekly[personId]) vacationPersonWeekly[personId][idx] += fte;
+              }
+            }
+          }
+        }
+        const personCapacityWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
+        const vacationWeekly = Array(horizon).fill(0);
+        const grossCapacityWeekly = Array(horizon).fill(0);
+        const teamCapacityWeekly = Array(horizon).fill(0);
+        people.forEach(person => {
+          const base = person.active ? (Number(person.capacity) || 0) : 0;
+          range(horizon).forEach(i => {
+            const vacation = Math.min(base, vacationPersonWeekly[person.id]?.[i] || 0);
+            vacationWeekly[i] += vacation;
+            grossCapacityWeekly[i] += base;
+            personCapacityWeekly[person.id][i] = Math.max(0, base - vacation);
+            teamCapacityWeekly[i] += personCapacityWeekly[person.id][i];
+          });
+        });
         const totalFteWeeks = weeklyTotal.reduce((a,b)=>a+b, 0);
         const peakWeekly = Math.max(0, ...weeklyTotal);
+        const teamCapacityTotal = teamCapacityWeekly.reduce((a,b)=>a+b, 0);
+        const teamGrossCapacityTotal = grossCapacityWeekly.reduce((a,b)=>a+b, 0);
+        const vacationTotal = vacationWeekly.reduce((a,b)=>a+b, 0);
+        const avgTeamCapacity = horizon ? teamCapacityTotal / horizon : 0;
         const personRecap = people.map(p => {
           const arr = personWeekly[p.id] || Array(horizon).fill(0);
+          const capArr = personCapacityWeekly[p.id] || Array(horizon).fill(0);
           const total = arr.reduce((a,b)=>a+b, 0);
+          const capacityTotal = capArr.reduce((a,b)=>a+b, 0);
           const peak = Math.max(0, ...arr);
+          const peakRatio = Math.max(0, ...arr.map((v, i) => capArr[i] ? v / capArr[i] : (v > 0 ? 999 : 0)));
           const avg = horizon ? total / horizon : 0;
-          const projectCount = projects.filter(pr => projectActivities(pr).some(activity => Object.values(activity.plan?.[p.id] || {}).some(v => Number(v) > 0))).length;
-          return { ...p, total, avg, peak, utilization: p.capacity ? avg / Number(p.capacity) : 0, projectCount };
+          const avgCapacity = horizon ? capacityTotal / horizon : 0;
+          const vacationTotalPerson = (vacationPersonWeekly[p.id] || []).reduce((a,b)=>a+Math.min(Number(p.capacity)||0,b||0), 0);
+          const projectCount = projects.filter(pr => projectActivities(pr).some(activity => Object.keys(activity.plan?.[p.id] || {}).some(w => activityWeekValue(activity, p.id, w) > 0))).length;
+          return { ...p, total, avg, peak, avgCapacity, capacityTotal, vacationTotal: vacationTotalPerson, utilization: capacityTotal ? total / capacityTotal : 0, peakUtilization: peakRatio === 999 ? 9.99 : peakRatio, projectCount };
         });
         const projectRecap = projects.map(project => {
           const arr = projectWeekly[project.id] || Array(horizon).fill(0);
@@ -1313,11 +1454,11 @@
           const avg = horizon ? total / horizon : 0;
           const assignedPeople = new Set();
           projectActivities(project).forEach(activity => Object.entries(activity.plan || {}).forEach(([personId, m]) => {
-            if (Object.values(m || {}).some(v => Number(v) > 0)) assignedPeople.add(personId);
+            if (Object.keys(m || {}).some(w => activityWeekValue(activity, personId, w) > 0)) assignedPeople.add(personId);
           }));
           return { ...project, total, peak, avg, assignedPeople: assignedPeople.size, ownerName: getOwnerName(project), activityCount: projectActivities(project).length };
         });
-        return { weeks, weeklyTotal, teamCapacity, totalFteWeeks, peakWeekly, personWeekly, projectWeekly, personRecap, projectRecap, projects };
+        return { weeks, weeklyTotal, teamCapacity: avgTeamCapacity, avgTeamCapacity, teamCapacityWeekly, grossCapacityWeekly, teamCapacityTotal, teamGrossCapacityTotal, vacationWeekly, vacationPersonWeekly, vacationTotal, personCapacityWeekly, totalFteWeeks, peakWeekly, personWeekly, projectWeekly, personRecap, projectRecap, projects };
       }
 
       function summaryGranularity() {
@@ -1335,7 +1476,9 @@
         if (summaryGranularity() === 'week') {
           return s.weeks.map((w, i) => {
             const total = s.weeklyTotal[i] || 0;
-            const capacity = s.teamCapacity || 0;
+            const capacity = s.teamCapacityWeekly?.[i] || 0;
+            const grossCapacity = s.grossCapacityWeekly?.[i] || 0;
+            const vacation = s.vacationWeekly?.[i] || 0;
             return {
               key: w.date,
               head: `S${w.index + 1}`,
@@ -1343,6 +1486,8 @@
               weekIndexes: [i],
               total,
               capacity,
+              grossCapacity,
+              vacation,
               balance: capacity - total,
               utilization: capacity ? total / capacity : 0
             };
@@ -1353,7 +1498,7 @@
         s.weeks.forEach((w, i) => {
           const key = monthKey(w.date);
           if (!byKey.has(key)) {
-            const g = { key, head: labelMonthKey(key).toUpperCase(), label: '0 sem.', weekIndexes: [], total: 0, capacity: 0, balance: 0, utilization: 0 };
+            const g = { key, head: labelMonthKey(key).toUpperCase(), label: '0 sem.', weekIndexes: [], total: 0, capacity: 0, grossCapacity: 0, vacation: 0, balance: 0, utilization: 0 };
             byKey.set(key, g);
             groups.push(g);
           }
@@ -1361,7 +1506,9 @@
         });
         groups.forEach(g => {
           g.total = g.weekIndexes.reduce((sum, i) => sum + (s.weeklyTotal[i] || 0), 0);
-          g.capacity = (s.teamCapacity || 0) * g.weekIndexes.length;
+          g.capacity = g.weekIndexes.reduce((sum, i) => sum + (s.teamCapacityWeekly?.[i] || 0), 0);
+          g.grossCapacity = g.weekIndexes.reduce((sum, i) => sum + (s.grossCapacityWeekly?.[i] || 0), 0);
+          g.vacation = g.weekIndexes.reduce((sum, i) => sum + (s.vacationWeekly?.[i] || 0), 0);
           g.balance = g.capacity - g.total;
           g.utilization = g.capacity ? g.total / g.capacity : 0;
           g.label = `${g.weekIndexes.length} sem.`;
@@ -1427,19 +1574,17 @@
         const s = computeSummary();
         const horizon = s.weeks.length || 1;
         const avgLoad = s.totalFteWeeks / horizon;
-        const avgUtilization = s.teamCapacity ? avgLoad / s.teamCapacity : 0;
+        const avgCapacity = s.avgTeamCapacity || 0;
+        const avgUtilization = avgCapacity ? avgLoad / avgCapacity : 0;
         let peakIndex = 0;
         s.weeklyTotal.forEach((value, i) => { if (value > (s.weeklyTotal[peakIndex] || 0)) peakIndex = i; });
         const peakLoad = s.weeklyTotal[peakIndex] || 0;
-        const peakUtilization = s.teamCapacity ? peakLoad / s.teamCapacity : 0;
-        const criticalWeeks = s.weeklyTotal.filter(v => s.teamCapacity && v / s.teamCapacity >= .95).length;
-        const overloadWeeks = s.weeklyTotal.filter(v => s.teamCapacity && v / s.teamCapacity > 1).length;
-        const peopleWithPeak = state.people.filter(p => p.active).map(p => {
-          const capacity = Number(p.capacity) || 0;
-          const peak = Math.max(0, ...(s.personWeekly[p.id] || []));
-          return { ...p, capacity, peak, ratio: capacity ? peak / capacity : 0 };
-        });
-        const tensionedPeople = peopleWithPeak.filter(p => p.capacity && p.ratio > 1).length;
+        const peakCapacity = s.teamCapacityWeekly?.[peakIndex] || 0;
+        const peakUtilization = peakCapacity ? peakLoad / peakCapacity : 0;
+        const criticalWeeks = s.weeklyTotal.filter((v, i) => s.teamCapacityWeekly?.[i] && v / s.teamCapacityWeekly[i] >= .95).length;
+        const overloadWeeks = s.weeklyTotal.filter((v, i) => s.teamCapacityWeekly?.[i] && v / s.teamCapacityWeekly[i] > 1).length;
+        const peopleWithPeak = s.personRecap.filter(p => p.active).map(p => ({ ...p, ratio: p.peakUtilization || 0 }));
+        const tensionedPeople = peopleWithPeak.filter(p => p.ratio > 1).length;
         const maxPersonPeak = Math.max(0, ...peopleWithPeak.map(p => p.ratio));
         const riskRatio = overloadWeeks ? 1.12 : criticalWeeks ? .98 : avgUtilization;
         const peakLabel = s.weeks[peakIndex]?.label || '—';
@@ -1465,9 +1610,9 @@
             </div></div>
 
             <div class="grid grid--4" style="margin-bottom:14px">
-              ${healthKpi('Uso medio equipo', pctLabel(avgUtilization, s.teamCapacity), `${fmt(avgLoad,1)} FTE/semana sobre ${fmt(s.teamCapacity,1)} FTE disponibles.`, avgUtilization, s.teamCapacity)}
-              ${healthKpi('Pico de demanda', pctLabel(peakUtilization, s.teamCapacity), `${fmt(peakLoad,1)} FTE en ${esc(peakLabel)}.`, peakUtilization, s.teamCapacity)}
-              ${healthKpi('Semanas críticas', String(criticalWeeks), `${overloadWeeks} sobre capacidad · ${criticalWeeks} por encima del 95%.`, riskRatio, s.teamCapacity)}
+              ${healthKpi('Uso medio equipo', pctLabel(avgUtilization, avgCapacity), `${fmt(avgLoad,1)} FTE/semana sobre ${fmt(avgCapacity,1)} FTE disponibles netos.`, avgUtilization, avgCapacity)}
+              ${healthKpi('Pico de demanda', pctLabel(peakUtilization, peakCapacity), `${fmt(peakLoad,1)} FTE en ${esc(peakLabel)} sobre ${fmt(peakCapacity,1)} FTE netos.`, peakUtilization, peakCapacity)}
+              ${healthKpi('Semanas críticas', String(criticalWeeks), `${overloadWeeks} sobre capacidad · ${criticalWeeks} por encima del 95%. Vacaciones reducen capacidad.`, riskRatio, avgCapacity)}
               ${healthKpi('Personas tensionadas', String(tensionedPeople), `Superan el 100% de su capacidad en alguna semana. Pico individual: ${pctLabel(maxPersonPeak, 1)}.`, maxPersonPeak, 1)}
             </div>
 
@@ -1485,13 +1630,14 @@
         const periods = summaryPeriods(s);
         const mode = summaryGranularity() === 'month' ? 'mensual' : 'semanal';
         return `<div class="card">
-          <div class="card__head"><div><h3 class="card__title">Resumen ${mode}</h3><p class="card__hint">Carga total, capacidad disponible y uso en porcentaje. Se eliminan balance e intensidad porque repetían esta misma lectura.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
+          <div class="card__head"><div><h3 class="card__title">Resumen ${mode}</h3><p class="card__hint">Carga forecast/real, vacaciones que restan capacidad y uso de capacidad neta.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
           <div class="table-scroll"><table class="summary-table">
             <thead><tr><th class="sticky-col">Métrica</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
             <tbody>
-              <tr><td class="sticky-col">FTE planificado</td>${periods.map(p => `<td class="cell-total mono" title="Demanda total imputada en el periodo">${fmt(p.total,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Capacidad disponible</td>${periods.map(p => `<td class="cell-total mono" title="Capacidad activa del equipo en el periodo">${fmt(p.capacity,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Uso capacidad</td>${periods.map(p => `<td>${usageCell(p.utilization, p.capacity, false, `${fmt(p.total,1)} FTE / ${fmt(p.capacity,1)} capacidad`)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">FTE forecast/real</td>${periods.map(p => `<td class="cell-total mono" title="Carga imputada: usa real si existe; si no, forecast">${fmt(p.total,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Vacaciones / ausencias</td>${periods.map(p => `<td class="cell-total mono" title="Capacidad restada por vacaciones del equipo">-${fmt(p.vacation || 0,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Capacidad disponible</td>${periods.map(p => `<td class="cell-total mono" title="Capacidad bruta ${fmt(p.grossCapacity || 0,1)} - vacaciones ${fmt(p.vacation || 0,1)}">${fmt(p.capacity,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Uso capacidad</td>${periods.map(p => `<td>${usageCell(p.utilization, p.capacity, false, `${fmt(p.total,1)} FTE / ${fmt(p.capacity,1)} capacidad neta`)}</td>`).join('')}</tr>
             </tbody>
           </table></div>
         </div>`;
@@ -1509,7 +1655,7 @@
                 const arr = s.personWeekly[person.id] || [];
                 return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">cap. ${fmt(person.capacity,1)} FTE · ${esc(person.role)}</div></span></div></td>${periods.map(period => {
                   const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
-                  const capacity = (Number(person.capacity) || 0) * period.weekIndexes.length;
+                  const capacity = period.weekIndexes.reduce((sum, i) => sum + (s.personCapacityWeekly?.[person.id]?.[i] || 0), 0);
                   const ratio = capacity ? total / capacity : 0;
                   return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
                 }).join('')}</tr>`;
@@ -1531,7 +1677,7 @@
                 const arr = s.projectWeekly[project.id] || [];
                 return `<tr><td class="sticky-col"><span class="strong">${esc(project.name)}</span><div class="person-sub">${esc(project.client || 'Cliente sin definir')} · ${esc(project.status || 'Sin estado')} · ${esc(project.ownerName || 'Sin owner')}</div></td>${periods.map(period => {
                   const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
-                  const capacity = (s.teamCapacity || 0) * period.weekIndexes.length;
+                  const capacity = period.weekIndexes.reduce((sum, i) => sum + (s.teamCapacityWeekly?.[i] || 0), 0);
                   const ratio = capacity ? total / capacity : 0;
                   return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad equipo · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
                 }).join('')}</tr>`;
@@ -1579,12 +1725,12 @@
             <div class="view-header">
               <div>
                 <h2 class="view-title"><span class="title-base">Proyectos</span><span class="title-accent"> y actividades</span></h2>
-                <p class="view-subtitle">Cada proyecto puede desglosarse en varias actividades. Cada actividad tiene su propio cronograma FTE por persona y semana.</p>
+                <p class="view-subtitle">Cada proyecto puede desglosarse en varias actividades. Cada actividad tiene su propio cronograma FTE por persona y semana. Cada celda permite forecast (F) y real (R).</p>
               </div>
               <div class="actions"><button class="btn btn--green" data-action="add-project">+ Crear proyecto</button></div>
             </div>
             <div class="project-tabs">
-              ${state.projects.map(p => `<button class="project-chip ${p.id === ui.selectedProjectId ? 'active' : ''}" data-select-project="${p.id}"><span class="project-chip__name">${esc(p.name)}</span><span class="project-chip__meta">${esc(p.client || 'Sin cliente')} · ${esc(p.status || 'Sin estado')} · <span class="owner-inline">${esc(getOwnerName(p))}</span></span></button>`).join('')}
+              ${state.projects.map(p => `<button class="project-chip ${p.id === ui.selectedProjectId ? 'active' : ''} ${isVacationProject(p) ? 'is-vacation' : ''}" data-select-project="${p.id}"><span class="project-chip__name">${esc(p.name)}</span><span class="project-chip__meta">${esc(p.client || 'Sin cliente')} · ${esc(p.status || 'Sin estado')} · <span class="owner-inline">${esc(getOwnerName(p))}</span></span></button>`).join('')}
             </div>
             ${project ? projectDetail(project) : ''}
           </section>`;
@@ -1596,6 +1742,7 @@
 
       function projectDetail(project) {
         const ownerOptions = state.people.map(person => `<option value="${person.id}" ${project.ownerId === person.id ? 'selected' : ''}>${esc(person.name)}</option>`).join('');
+        const isVacation = isVacationProject(project);
         const projectGrandTotal = projectTotal(project);
         const projectWeeklyPeak = Math.max(0, ...range(project.durationWeeks || 1).map(w => state.people.reduce((sum, person) => sum + projectWeekValue(project, person.id, w), 0)));
         return `<div class="project-layout">
@@ -1621,20 +1768,21 @@
               <div class="actions actions--left"><button class="btn btn--quiet" data-action="delete-project" data-project-id="${project.id}">Eliminar proyecto</button></div>
             </div>
           </aside>
-          <div class="card project-planner-card">
+          <div class="card project-planner-card ${isVacation ? 'is-vacation' : ''}">
             <div class="card__head">
               <div>
                 <div class="project-title-row"><h3 class="card__title">${esc(project.name)}</h3><span class="status-pill"><span class="status-dot ${project.status === 'Activo' ? 'active' : ''}"></span>${esc(project.status)}</span><span class="owner-pill">${esc(getOwnerName(project))}</span></div>
-                <p class="card__hint">Imputa FTEs a nivel de actividad. El resumen agrega automáticamente por proyecto, persona y periodo.</p>
+                <p class="card__hint">${isVacation ? 'Registra vacaciones/ausencias por persona y semana. No suma carga: resta capacidad disponible en el resumen.' : 'Imputa FTEs a nivel de actividad. El resumen agrega automáticamente por proyecto, persona y periodo.'}</p>
               </div>
               <div class="actions"><button class="btn btn--green btn--small" data-action="add-activity" data-project-id="${project.id}">+ Añadir actividad</button><button class="btn btn--small" data-action="clear-project" data-project-id="${project.id}">Vaciar proyecto</button></div>
             </div>
             <div class="project-summary-bar">
-              <div class="project-summary-stat"><span class="project-summary-stat__label">Total proyecto</span><span class="project-summary-stat__value" data-project-grand-total="${project.id}">${fmt(projectGrandTotal,1)} FTE</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">${isVacation ? 'Capacidad restada' : 'Total proyecto'}</span><span class="project-summary-stat__value" data-project-grand-total="${project.id}">${fmt(projectGrandTotal,1)} FTE</span></div>
               <div class="project-summary-stat"><span class="project-summary-stat__label">Pico semanal</span><span class="project-summary-stat__value" data-project-weekly-peak="${project.id}">${fmt(projectWeeklyPeak,1)} FTE</span></div>
               <div class="project-summary-stat"><span class="project-summary-stat__label">Inicio / duración</span><span class="project-summary-stat__value">${labelWeek(project.startDate)} · ${project.durationWeeks} sem.</span></div>
               <div class="project-summary-stat"><span class="project-summary-stat__label">Actividades</span><span class="project-summary-stat__value">${projectActivities(project).length}</span></div>
             </div>
+            ${isVacation ? '<div class="card__body"><span class="vacation-note"><strong>Proyecto de capacidad:</strong> los FTEs aquí no cuentan como carga de proyecto; reducen la capacidad disponible de cada persona/semana.</span></div>' : ''}
             ${projectActivitiesStack(project)}
           </div>
         </div>`;
@@ -1650,7 +1798,7 @@
 
       function activityCard(project, activity, index) {
         const total = activityTotal(activity);
-        return `<div class="activity-card" data-activity-card="${activity.id}">
+        return `<div class="activity-card ${isVacationProject(project) ? 'is-vacation' : ''}" data-activity-card="${activity.id}">
           <div class="activity-card__head">
             <div class="activity-heading">
               <span class="activity-index-badge">${String(index + 1).padStart(2, '0')}</span>
@@ -1681,8 +1829,9 @@
             ${people.map((person, rowIndex) => {
               const rowTotal = weeks.reduce((sum,w)=>sum + activityWeekValue(activity, person.id, w), 0);
               return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">${esc(person.role)} · cap. ${fmt(person.capacity,1)}</div></span></div></td>${weeks.map((w, colIndex) => {
-                const val = activityWeekValue(activity, person.id, w);
-                return `<td style="text-align:center"><input class="fte-input ${val ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${val ? esc(val) : ''}" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="FTE ${esc(person.name)} actividad ${esc(activity.name)} semana ${w+1}"></td>`;
+                const forecast = activityWeekForecast(activity, person.id, w);
+                const actual = activityWeekActual(activity, person.id, w);
+                return `<td style="text-align:center"><div class="fte-cell ${forecast ? 'has-forecast' : ''} ${actual ? 'has-actual' : ''}"><label class="fte-mini"><span class="fte-mini__label">F</span><input class="fte-input fte-input--mini ${forecast ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${forecast ? esc(forecast) : ''}" data-fte-kind="forecast" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="Forecast FTE ${esc(person.name)} actividad ${esc(activity.name)} semana ${w+1}"></label><label class="fte-mini fte-mini--actual"><span class="fte-mini__label">R</span><input class="fte-input fte-input--mini fte-input--actual ${actual ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${actual ? esc(actual) : ''}" data-fte-kind="actual" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="Real FTE ${esc(person.name)} actividad ${esc(activity.name)} semana ${w+1}"></label></div></td>`;
               }).join('')}<td class="cell-total mono" data-row-total="${activity.id}:${person.id}">${fmt(rowTotal,1)}</td></tr>`;
             }).join('')}
           </tbody>
@@ -1831,10 +1980,18 @@
       function updateFte(el) {
         normalizeFteInput(el);
         const projectId = el.dataset.fteProject, activityId = el.dataset.fteActivity, personId = el.dataset.ftePerson, week = Number(el.dataset.fteWeek);
+        const kind = el.dataset.fteKind === 'actual' ? 'actual' : 'forecast';
         const p = state.projects.find(x => x.id === projectId);
         const activity = p ? projectActivities(p).find(a => a.id === activityId) : null;
-        if (activity) setActivityWeek(activity, personId, week, fteValue(el.value));
+        if (activity) setActivityWeek(activity, personId, week, kind, el.value);
         el.classList.toggle('has-value', fteValue(el.value) > 0);
+        const wrap = el.closest('.fte-cell');
+        if (wrap && activity) {
+          const forecast = activityWeekForecast(activity, personId, week);
+          const actual = activityWeekActual(activity, personId, week);
+          wrap.classList.toggle('has-forecast', forecast > 0);
+          wrap.classList.toggle('has-actual', actual > 0);
+        }
         saveState(true);
         updateMatrixTotals(projectId, activityId);
       }
@@ -1882,7 +2039,13 @@
         const row = Number(input.dataset.fteRow || 0);
         const col = Number(input.dataset.fteCol || 0);
         const delta = e.key === 'ArrowRight' ? [0, 1] : e.key === 'ArrowLeft' ? [0, -1] : e.key === 'ArrowUp' ? [-1, 0] : [1, 0];
-        const next = document.querySelector(`[data-fte-project="${input.dataset.fteProject}"][data-fte-activity="${input.dataset.fteActivity}"][data-fte-row="${row + delta[0]}"][data-fte-col="${col + delta[1]}"]`);
+        let next;
+        if (e.key === 'Enter' && input.dataset.fteKind !== 'actual') {
+          next = document.querySelector(`[data-fte-project="${input.dataset.fteProject}"][data-fte-activity="${input.dataset.fteActivity}"][data-fte-kind="actual"][data-fte-row="${row}"][data-fte-col="${col}"]`);
+        } else {
+          const nextKind = input.dataset.fteKind || 'forecast';
+          next = document.querySelector(`[data-fte-project="${input.dataset.fteProject}"][data-fte-activity="${input.dataset.fteActivity}"][data-fte-kind="${nextKind}"][data-fte-row="${row + delta[0]}"][data-fte-col="${col + delta[1]}"]`);
+        }
         if (next) {
           next.focus({ preventScroll: true });
           next.select?.();
@@ -1908,7 +2071,7 @@
         const activityId = uid('activity');
         setState(st => {
           const ownerId = st.people.find(p => p.active)?.id || st.people[0]?.id || '';
-          st.projects.push({ id, name: `Nuevo proyecto ${st.projects.length + 1}`, client: 'Astara Intelligence', status: 'Pipeline', ownerId, startDate: st.settings.portfolioStartDate || formatISO(new Date()), durationWeeks: 12, notes: '', activities: [{ id: activityId, name: 'Planificación general', notes: '', plan: {} }] });
+          st.projects.push({ id, name: `Nuevo proyecto ${st.projects.filter(p => !isVacationProject(p)).length + 1}`, client: 'Astara Intelligence', status: 'Pipeline', capacityMode: 'standard', ownerId, startDate: st.settings.portfolioStartDate || formatISO(new Date()), durationWeeks: 12, notes: '', activities: [{ id: activityId, name: 'Planificación general', notes: '', plan: {} }] });
         });
         ui.selectedProjectId = id; ui.tab = 'projects'; render();
       }
