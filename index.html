@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -326,6 +326,10 @@
     .fte-input.fte-input--actual.has-value { background: rgba(26,77,122,0.14); border-color: rgba(26,77,122,0.45); color: var(--accent); }
     .fte-cell.has-actual { background: rgba(26,77,122,0.045); border-radius: 10px; padding: 4px 2px; }
     .fte-cell.has-forecast:not(.has-actual) { background: rgba(139,205,255,0.08); border-radius: 10px; padding: 4px 2px; }
+    .fte-legend { display:inline-flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px; color:var(--fg-3); font-size:10px; font-weight:700; letter-spacing:.9px; text-transform:uppercase; }
+    .fte-legend__item { display:inline-flex; align-items:center; gap:5px; }
+    .fte-legend__key { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:6px; border:1px solid var(--border); background:#fff; color:var(--fg-1); font-size:9px; font-weight:800; }
+    .fte-legend__key--actual { color:var(--accent); border-color:rgba(26,77,122,.35); background:rgba(26,77,122,.045); }
     .project-chip.is-vacation, .project-planner-card.is-vacation { border-color: rgba(134,191,198,0.75); }
     .project-chip.is-vacation.active { background: #e0f0f3; color: var(--fg-1); border-color: #86bfc6; }
     .activity-card.is-vacation { border-left-color: #86bfc6; }
@@ -532,6 +536,30 @@
     }
     .auth-logout:hover { color: #fff; border-color: rgba(240,244,248,0.38); }
 
+
+
+    /* v7 operational summary charts + weekly adjustment modal */
+    .chart-card { padding: 14px 16px 18px; border-top: 1px solid var(--border-light); background: linear-gradient(180deg, rgba(232,237,242,.55), rgba(255,255,255,.7)); }
+    .line-chart { width: 100%; min-height: 190px; }
+    .line-chart svg { width: 100%; height: 190px; display: block; overflow: visible; }
+    .line-chart__grid { stroke: rgba(90,122,148,.20); stroke-width: 1; }
+    .line-chart__axis { stroke: rgba(46,74,98,.32); stroke-width: 1; }
+    .line-chart__line { fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .line-chart__dot { stroke: #fff; stroke-width: 1.5; }
+    .line-chart__label { font-family: var(--font-ui); font-size: 10px; fill: var(--fg-3); font-weight: 600; }
+    .chart-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .chart-legend__item { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--fg-2); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+    .chart-legend__swatch { width: 18px; height: 3px; border-radius: 999px; display: inline-block; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 120; background: rgba(4,20,37,.48); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .modal-panel { width: min(1080px, 96vw); max-height: 86vh; overflow: auto; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow-strong); }
+    .modal-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; padding:22px 24px; background: #e8edf2; border-bottom:1px solid var(--border); }
+    .modal-title { margin:0; font-size:24px; color:var(--fg-1); letter-spacing:-.03em; }
+    .modal-subtitle { margin:6px 0 0; color:var(--fg-2); font-size:13px; line-height:1.55; }
+    .modal-body { padding: 18px 24px 24px; }
+    .adjust-table input { width: 82px; text-align: center; }
+    .proposal-badge { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; border:1px solid var(--border); background:#fff; color:var(--accent); font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+    .activity-card.is-proposal { border-left: 4px solid var(--accent-light); }
+
     @media print {
       .nav, .tabs, .actions, .footer, .btn, .toast { display: none !important; }
       .hero { background: #fff; padding: 20px; }
@@ -542,27 +570,27 @@
   </style>
 </head>
 <body class="is-auth-locked">
-  <section class="auth-gate" id="authGate" aria-label="Acceso al planner">
+  <section class="auth-gate" id="authGate" aria-label="Planner access">
     <div class="auth-card">
       <div class="auth-card__top">
         <img class="auth-logo" src="data:image/png;base64,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" alt="Astara Intelligence" />
         <span class="auth-eyebrow">Astara Intelligence Advisory</span>
-        <h1 class="auth-title"><span class="title-base">Acceso al</span><br><span class="title-accent">FTE Planner</span></h1>
+        <h1 class="auth-title"><span class="title-base">Access the</span><br><span class="title-accent">FTE Planner</span></h1>
       </div>
       <div class="auth-card__body">
-        <p class="auth-copy">Introduce la clave de acceso para abrir la planificación. Esta barrera es básica y está separada del token de GitHub.</p>
+        <p class="auth-copy">Enter the access password to open the planner. This is a light access gate and is separate from the GitHub token.</p>
         <form class="auth-form" id="authForm">
           <label class="field">
             <span class="label">Password</span>
-            <input class="auth-password" id="authPassword" type="password" autocomplete="current-password" placeholder="Introduce la clave" autofocus />
+            <input class="auth-password" id="authPassword" type="password" autocomplete="current-password" placeholder="Enter password" autofocus />
           </label>
           <div class="auth-row">
-            <label class="auth-remember"><input id="authRemember" type="checkbox" /> Recordar en este navegador</label>
-            <button class="btn btn--primary" type="submit">Entrar</button>
+            <label class="auth-remember"><input id="authRemember" type="checkbox" /> Remember on this browser</label>
+            <button class="btn btn--primary" type="submit">Enter</button>
           </div>
           <div class="auth-error" id="authError" role="alert" aria-live="polite"></div>
         </form>
-        <p class="auth-note"><strong>Nota:</strong> esto evita accesos casuales, pero no sustituye un login real si el site o el JSON están publicados en abierto.</p>
+        <p class="auth-note"><strong>Note:</strong> this avoids casual access, but it does not replace real authentication if the site or JSON are publicly available.</p>
       </div>
     </div>
   </section>
@@ -573,14 +601,14 @@
         <span class="nav__separator"></span>
         <span class="nav__title">Advisory Team · FTE Planner</span>
       </div>
-      <div class="nav__meta"><span class="save-dot"></span><span id="saveState">Guardado local</span><button class="auth-logout" type="button" id="authLogout">Cerrar acceso</button></div>
+      <div class="nav__meta"><span class="save-dot"></span><span id="saveState">Saved locally</span><button class="auth-logout" type="button" id="authLogout">Lock access</button></div>
     </nav>
 
     <header class="hero">
       <div class="hero__inner">
         <span class="eyebrow-editorial">Astara Intelligence Advisory</span>
-        <h1 class="h-display"><span class="title-base">Planificación de equipo</span><br><span class="title-accent">por proyecto y semana</span></h1>
-        <p class="hero__text">Imputa FTEs por persona, proyecto y semana; mueve fechas de inicio sin perder la planificación relativa; y revisa capacidad, carga total y recap por persona desde un resumen agregado.</p>
+        <h1 class="h-display"><span class="title-base">Team planning</span><br><span class="title-accent">by project and week</span></h1>
+        <p class="hero__text">Plan FTEs by person, project and week; move project dates without losing relative planning; and review capacity, workload and team recap from an aggregated summary.</p>
         <section class="hero__panel">
           <div class="tabs" id="primaryTabs"></div>
         </section>
@@ -588,7 +616,7 @@
     </header>
 
     <main class="content"><div class="content__inner" id="app"></div></main>
-    <footer class="footer"><span>Astara Intelligence · Advisory Planning Tool</span><span>Datos locales + sincronización opcional con GitHub Pages</span></footer>
+    <footer class="footer"><span>Astara Intelligence · Advisory Planning Tool</span><span>Local data + optional GitHub Pages sync</span></footer>
   </div>
   <div class="toast" id="toast"></div>
 
@@ -638,7 +666,7 @@
             if (input) { input.value = ''; input.focus(); }
           }
         } catch (err) {
-          if (error) error.textContent = 'No se pudo validar la clave';
+          if (error) error.textContent = 'Could not validate the password';
         }
       });
       document.getElementById('authLogout')?.addEventListener('click', lock);
@@ -652,18 +680,20 @@
       const GITHUB_TOKEN_KEY = 'astara-advisory-fte-github-token-session';
       const SYNC_META_KEY = 'astara-advisory-fte-sync-meta-v1';
       const TABS = [
-        { id: 'summary', label: 'Resumen' },
-        { id: 'projects', label: 'Proyectos' },
-        { id: 'people', label: 'Personas' },
-        { id: 'data', label: 'Datos' }
+        { id: 'summary', label: 'Summary' },
+        { id: 'projects', label: 'Projects' },
+        { id: 'people', label: 'People' },
+        { id: 'data', label: 'Data' }
       ];
-      const STATUS_OPTIONS = ['Pipeline', 'En propuesta', 'Propuesta enviada', 'Ganado / pendiente inicio', 'Activo', 'En pausa', 'En riesgo', 'En espera', 'Cerrado', 'Cancelado', 'No go'];
+      const STATUS_OPTIONS = ['Pipeline', 'In proposal', 'Proposal sent', 'Won / pending start', 'Active', 'Paused', 'At risk', 'On hold', 'Closed', 'Cancelled', 'No go'];
+      const STATUS_MAP = { 'En propuesta':'In proposal', 'Propuesta enviada':'Proposal sent', 'Ganado / pendiente inicio':'Won / pending start', 'Activo':'Active', 'En pausa':'Paused', 'En riesgo':'At risk', 'En espera':'On hold', 'Cerrado':'Closed', 'Cancelado':'Cancelled' };
       const ROLE_OPTIONS = ['Partner / Lead', 'Project Manager', 'Senior Consultant', 'Consultant', 'Data Analyst', 'UX / Product', 'Operations'];
-      const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       const FIXED_GITHUB_CONFIG = Object.freeze({ owner: 'hybridathletics94', repo: 'Advisory_FTE', branch: 'main', path: 'data/planner.json' });
       const VACATION_PROJECT_ID = 'project_vacaciones_equipo';
-      const VACATION_PROJECT_NAME = 'Vacaciones equipo';
-      const VACATION_ACTIVITY_NAME = 'Vacaciones / ausencias';
+      const VACATION_PROJECT_NAME = 'Team holidays';
+      const VACATION_ACTIVITY_NAME = 'Holidays / absences';
+      const PROPOSAL_ACTIVITY_ID = 'activity_proposal';
       const DEFAULT_DATA = {
         "settings": {
                 "portfolioStartDate": "2026-06-15",
@@ -707,15 +737,15 @@
                         "id": "project_ygr40ky",
                         "name": "PMST - Astara",
                         "client": "Astara",
-                        "status": "Activo",
+                        "status": "Active",
                         "startDate": "2026-06-15",
                         "durationWeeks": 12,
-                        "notes": "Plan de movilidad corporativa: diagnóstico, medidas potenciales y documentación final.",
+                        "notes": "Corporate mobility plan: diagnosis, potential measures and final documentation.",
                         "ownerId": "person_qk3xdgo",
                         "activities": [
                                 {
                                         "id": "activity_r2367pu",
-                                        "name": "Planificación general",
+                                        "name": "General planning",
                                         "notes": "",
                                         "plan": {
                                                 "person_ld8htvs": {
@@ -754,15 +784,15 @@
                         "id": "project_jr8ckuq",
                         "name": "PMST - Metro Bilbao",
                         "client": "Metro Bilbao",
-                        "status": "Activo",
+                        "status": "Active",
                         "startDate": "2026-07-06",
                         "durationWeeks": 12,
-                        "notes": "Acompañamiento para diagnóstico, lectura de movilidad y preparación de PMST.",
+                        "notes": "Support for diagnosis, mobility analysis and PMST preparation.",
                         "ownerId": "person_qk3xdgo",
                         "activities": [
                                 {
                                         "id": "activity_lmjnt9y",
-                                        "name": "Planificación general",
+                                        "name": "General planning",
                                         "notes": "",
                                         "plan": {
                                                 "person_ld8htvs": {
@@ -801,7 +831,7 @@
                         "id": "project_3wly82r",
                         "name": "Diriyah",
                         "client": "Bizkaia",
-                        "status": "En espera",
+                        "status": "On hold",
                         "startDate": "2026-08-03",
                         "durationWeeks": 16,
                         "notes": "NA",
@@ -809,7 +839,7 @@
                         "activities": [
                                 {
                                         "id": "activity_kagut76",
-                                        "name": "Planificación general",
+                                        "name": "General planning",
                                         "notes": "",
                                         "plan": {
                                                 "person_sxydvxl": {
@@ -874,7 +904,7 @@
                         "id": "project_imc301n",
                         "name": "Plan Director de Movilidad",
                         "client": "Bizkaia",
-                        "status": "En espera",
+                        "status": "On hold",
                         "startDate": "2026-09-06",
                         "durationWeeks": 32,
                         "notes": "",
@@ -882,7 +912,7 @@
                         "activities": [
                                 {
                                         "id": "activity_z9exad8",
-                                        "name": "Planificación general",
+                                        "name": "General planning",
                                         "notes": "",
                                         "plan": {
                                                 "person_9bzn2pf": {
@@ -959,8 +989,8 @@
                 }
         ]
 };
-      let ui = { tab: 'summary', selectedProjectId: null, importText: '' };
-      let github = { config: loadGithubConfig(), token: sessionStorage.getItem(GITHUB_TOKEN_KEY) || '', sha: null, status: 'local', statusText: 'Sin sincronizar' };
+      let ui = { tab: 'summary', selectedProjectId: null, importText: '', adjustPersonId: null };
+      let github = { config: loadGithubConfig(), token: sessionStorage.getItem(GITHUB_TOKEN_KEY) || '', sha: null, status: 'local', statusText: 'Remote not checked' };
       let syncMeta = loadSyncMeta();
       let state = loadState();
       if (!ui.selectedProjectId && state.projects[0]) ui.selectedProjectId = state.projects[0].id;
@@ -1006,53 +1036,57 @@
         st.people = Array.isArray(st.people) ? st.people : [];
         st.projects = Array.isArray(st.projects) ? st.projects : [];
         st.settings.summaryGranularity = st.settings.summaryGranularity === 'month' ? 'month' : 'week';
-        st.settings.summaryProjectStatus ||= 'all';
+        st.settings.summaryProjectStatus = st.settings.summaryProjectStatus === 'all' ? 'all' : normalizeStatus(st.settings.summaryProjectStatus || 'all');
         st.settings.summaryProjectSort ||= 'status';
         const defaultOwnerId = st.people.find(p => p.active)?.id || st.people[0]?.id || '';
         st.projects.forEach(project => {
-          project.status ||= 'En propuesta';
+          project.status = normalizeStatus(project.status || 'In proposal');
           project.ownerId ||= defaultOwnerId;
+          project.proposalStartDate ||= project.startDate;
           project.durationWeeks = Math.max(1, Math.min(104, Math.round(Number(project.durationWeeks) || 12)));
           if (!Array.isArray(project.activities) || !project.activities.length) {
-            project.activities = [{ id: uid('activity'), name: 'Planificación general', notes: '', plan: project.plan || {} }];
+            project.activities = [{ id: uid('activity'), name: 'General planning', notes: '', plan: project.plan || {} }];
           }
           project.activities.forEach((activity, i) => {
             activity.id ||= uid('activity');
-            activity.name ||= i === 0 ? 'Planificación general' : `Actividad ${i + 1}`;
+            activity.name ||= i === 0 ? 'General planning' : `Activity ${i + 1}`;
+            if (activity.name === 'Planificación general') activity.name = 'General planning';
+            if (activity.name === 'Nueva actividad') activity.name = 'New activity';
             activity.notes ||= '';
             activity.plan = normalizePlan(activity.plan || {});
           });
+          ensureProposalActivity(project);
           delete project.plan;
         });
-        let vacation = st.projects.find(p => p.id === VACATION_PROJECT_ID || p.capacityMode === 'vacation' || String(p.name || '').trim().toLowerCase() === VACATION_PROJECT_NAME.toLowerCase());
+        let vacation = st.projects.find(p => p.id === VACATION_PROJECT_ID || p.capacityMode === 'vacation' || [VACATION_PROJECT_NAME.toLowerCase(), 'vacaciones equipo'].includes(String(p.name || '').trim().toLowerCase()));
         if (!vacation) {
           vacation = {
             id: VACATION_PROJECT_ID,
             name: VACATION_PROJECT_NAME,
-            client: 'Equipo Advisory',
-            status: 'Activo',
+            client: 'Advisory Team',
+            status: 'Active',
             capacityMode: 'vacation',
             ownerId: defaultOwnerId,
             startDate: st.settings.portfolioStartDate || '2026-06-15',
             durationWeeks: Number(st.settings.horizonWeeks) || 26,
-            notes: 'Proyecto técnico para registrar vacaciones y ausencias. No suma carga: resta capacidad disponible en el resumen.',
+            notes: 'Technical project for holidays and absences. It does not add workload: it reduces available capacity in the summary.',
             activities: [{ id: 'activity_vacaciones_equipo', name: VACATION_ACTIVITY_NAME, notes: '', plan: {} }]
           };
           st.projects.unshift(vacation);
         }
         vacation.id = VACATION_PROJECT_ID;
         vacation.name = VACATION_PROJECT_NAME;
-        vacation.client ||= 'Equipo Advisory';
-        vacation.status ||= 'Activo';
+        vacation.client ||= 'Advisory Team';
+        vacation.status = normalizeStatus(vacation.status || 'Active');
         vacation.capacityMode = 'vacation';
         vacation.ownerId ||= defaultOwnerId;
         vacation.startDate ||= st.settings.portfolioStartDate || '2026-06-15';
         vacation.durationWeeks = Math.max(Number(vacation.durationWeeks) || 0, Number(st.settings.horizonWeeks) || 26, 12);
-        vacation.notes ||= 'Proyecto técnico para registrar vacaciones y ausencias. No suma carga: resta capacidad disponible en el resumen.';
+        vacation.notes ||= 'Technical project for holidays and absences. It does not add workload: it reduces available capacity in the summary.';
         if (!Array.isArray(vacation.activities) || !vacation.activities.length) vacation.activities = [{ id: 'activity_vacaciones_equipo', name: VACATION_ACTIVITY_NAME, notes: '', plan: {} }];
         vacation.activities.forEach((activity, i) => {
           activity.id ||= i === 0 ? 'activity_vacaciones_equipo' : uid('activity');
-          activity.name ||= i === 0 ? VACATION_ACTIVITY_NAME : `Ausencia ${i + 1}`;
+          activity.name ||= i === 0 ? VACATION_ACTIVITY_NAME : `Absence ${i + 1}`;
           activity.notes ||= '';
           activity.plan = normalizePlan(activity.plan || {});
         });
@@ -1093,13 +1127,13 @@
         if (!value) return '—';
         const d = new Date(value);
         if (Number.isNaN(d.getTime())) return '—';
-        return d.toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+        return d.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
       }
       function saveStateLabel() {
-        if (syncMeta.hasPendingChanges) return 'Cambios locales pendientes de publicar';
-        if (syncMeta.lastGithubPublishAt) return `Publicado · ${formatDateTime(syncMeta.lastGithubPublishAt)}`;
-        if (syncMeta.lastGithubLoadAt) return `Actualizado · ${formatDateTime(syncMeta.lastGithubLoadAt)}`;
-        return 'Sin cambios pendientes';
+        if (syncMeta.hasPendingChanges) return 'Local changes pending publication';
+        if (syncMeta.lastGithubPublishAt) return `Published · ${formatDateTime(syncMeta.lastGithubPublishAt)}`;
+        if (syncMeta.lastGithubLoadAt) return `Updated · ${formatDateTime(syncMeta.lastGithubLoadAt)}`;
+        return 'No pending changes';
       }
       function updateSaveIndicator() {
         const label = document.getElementById('saveState');
@@ -1124,14 +1158,14 @@
           github.token = tokenInput;
           sessionStorage.setItem(GITHUB_TOKEN_KEY, github.token);
         }
-        updateGithubStatus('local', github.token ? 'Token guardado en sesión' : 'Introduce token para publicar');
+        updateGithubStatus('local', github.token ? 'Token saved for this session' : 'Enter token to publish');
         saveState(true, false);
-        toast(github.token ? 'Token GitHub guardado en sesión' : 'Config fija aplicada; falta token');
+        toast(github.token ? 'GitHub token saved for this session' : 'Fixed config applied; token missing');
         render();
       }
       function updateGithubStatus(status, text) {
         github.status = status || 'local';
-        github.statusText = text || 'Sin sincronizar';
+        github.statusText = text || 'Remote not checked';
         const el = document.getElementById('githubSyncStatus');
         if (el) {
           el.textContent = github.statusText;
@@ -1143,13 +1177,13 @@
       }
       function githubApiUrl() {
         const { owner, repo, path } = github.config;
-        if (!owner || !repo || !path) throw new Error('Completa owner, repo y path');
+        if (!owner || !repo || !path) throw new Error('Owner, repo and path are required');
         return `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path.split('/').map(encodeURIComponent).join('/')}`;
       }
       function githubHeaders(auth = false) {
         const headers = { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
         if (auth) {
-          if (!github.token) throw new Error('Introduce un token de GitHub para publicar');
+          if (!github.token) throw new Error('Enter a GitHub token to publish');
           headers.Authorization = `Bearer ${github.token}`;
         }
         return headers;
@@ -1169,17 +1203,17 @@
         const url = `${githubApiUrl()}?ref=${encodeURIComponent(github.config.branch || 'main')}&_=${Date.now()}`;
         const res = await fetch(url, { headers: githubHeaders(auth), cache: 'no-store' });
         if (res.status === 404) return null;
-        if (!res.ok) throw new Error(`GitHub respondió ${res.status}`);
+        if (!res.ok) throw new Error(`GitHub returned ${res.status}`);
         return res.json();
       }
       async function loadFromGithub() {
         try {
           saveGithubConfigFromInputsOnly();
-          updateGithubStatus('local', 'Actualizando desde GitHub…');
+          updateGithubStatus('local', 'Loading from GitHub…');
           const file = await fetchGithubFile(false);
-          if (!file || !file.content) throw new Error('No existe el fichero JSON publicado');
+          if (!file || !file.content) throw new Error('The published JSON file does not exist');
           const parsed = JSON.parse(decodeBase64Utf8(file.content));
-          if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('El JSON publicado no tiene formato válido');
+          if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('The published JSON does not have a valid format');
           github.sha = file.sha;
           state = normalizeState(parsed);
           syncMeta.hasPendingChanges = false;
@@ -1187,12 +1221,12 @@
           saveSyncMeta();
           saveState(true, false);
           ui.selectedProjectId = state.projects[0]?.id || null;
-          updateGithubStatus('ok', `Datos actualizados · ${formatDateTime(syncMeta.lastGithubLoadAt)}`);
-          toast('Datos actualizados desde GitHub');
+          updateGithubStatus('ok', `Data updated · ${formatDateTime(syncMeta.lastGithubLoadAt)}`);
+          toast('Data updated desde GitHub');
           render();
         } catch (err) {
-          updateGithubStatus('error', 'Error al cargar GitHub');
-          toast(err.message || 'No se pudo cargar desde GitHub');
+          updateGithubStatus('error', 'GitHub load error');
+          toast(err.message || 'Could not load from GitHub');
         }
       }
       function saveGithubConfigFromInputsOnly() {
@@ -1206,7 +1240,7 @@
       async function publishToGithub() {
         try {
           saveGithubConfigFromInputsOnly();
-          updateGithubStatus('local', 'Publicando cambios…');
+          updateGithubStatus('local', 'Publishing changes…');
           let sha = github.sha;
           if (!sha) {
             const current = await fetchGithubFile(true);
@@ -1219,19 +1253,19 @@
           };
           if (sha) body.sha = sha;
           const res = await fetch(githubApiUrl(), { method: 'PUT', headers: { ...githubHeaders(true), 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-          if (res.status === 409) throw new Error('Conflicto: alguien publicó cambios antes. Carga desde GitHub y vuelve a publicar.');
-          if (!res.ok) throw new Error(`GitHub respondió ${res.status}`);
+          if (res.status === 409) throw new Error('Conflict: someone published changes before you. Load from GitHub and publish again.');
+          if (!res.ok) throw new Error(`GitHub returned ${res.status}`);
           const json = await res.json();
           github.sha = json.content?.sha || null;
           syncMeta.hasPendingChanges = false;
           syncMeta.lastGithubPublishAt = nowIso();
           saveSyncMeta();
-          updateGithubStatus('ok', `Publicado · ${formatDateTime(syncMeta.lastGithubPublishAt)}`);
-          toast('Cambios publicados en GitHub');
+          updateGithubStatus('ok', `Published · ${formatDateTime(syncMeta.lastGithubPublishAt)}`);
+          toast('Changes published to GitHub');
           render();
         } catch (err) {
-          updateGithubStatus('error', 'Error al publicar');
-          toast(err.message || 'No se pudo publicar en GitHub');
+          updateGithubStatus('error', 'Publish error');
+          toast(err.message || 'Could not publish to GitHub');
         }
       }
 
@@ -1241,10 +1275,10 @@
           syncMeta.hasPendingChanges = true;
           syncMeta.lastLocalChangeAt = nowIso();
           saveSyncMeta();
-          if (github?.config?.repo) github.statusText = 'Cambios locales pendientes';
+          if (github?.config?.repo) github.statusText = 'Local changes pending';
         }
         updateSaveIndicator();
-        if (!silent) toast('Cambios guardados');
+        if (!silent) toast('Changes saved');
       }
       function setState(mutator, opts = {}) {
         mutator(state);
@@ -1285,7 +1319,7 @@
       }
       function fmt(n, digits = 1) {
         const x = Number(n) || 0;
-        return x.toLocaleString('es-ES', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+        return x.toLocaleString('en-GB', { minimumFractionDigits: digits, maximumFractionDigits: digits });
       }
       function esc(v) {
         return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -1303,8 +1337,51 @@
       }
       function range(n) { return Array.from({length: Math.max(0, Number(n) || 0)}, (_,i)=>i); }
 
+      function normalizeStatus(value) {
+        return STATUS_MAP[value] || value || 'In proposal';
+      }
+      function diffWeeksFloor(startDateStr, targetDateStr) {
+        const a = parseDate(startDateStr), b = parseDate(targetDateStr);
+        return Math.floor((b - a) / (7 * 24 * 60 * 60 * 1000));
+      }
+      function activityStartDate(project, activity) {
+        return activity?.phase === 'proposal' ? (project.proposalStartDate || project.startDate) : project.startDate;
+      }
+      function proposalWeeks(project) {
+        if (!project?.proposalStartDate || !project?.startDate) return 0;
+        const w = diffWeeksFloor(project.proposalStartDate, project.startDate);
+        return Math.max(0, w);
+      }
+      function activityDurationWeeks(project, activity) {
+        if (activity?.phase === 'proposal') return Math.max(1, proposalWeeks(project));
+        return Math.max(1, Number(project.durationWeeks) || 1);
+      }
+      function ensureProposalActivity(project) {
+        if (!project || isVacationProject(project)) return;
+        project.proposalStartDate ||= project.startDate;
+        if (parseDate(project.proposalStartDate) > parseDate(project.startDate)) project.proposalStartDate = project.startDate;
+        const weeks = proposalWeeks(project);
+        let proposal = (project.activities || []).find(a => a.phase === 'proposal' || a.id === PROPOSAL_ACTIVITY_ID || String(a.name || '').trim().toLowerCase() === 'proposal');
+        if (weeks > 0 && !proposal) {
+          project.activities ||= [];
+          project.activities.unshift({ id: PROPOSAL_ACTIVITY_ID, name: 'Proposal', phase: 'proposal', notes: 'Proposal / business development effort.', plan: {} });
+        } else if (proposal) {
+          proposal.id ||= PROPOSAL_ACTIVITY_ID;
+          proposal.phase = 'proposal';
+          proposal.name ||= 'Proposal';
+          proposal.notes ||= 'Proposal / business development effort.';
+        }
+      }
+      function projectPlanningStart(project) {
+        return proposalWeeks(project) > 0 ? project.proposalStartDate : project.startDate;
+      }
+      function projectPlanningWeeks(project) {
+        return (proposalWeeks(project) || 0) + (Number(project.durationWeeks) || 1);
+      }
+
+
       function isVacationProject(project) {
-        return Boolean(project && (project.capacityMode === 'vacation' || project.id === VACATION_PROJECT_ID || String(project.name || '').trim().toLowerCase() === VACATION_PROJECT_NAME.toLowerCase()));
+        return Boolean(project && (project.capacityMode === 'vacation' || project.id === VACATION_PROJECT_ID || [VACATION_PROJECT_NAME.toLowerCase(), 'vacaciones equipo'].includes(String(project.name || '').trim().toLowerCase())));
       }
       function projectActivities(project) {
         if (!project.activities || !project.activities.length) normalizeState(state);
@@ -1327,7 +1404,11 @@
         return cell.actual > 0 ? cell.actual : (cell.forecast || 0);
       }
       function projectWeekValue(project, personId, week) {
-        return projectActivities(project).reduce((sum, activity) => sum + activityWeekValue(activity, personId, week), 0);
+        const date = addWeeks(projectPlanningStart(project), week);
+        return projectActivities(project).reduce((sum, activity) => {
+          const rel = diffWeeksFloor(activityStartDate(project, activity), date);
+          return sum + (rel >= 0 && rel < activityDurationWeeks(project, activity) ? activityWeekValue(activity, personId, rel) : 0);
+        }, 0);
       }
       function activityTotal(activity) {
         let total = 0;
@@ -1353,7 +1434,7 @@
         if (!Object.keys(activity.plan[personId] || {}).length) delete activity.plan[personId];
       }
       function getOwnerName(project) {
-        return getPerson(project.ownerId)?.name || 'Sin owner';
+        return getPerson(project.ownerId)?.name || 'No owner';
       }
       function summaryProjectStatusFilter() {
         return state.settings.summaryProjectStatus || 'all';
@@ -1363,14 +1444,14 @@
       }
       function filteredProjectsForSummary() {
         const filter = summaryProjectStatusFilter();
-        let projects = state.projects.filter(p => !isVacationProject(p) && (filter === 'all' || (p.status || 'Sin estado') === filter));
+        let projects = state.projects.filter(p => !isVacationProject(p) && (filter === 'all' || (normalizeStatus(p.status) || 'No status') === filter));
         const sort = summaryProjectSort();
         projects = [...projects].sort((a, b) => {
           if (sort === 'load') return projectTotal(b) - projectTotal(a);
           if (sort === 'start') return parseDate(a.startDate) - parseDate(b.startDate);
-          if (sort === 'owner') return getOwnerName(a).localeCompare(getOwnerName(b), 'es');
-          if (sort === 'name') return String(a.name || '').localeCompare(String(b.name || ''), 'es');
-          return String(a.status || '').localeCompare(String(b.status || ''), 'es') || String(a.name || '').localeCompare(String(b.name || ''), 'es');
+          if (sort === 'owner') return getOwnerName(a).localeCompare(getOwnerName(b), 'en');
+          if (sort === 'name') return String(a.name || '').localeCompare(String(b.name || ''), 'en');
+          return String(a.status || '').localeCompare(String(b.status || ''), 'es') || String(a.name || '').localeCompare(String(b.name || ''), 'en');
         });
         return projects;
       }
@@ -1383,20 +1464,35 @@
         const projects = filteredProjectsForSummary();
         const vacationProjects = state.projects.filter(isVacationProject);
         const personWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
+        const personForecastWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
+        const personActualWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
         const projectWeekly = Object.fromEntries(projects.map(p => [p.id, Array(horizon).fill(0)]));
+        const projectForecastWeekly = Object.fromEntries(projects.map(p => [p.id, Array(horizon).fill(0)]));
+        const projectActualWeekly = Object.fromEntries(projects.map(p => [p.id, Array(horizon).fill(0)]));
         const vacationPersonWeekly = Object.fromEntries(people.map(p => [p.id, Array(horizon).fill(0)]));
         const weeklyTotal = Array(horizon).fill(0);
+        const weeklyForecast = Array(horizon).fill(0);
+        const weeklyActual = Array(horizon).fill(0);
         for (const project of projects) {
           for (const activity of projectActivities(project)) {
             for (const [personId, weekMap] of Object.entries(activity.plan || {})) {
-              for (const [relWeek] of Object.entries(weekMap || {})) {
-                const actualDate = addWeeks(project.startDate, Number(relWeek));
+              for (const [relWeek, cellValue] of Object.entries(weekMap || {})) {
+                const actualDate = addWeeks(activityStartDate(project, activity), Number(relWeek));
                 const idx = diffWeeks(start, actualDate);
-                const fte = activityWeekValue(activity, personId, relWeek);
+                const cell = fteCellParts(cellValue);
+                const effective = cell.actual > 0 ? cell.actual : (cell.forecast || 0);
                 if (idx >= 0 && idx < horizon) {
-                  weeklyTotal[idx] += fte;
-                  projectWeekly[project.id][idx] += fte;
-                  if (personWeekly[personId]) personWeekly[personId][idx] += fte;
+                  weeklyForecast[idx] += cell.forecast || 0;
+                  weeklyActual[idx] += cell.actual || 0;
+                  weeklyTotal[idx] += effective;
+                  projectForecastWeekly[project.id][idx] += cell.forecast || 0;
+                  projectActualWeekly[project.id][idx] += cell.actual || 0;
+                  projectWeekly[project.id][idx] += effective;
+                  if (personWeekly[personId]) {
+                    personForecastWeekly[personId][idx] += cell.forecast || 0;
+                    personActualWeekly[personId][idx] += cell.actual || 0;
+                    personWeekly[personId][idx] += effective;
+                  }
                 }
               }
             }
@@ -1405,8 +1501,8 @@
         for (const project of vacationProjects) {
           for (const activity of projectActivities(project)) {
             for (const [personId, weekMap] of Object.entries(activity.plan || {})) {
-              for (const [relWeek] of Object.entries(weekMap || {})) {
-                const actualDate = addWeeks(project.startDate, Number(relWeek));
+              for (const [relWeek, cellValue] of Object.entries(weekMap || {})) {
+                const actualDate = addWeeks(activityStartDate(project, activity), Number(relWeek));
                 const idx = diffWeeks(start, actualDate);
                 const fte = activityWeekValue(activity, personId, relWeek);
                 if (idx >= 0 && idx < horizon && vacationPersonWeekly[personId]) vacationPersonWeekly[personId][idx] += fte;
@@ -1429,6 +1525,8 @@
           });
         });
         const totalFteWeeks = weeklyTotal.reduce((a,b)=>a+b, 0);
+        const forecastFteWeeks = weeklyForecast.reduce((a,b)=>a+b, 0);
+        const actualFteWeeks = weeklyActual.reduce((a,b)=>a+b, 0);
         const peakWeekly = Math.max(0, ...weeklyTotal);
         const teamCapacityTotal = teamCapacityWeekly.reduce((a,b)=>a+b, 0);
         const teamGrossCapacityTotal = grossCapacityWeekly.reduce((a,b)=>a+b, 0);
@@ -1456,9 +1554,9 @@
           projectActivities(project).forEach(activity => Object.entries(activity.plan || {}).forEach(([personId, m]) => {
             if (Object.keys(m || {}).some(w => activityWeekValue(activity, personId, w) > 0)) assignedPeople.add(personId);
           }));
-          return { ...project, total, peak, avg, assignedPeople: assignedPeople.size, ownerName: getOwnerName(project), activityCount: projectActivities(project).length };
+          return { ...project, status: normalizeStatus(project.status), total, peak, avg, assignedPeople: assignedPeople.size, ownerName: getOwnerName(project), activityCount: projectActivities(project).length };
         });
-        return { weeks, weeklyTotal, teamCapacity: avgTeamCapacity, avgTeamCapacity, teamCapacityWeekly, grossCapacityWeekly, teamCapacityTotal, teamGrossCapacityTotal, vacationWeekly, vacationPersonWeekly, vacationTotal, personCapacityWeekly, totalFteWeeks, peakWeekly, personWeekly, projectWeekly, personRecap, projectRecap, projects };
+        return { weeks, weeklyTotal, weeklyForecast, weeklyActual, teamCapacity: avgTeamCapacity, avgTeamCapacity, teamCapacityWeekly, grossCapacityWeekly, teamCapacityTotal, teamGrossCapacityTotal, vacationWeekly, vacationPersonWeekly, vacationTotal, personCapacityWeekly, totalFteWeeks, forecastFteWeeks, actualFteWeeks, peakWeekly, personWeekly, personForecastWeekly, personActualWeekly, projectWeekly, projectForecastWeekly, projectActualWeekly, projectRecap, personRecap, projects };
       }
 
       function summaryGranularity() {
@@ -1476,19 +1574,22 @@
         if (summaryGranularity() === 'week') {
           return s.weeks.map((w, i) => {
             const total = s.weeklyTotal[i] || 0;
+            const forecast = s.weeklyForecast?.[i] || 0;
+            const actual = s.weeklyActual?.[i] || 0;
             const capacity = s.teamCapacityWeekly?.[i] || 0;
             const grossCapacity = s.grossCapacityWeekly?.[i] || 0;
             const vacation = s.vacationWeekly?.[i] || 0;
             return {
               key: w.date,
-              head: `S${w.index + 1}`,
+              head: `W${w.index + 1}`,
               label: w.label,
               weekIndexes: [i],
               total,
+              forecast,
+              actual,
               capacity,
               grossCapacity,
               vacation,
-              balance: capacity - total,
               utilization: capacity ? total / capacity : 0
             };
           });
@@ -1498,7 +1599,7 @@
         s.weeks.forEach((w, i) => {
           const key = monthKey(w.date);
           if (!byKey.has(key)) {
-            const g = { key, head: labelMonthKey(key).toUpperCase(), label: '0 sem.', weekIndexes: [], total: 0, capacity: 0, grossCapacity: 0, vacation: 0, balance: 0, utilization: 0 };
+            const g = { key, head: labelMonthKey(key).toUpperCase(), label: '0 wks', weekIndexes: [], total: 0, forecast: 0, actual: 0, capacity: 0, grossCapacity: 0, vacation: 0, utilization: 0 };
             byKey.set(key, g);
             groups.push(g);
           }
@@ -1506,15 +1607,17 @@
         });
         groups.forEach(g => {
           g.total = g.weekIndexes.reduce((sum, i) => sum + (s.weeklyTotal[i] || 0), 0);
+          g.forecast = g.weekIndexes.reduce((sum, i) => sum + (s.weeklyForecast?.[i] || 0), 0);
+          g.actual = g.weekIndexes.reduce((sum, i) => sum + (s.weeklyActual?.[i] || 0), 0);
           g.capacity = g.weekIndexes.reduce((sum, i) => sum + (s.teamCapacityWeekly?.[i] || 0), 0);
           g.grossCapacity = g.weekIndexes.reduce((sum, i) => sum + (s.grossCapacityWeekly?.[i] || 0), 0);
           g.vacation = g.weekIndexes.reduce((sum, i) => sum + (s.vacationWeekly?.[i] || 0), 0);
-          g.balance = g.capacity - g.total;
           g.utilization = g.capacity ? g.total / g.capacity : 0;
-          g.label = `${g.weekIndexes.length} sem.`;
+          g.label = `${g.weekIndexes.length} wks`;
         });
         return groups;
       }
+
       function usageClass(ratio, capacity = 1) {
         if (!capacity || ratio <= 0) return 'usage--none';
         if (ratio > 1.1) return 'usage--over';
@@ -1523,11 +1626,11 @@
         return 'usage--low';
       }
       function usageLabel(ratio, capacity = 1) {
-        if (!capacity || ratio <= 0) return 'Sin carga';
-        if (ratio > 1.1) return 'Sobrecarga';
-        if (ratio >= .95) return 'Alta';
-        if (ratio >= .70) return 'Óptima';
-        return 'Baja';
+        if (!capacity || ratio <= 0) return 'No load';
+        if (ratio > 1.1) return 'Overload';
+        if (ratio >= .95) return 'High';
+        if (ratio >= .70) return 'Optimal';
+        return 'Low';
       }
       function usageBadge(ratio, capacity = 1) {
         const cls = usageClass(ratio, capacity);
@@ -1555,7 +1658,7 @@
 
       function renderTabs() {
         const tabs = document.getElementById('primaryTabs');
-        tabs.innerHTML = `${TABS.map(t => `<button class="tab-btn ${ui.tab === t.id ? 'active' : ''}" data-tab="${t.id}">${t.label}</button>`).join('')}<span class="tab-spacer"></span><span class="tiny-status">${esc(state.projects.length)} proyectos · ${esc(activePeople().length)} personas activas</span>`;
+        tabs.innerHTML = `${TABS.map(t => `<button class="tab-btn ${ui.tab === t.id ? 'active' : ''}" data-tab="${t.id}">${t.label}</button>`).join('')}<span class="tab-spacer"></span><span class="tiny-status">${esc(state.projects.length)} projects · ${esc(activePeople().length)} active people</span>`;
         tabs.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => { ui.tab = btn.dataset.tab; render(); }));
       }
 
@@ -1570,51 +1673,57 @@
         updateSaveIndicator();
       }
 
+
+      function lineChart(title, periods, series) {
+        const width = 960, height = 190, left = 44, right = 18, top = 18, bottom = 34;
+        const values = series.flatMap(s => s.values || []);
+        const max = Math.max(1, ...values.map(v => Number(v) || 0));
+        const x = i => left + (periods.length <= 1 ? 0 : i * ((width - left - right) / (periods.length - 1)));
+        const y = v => (height - bottom) - ((Number(v) || 0) / max) * (height - top - bottom);
+        const palette = ['#1a4d7a', '#86bfc6', '#0e2236', '#8bcdff', '#5a7a94', '#b1c28c', '#2e4a62', '#c4d3df'];
+        const grid = [0,.25,.5,.75,1].map(t => `<line class="line-chart__grid" x1="${left}" x2="${width-right}" y1="${top + t*(height-top-bottom)}" y2="${top + t*(height-top-bottom)}"></line>`).join('');
+        const lines = series.map((s, idx) => {
+          const color = s.color || palette[idx % palette.length];
+          const pts = (s.values || []).map((v,i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+          const dots = (s.values || []).map((v,i) => `<circle class="line-chart__dot" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3" fill="${color}"><title>${esc(s.name)} · ${esc(periods[i]?.head || '')}: ${fmt(v,1)} FTE</title></circle>`).join('');
+          return `<polyline class="line-chart__line" points="${pts}" stroke="${color}"></polyline>${dots}`;
+        }).join('');
+        const labels = periods.filter((_, i) => i === 0 || i === periods.length - 1 || (periods.length <= 12 && i % 2 === 0) || (periods.length > 12 && i % 4 === 0)).map((p, i, arr) => {
+          const originalIndex = periods.indexOf(p);
+          return `<text class="line-chart__label" x="${x(originalIndex).toFixed(1)}" y="${height - 10}" text-anchor="middle">${esc(p.head)}</text>`;
+        }).join('');
+        const legend = `<div class="chart-legend">${series.map((s, idx) => `<span class="chart-legend__item"><span class="chart-legend__swatch" style="background:${s.color || palette[idx % palette.length]}"></span>${esc(s.name)}</span>`).join('')}</div>`;
+        return `<div class="chart-card"><div class="line-chart" role="img" aria-label="${esc(title)}"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">${grid}<line class="line-chart__axis" x1="${left}" x2="${width-right}" y1="${height-bottom}" y2="${height-bottom}"></line>${lines}${labels}<text class="line-chart__label" x="${left}" y="14" text-anchor="start">${esc(title)}</text></svg></div>${legend}</div>`;
+      }
+      function seriesFromPeople(s, periods) {
+        return state.people.map(person => ({ name: person.name, values: periods.map(period => period.weekIndexes.reduce((sum, i) => sum + ((s.personWeekly[person.id] || [])[i] || 0), 0)) }));
+      }
+      function seriesFromProjects(s, periods) {
+        return s.projectRecap.map(project => ({ name: project.name, values: periods.map(period => period.weekIndexes.reduce((sum, i) => sum + ((s.projectWeekly[project.id] || [])[i] || 0), 0)) }));
+      }
+
       function viewSummary() {
         const s = computeSummary();
-        const horizon = s.weeks.length || 1;
-        const avgLoad = s.totalFteWeeks / horizon;
-        const avgCapacity = s.avgTeamCapacity || 0;
-        const avgUtilization = avgCapacity ? avgLoad / avgCapacity : 0;
-        let peakIndex = 0;
-        s.weeklyTotal.forEach((value, i) => { if (value > (s.weeklyTotal[peakIndex] || 0)) peakIndex = i; });
-        const peakLoad = s.weeklyTotal[peakIndex] || 0;
-        const peakCapacity = s.teamCapacityWeekly?.[peakIndex] || 0;
-        const peakUtilization = peakCapacity ? peakLoad / peakCapacity : 0;
-        const criticalWeeks = s.weeklyTotal.filter((v, i) => s.teamCapacityWeekly?.[i] && v / s.teamCapacityWeekly[i] >= .95).length;
-        const overloadWeeks = s.weeklyTotal.filter((v, i) => s.teamCapacityWeekly?.[i] && v / s.teamCapacityWeekly[i] > 1).length;
-        const peopleWithPeak = s.personRecap.filter(p => p.active).map(p => ({ ...p, ratio: p.peakUtilization || 0 }));
-        const tensionedPeople = peopleWithPeak.filter(p => p.ratio > 1).length;
-        const maxPersonPeak = Math.max(0, ...peopleWithPeak.map(p => p.ratio));
-        const riskRatio = overloadWeeks ? 1.12 : criticalWeeks ? .98 : avgUtilization;
-        const peakLabel = s.weeks[peakIndex]?.label || '—';
         return `
           <section>
             <div class="view-header">
               <div>
-                <h2 class="view-title"><span class="title-base">Resumen</span><span class="title-accent"> de capacidad</span></h2>
-                <p class="view-subtitle">Vista consolidada para entender si el equipo está equilibrado, dónde aparecen picos de demanda y qué personas pueden quedar tensionadas.</p>
+                <h2 class="view-title"><span class="title-base">Capacity</span><span class="title-accent"> summary</span></h2>
+                <p class="view-subtitle">Consolidated view of net capacity, holidays, forecast FTEs, actual FTEs and effective workload across the Advisory team.</p>
               </div>
-              <div class="actions"><button class="btn" data-action="print">Imprimir / PDF</button><button class="btn btn--primary" data-action="go-projects">Editar proyectos</button></div>
+              <div class="actions"><button class="btn" data-action="print">Print / PDF</button><button class="btn btn--primary" data-action="go-projects">Edit projects</button></div>
             </div>
 
             <div class="card" style="margin-bottom:14px"><div class="card__body">
               <div class="controls-row">
-                <label class="field"><span class="label">Inicio resumen</span><input type="date" value="${esc(state.settings.portfolioStartDate)}" data-bind="settings.portfolioStartDate"></label>
-                <label class="field"><span class="label">Horizonte semanas</span><input type="number" min="4" max="104" step="1" value="${esc(state.settings.horizonWeeks)}" data-bind="settings.horizonWeeks"></label>
-                <div class="field"><span class="label">Agrupar por</span><div class="segmented" role="group" aria-label="Agrupar resumen"><button type="button" class="segmented__btn ${summaryGranularity() === 'week' ? 'active' : ''}" data-summary-granularity="week">Semana</button><button type="button" class="segmented__btn ${summaryGranularity() === 'month' ? 'active' : ''}" data-summary-granularity="month">Mes</button></div></div>
-                <label class="field"><span class="label">Estado proyecto</span><select data-bind="settings.summaryProjectStatus"><option value="all" ${summaryProjectStatusFilter() === 'all' ? 'selected' : ''}>Todos</option>${STATUS_OPTIONS.map(o => `<option value="${esc(o)}" ${summaryProjectStatusFilter() === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>
-                <label class="field"><span class="label">Orden proyectos</span><select data-bind="settings.summaryProjectSort"><option value="status" ${summaryProjectSort() === 'status' ? 'selected' : ''}>Estado</option><option value="load" ${summaryProjectSort() === 'load' ? 'selected' : ''}>Mayor carga</option><option value="start" ${summaryProjectSort() === 'start' ? 'selected' : ''}>Inicio</option><option value="owner" ${summaryProjectSort() === 'owner' ? 'selected' : ''}>Owner</option><option value="name" ${summaryProjectSort() === 'name' ? 'selected' : ''}>Nombre</option></select></label>
-                <div class="field field--wide"><span class="label">Lectura</span><span class="card__hint">El resumen puede filtrar por estado. Las tablas de personas y proyectos se recalculan con los proyectos visibles.</span></div>
+                <label class="field"><span class="label">Summary start</span><input type="date" value="${esc(state.settings.portfolioStartDate)}" data-bind="settings.portfolioStartDate"></label>
+                <label class="field"><span class="label">Horizon weeks</span><input type="number" min="4" max="104" step="1" value="${esc(state.settings.horizonWeeks)}" data-bind="settings.horizonWeeks"></label>
+                <div class="field"><span class="label">Group by</span><div class="segmented" role="group" aria-label="Group summary"><button type="button" class="segmented__btn ${summaryGranularity() === 'week' ? 'active' : ''}" data-summary-granularity="week">Week</button><button type="button" class="segmented__btn ${summaryGranularity() === 'month' ? 'active' : ''}" data-summary-granularity="month">Month</button></div></div>
+                <label class="field"><span class="label">Project status</span><select data-bind="settings.summaryProjectStatus"><option value="all" ${summaryProjectStatusFilter() === 'all' ? 'selected' : ''}>All</option>${STATUS_OPTIONS.map(o => `<option value="${esc(o)}" ${summaryProjectStatusFilter() === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>
+                <label class="field"><span class="label">Project sort</span><select data-bind="settings.summaryProjectSort"><option value="status" ${summaryProjectSort() === 'status' ? 'selected' : ''}>Status</option><option value="load" ${summaryProjectSort() === 'load' ? 'selected' : ''}>Highest load</option><option value="start" ${summaryProjectSort() === 'start' ? 'selected' : ''}>Start</option><option value="owner" ${summaryProjectSort() === 'owner' ? 'selected' : ''}>Owner</option><option value="name" ${summaryProjectSort() === 'name' ? 'selected' : ''}>Name</option></select></label>
+                <div class="field field--wide"><span class="label">Reading guide</span><span class="card__hint">Effective load uses Actual FTE when available; otherwise it uses Forecast FTE. Holidays reduce net capacity before utilisation is calculated.</span></div>
               </div>
             </div></div>
-
-            <div class="grid grid--4" style="margin-bottom:14px">
-              ${healthKpi('Uso medio equipo', pctLabel(avgUtilization, avgCapacity), `${fmt(avgLoad,1)} FTE/semana sobre ${fmt(avgCapacity,1)} FTE disponibles netos.`, avgUtilization, avgCapacity)}
-              ${healthKpi('Pico de demanda', pctLabel(peakUtilization, peakCapacity), `${fmt(peakLoad,1)} FTE en ${esc(peakLabel)} sobre ${fmt(peakCapacity,1)} FTE netos.`, peakUtilization, peakCapacity)}
-              ${healthKpi('Semanas críticas', String(criticalWeeks), `${overloadWeeks} sobre capacidad · ${criticalWeeks} por encima del 95%. Vacaciones reducen capacidad.`, riskRatio, avgCapacity)}
-              ${healthKpi('Personas tensionadas', String(tensionedPeople), `Superan el 100% de su capacidad en alguna semana. Pico individual: ${pctLabel(maxPersonPeak, 1)}.`, maxPersonPeak, 1)}
-            </div>
 
             ${summaryTimelineTable(s)}
             ${personUtilizationMatrix(s)}
@@ -1628,16 +1737,27 @@
 
       function summaryTimelineTable(s) {
         const periods = summaryPeriods(s);
-        const mode = summaryGranularity() === 'month' ? 'mensual' : 'semanal';
+        const mode = summaryGranularity() === 'month' ? 'monthly' : 'weekly';
+        const chart = lineChart(`Team ${mode} workload`, periods, [
+          { name: 'Gross capacity', color: '#0e2236', values: periods.map(p => p.grossCapacity) },
+          { name: 'Net capacity', color: '#1a4d7a', values: periods.map(p => p.capacity) },
+          { name: 'Forecast FTE', color: '#86bfc6', values: periods.map(p => p.forecast) },
+          { name: 'Actual FTE', color: '#8bcdff', values: periods.map(p => p.actual) },
+          { name: 'Effective load', color: '#5a7a94', values: periods.map(p => p.total) }
+        ]);
         return `<div class="card">
-          <div class="card__head"><div><h3 class="card__title">Resumen ${mode}</h3><p class="card__hint">Carga forecast/real, vacaciones que restan capacidad y uso de capacidad neta.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
+          <div class="card__head"><div><h3 class="card__title">${mode[0].toUpperCase() + mode.slice(1)} summary</h3><p class="card__hint">Capacity first, then holidays, forecast, actual and effective load. Effective load = actual if available, otherwise forecast; utilisation is calculated against net capacity.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
+          ${chart}
           <div class="table-scroll"><table class="summary-table">
-            <thead><tr><th class="sticky-col">Métrica</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
+            <thead><tr><th class="sticky-col">Metric</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
             <tbody>
-              <tr><td class="sticky-col">FTE forecast/real</td>${periods.map(p => `<td class="cell-total mono" title="Carga imputada: usa real si existe; si no, forecast">${fmt(p.total,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Vacaciones / ausencias</td>${periods.map(p => `<td class="cell-total mono" title="Capacidad restada por vacaciones del equipo">-${fmt(p.vacation || 0,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Capacidad disponible</td>${periods.map(p => `<td class="cell-total mono" title="Capacidad bruta ${fmt(p.grossCapacity || 0,1)} - vacaciones ${fmt(p.vacation || 0,1)}">${fmt(p.capacity,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Uso capacidad</td>${periods.map(p => `<td>${usageCell(p.utilization, p.capacity, false, `${fmt(p.total,1)} FTE / ${fmt(p.capacity,1)} capacidad neta`)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Gross capacity</td>${periods.map(p => `<td class="cell-total mono" title="Team capacity before holidays">${fmt(p.grossCapacity,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Holidays / absences</td>${periods.map(p => `<td class="cell-total mono" title="Capacity removed by team holidays">-${fmt(p.vacation || 0,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Net available capacity</td>${periods.map(p => `<td class="cell-total mono" title="Gross capacity ${fmt(p.grossCapacity || 0,1)} - holidays ${fmt(p.vacation || 0,1)}">${fmt(p.capacity,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Forecast FTE</td>${periods.map(p => `<td class="cell-total mono" title="Planned FTE before actuals are entered">${fmt(p.forecast,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Actual FTE</td>${periods.map(p => `<td class="cell-total mono" title="Reported actual FTE">${fmt(p.actual,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Effective load</td>${periods.map(p => `<td class="cell-total mono" title="Uses actual if available; otherwise forecast">${fmt(p.total,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Capacity utilisation</td>${periods.map(p => `<td>${usageCell(p.utilization, p.capacity, false, `${fmt(p.total,1)} FTE / ${fmt(p.capacity,1)} net capacity`)}</td>`).join('')}</tr>
             </tbody>
           </table></div>
         </div>`;
@@ -1645,11 +1765,13 @@
 
       function personUtilizationMatrix(s) {
         const periods = summaryPeriods(s);
-        const mode = summaryGranularity() === 'month' ? 'mes' : 'semana';
+        const mode = summaryGranularity() === 'month' ? 'month' : 'week';
+        const chart = lineChart(`FTE by person and ${mode}`, periods, seriesFromPeople(s, periods));
         return `<div class="card" style="margin-top:14px">
-          <div class="card__head"><div><h3 class="card__title">Uso por persona y ${mode}</h3><p class="card__hint">FTE imputado por persona en cada periodo. El color indica el porcentaje de su capacidad individual utilizada.</p></div></div>
+          <div class="card__head"><div><h3 class="card__title">FTE by person and ${mode}</h3><p class="card__hint">Visible values are FTE. Colour indicates the percentage of each person's individual capacity used.</p></div></div>
+          ${chart}
           <div class="table-scroll"><table class="summary-table">
-            <thead><tr><th class="sticky-col">Persona</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
+            <thead><tr><th class="sticky-col">Person</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
             <tbody>
               ${state.people.map(person => {
                 const arr = s.personWeekly[person.id] || [];
@@ -1657,7 +1779,7 @@
                   const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
                   const capacity = period.weekIndexes.reduce((sum, i) => sum + (s.personCapacityWeekly?.[person.id]?.[i] || 0), 0);
                   const ratio = capacity ? total / capacity : 0;
-                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
+                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacity · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
                 }).join('')}</tr>`;
               }).join('')}
             </tbody>
@@ -1667,19 +1789,21 @@
 
       function projectUtilizationMatrix(s) {
         const periods = summaryPeriods(s);
-        const mode = summaryGranularity() === 'month' ? 'mes' : 'semana';
+        const mode = summaryGranularity() === 'month' ? 'month' : 'week';
+        const chart = lineChart(`FTE by project and ${mode}`, periods, seriesFromProjects(s, periods));
         return `<div class="card" style="margin-top:14px">
-          <div class="card__head"><div><h3 class="card__title">Uso por proyecto y ${mode}</h3><p class="card__hint">FTE imputado por proyecto en cada periodo. El color indica el porcentaje de capacidad total del equipo absorbida.</p></div></div>
+          <div class="card__head"><div><h3 class="card__title">FTE by project and ${mode}</h3><p class="card__hint">Visible values are FTE. Colour indicates the percentage of total net team capacity absorbed.</p></div></div>
+          ${chart}
           <div class="table-scroll"><table class="summary-table">
-            <thead><tr><th class="sticky-col">Proyecto</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
+            <thead><tr><th class="sticky-col">Project</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
             <tbody>
               ${s.projectRecap.map(project => {
                 const arr = s.projectWeekly[project.id] || [];
-                return `<tr><td class="sticky-col"><span class="strong">${esc(project.name)}</span><div class="person-sub">${esc(project.client || 'Cliente sin definir')} · ${esc(project.status || 'Sin estado')} · ${esc(project.ownerName || 'Sin owner')}</div></td>${periods.map(period => {
+                return `<tr><td class="sticky-col"><span class="strong">${esc(project.name)}</span><div class="person-sub">${esc(project.client || 'No client')} · ${esc(project.status || 'No status')} · ${esc(project.ownerName || 'No owner')}</div></td>${periods.map(period => {
                   const total = period.weekIndexes.reduce((sum, i) => sum + (arr[i] || 0), 0);
                   const capacity = period.weekIndexes.reduce((sum, i) => sum + (s.teamCapacityWeekly?.[i] || 0), 0);
                   const ratio = capacity ? total / capacity : 0;
-                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} capacidad equipo · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
+                  return `<td>${usageCell(ratio, capacity, true, `${fmt(total,1)} FTE / ${fmt(capacity,1)} team capacity · ${pctLabel(ratio, capacity)}`, `${fmt(total,1)} FTE`)}</td>`;
                 }).join('')}</tr>`;
               }).join('')}
             </tbody>
@@ -1689,10 +1813,10 @@
 
       function personRecapTable(s) {
         return `<div class="card">
-          <div class="card__head"><div><h3 class="card__title">Recap por persona</h3><p class="card__hint">Carga individual acumulada y riesgo medio frente a capacidad semanal.</p></div></div>
-          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Persona</th><th>Total</th><th>Media</th><th>Pico</th><th>Uso medio</th></tr></thead><tbody>
+          <div class="card__head"><div><h3 class="card__title">Person recap</h3><p class="card__hint">Accumulated individual load and average risk against weekly capacity.</p></div></div>
+          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Person</th><th>Total</th><th>Average</th><th>Peak</th><th>Average use</th></tr></thead><tbody>
             ${s.personRecap.map(p => `<tr>
-              <td><div class="person-name"><span class="avatar ${p.active ? '' : 'inactive'}">${esc(initials(p.name))}</span><span><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.role)} · ${p.projectCount} proyectos</div></span></div></td>
+              <td><div class="person-name"><span class="avatar ${p.active ? '' : 'inactive'}">${esc(initials(p.name))}</span><span><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.role)} · ${p.projectCount} projects</div></span></div></td>
               <td class="mono strong">${fmt(p.total,1)}</td><td class="mono">${fmt(p.avg,1)}</td><td class="mono">${fmt(p.peak,1)}</td>
               <td>${usageMeter(p.utilization, Number(p.capacity) || 0)}</td>
             </tr>`).join('')}
@@ -1703,12 +1827,12 @@
       function projectRecapTable(s) {
         const maxTotal = Math.max(1, ...s.projectRecap.map(p => p.total));
         return `<div class="card">
-          <div class="card__head"><div><h3 class="card__title">Recap por proyecto</h3><p class="card__hint">Volumen imputado, estado, owner interno y número de actividades/personas involucradas.</p></div></div>
-          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Proyecto</th><th>Estado</th><th>Owner</th><th>Inicio</th><th>Total</th><th>Pico</th><th>Equipo</th></tr></thead><tbody>
+          <div class="card__head"><div><h3 class="card__title">Project recap</h3><p class="card__hint">Assigned volume, status, internal owner and number of activities/people involved.</p></div></div>
+          <div class="table-scroll"><table class="plain-table"><thead><tr><th>Project</th><th>Status</th><th>Owner</th><th>Start</th><th>Total</th><th>Peak</th><th>Team</th></tr></thead><tbody>
             ${s.projectRecap.map(p => `<tr>
-              <td><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.client)} · ${p.activityCount} actividades</div></td>
-              <td><span class="status-pill"><span class="status-dot ${p.status === 'Activo' ? 'active' : ''}"></span>${esc(p.status)}</span></td>
-              <td><span class="owner-pill">${esc(p.ownerName || 'Sin owner')}</span></td>
+              <td><span class="strong">${esc(p.name)}</span><div class="person-sub">${esc(p.client)} · ${p.activityCount} activities</div></td>
+              <td><span class="status-pill"><span class="status-dot ${normalizeStatus(p.status) === 'Active' ? 'active' : ''}"></span>${esc(p.status)}</span></td>
+              <td><span class="owner-pill">${esc(p.ownerName || 'No owner')}</span></td>
               <td class="mono">${labelWeek(p.startDate)}</td><td class="mono strong">${fmt(p.total,1)}</td><td class="mono">${fmt(p.peak,1)}</td>
               <td><div class="summary-heat"><span>${p.assignedPeople}</span><span class="heat-bar"><span class="heat-bar__fill light" style="width:${Math.min(100, (p.total/maxTotal)*100)}%"></span></span></div></td>
             </tr>`).join('')}
@@ -1724,65 +1848,70 @@
           <section>
             <div class="view-header">
               <div>
-                <h2 class="view-title"><span class="title-base">Proyectos</span><span class="title-accent"> y actividades</span></h2>
-                <p class="view-subtitle">Cada proyecto puede desglosarse en varias actividades. Cada actividad tiene su propio cronograma FTE por persona y semana. Cada celda permite forecast (F) y real (R).</p>
+                <h2 class="view-title"><span class="title-base">Projects</span><span class="title-accent"> and activities</span></h2>
+                <p class="view-subtitle">Each project can be broken down into activities. Each activity has its own FTE timeline by person and week. Each cell supports forecast (F) and actual (A).</p>
               </div>
-              <div class="actions"><button class="btn btn--green" data-action="add-project">+ Crear proyecto</button></div>
+              <div class="actions"><button class="btn btn--green" data-action="add-project">+ Create project</button></div>
             </div>
             <div class="project-tabs">
-              ${state.projects.map(p => `<button class="project-chip ${p.id === ui.selectedProjectId ? 'active' : ''} ${isVacationProject(p) ? 'is-vacation' : ''}" data-select-project="${p.id}"><span class="project-chip__name">${esc(p.name)}</span><span class="project-chip__meta">${esc(p.client || 'Sin cliente')} · ${esc(p.status || 'Sin estado')} · <span class="owner-inline">${esc(getOwnerName(p))}</span></span></button>`).join('')}
+              ${state.projects.map(p => `<button class="project-chip ${p.id === ui.selectedProjectId ? 'active' : ''} ${isVacationProject(p) ? 'is-vacation' : ''}" data-select-project="${p.id}"><span class="project-chip__name">${esc(p.name)}</span><span class="project-chip__meta">${esc(p.client || 'No client')} · ${esc(normalizeStatus(p.status) || 'No status')} · <span class="owner-inline">${esc(getOwnerName(p))}</span></span></button>`).join('')}
             </div>
             ${project ? projectDetail(project) : ''}
           </section>`;
       }
 
       function emptyProjects() {
-        return `<div class="card"><div class="empty"><h3>No hay proyectos todavía</h3><p>Crea un primer proyecto para empezar a imputar FTEs por actividad, persona y semana.</p><button class="btn btn--primary" data-action="add-project">Crear proyecto</button></div></div>`;
+        return `<div class="card"><div class="empty"><h3>No projects yet</h3><p>Create a first project to start planning FTEs by activity, person and week.</p><button class="btn btn--primary" data-action="add-project">Create project</button></div></div>`;
       }
 
       function projectDetail(project) {
         const ownerOptions = state.people.map(person => `<option value="${person.id}" ${project.ownerId === person.id ? 'selected' : ''}>${esc(person.name)}</option>`).join('');
         const isVacation = isVacationProject(project);
         const projectGrandTotal = projectTotal(project);
-        const projectWeeklyPeak = Math.max(0, ...range(project.durationWeeks || 1).map(w => state.people.reduce((sum, person) => sum + projectWeekValue(project, person.id, w), 0)));
+        const projectWeeklyPeak = Math.max(0, ...range(projectPlanningWeeks(project)).map(w => { const date = addWeeks(projectPlanningStart(project), w); return state.people.reduce((sum, person) => sum + projectActivities(project).reduce((aSum, activity) => { const rel = diffWeeksFloor(activityStartDate(project, activity), date); return aSum + (rel >= 0 && rel < activityDurationWeeks(project, activity) ? activityWeekValue(activity, person.id, rel) : 0); }, 0), 0); }));
         return `<div class="project-layout">
           <aside class="card">
-            <div class="card__head"><div><h3 class="card__title">Configuración</h3><p class="card__hint">Al cambiar la fecha de inicio, se mueve la planificación completa del proyecto.</p></div></div>
+            <div class="card__head"><div><h3 class="card__title">Configuration</h3><p class="card__hint">Changing the start date moves the full project planning timeline.</p></div></div>
             <div class="card__body meta-form">
-              <label class="field field--wide"><span class="label">Nombre proyecto</span><input value="${esc(project.name)}" data-project-field="name" data-project-id="${project.id}"></label>
-              <label class="field field--wide"><span class="label">Cliente / ámbito</span><input value="${esc(project.client || '')}" data-project-field="client" data-project-id="${project.id}"></label>
+              <label class="field field--wide"><span class="label">Project name</span><input value="${esc(project.name)}" data-project-field="name" data-project-id="${project.id}"></label>
+              <label class="field field--wide"><span class="label">Client / scope</span><input value="${esc(project.client || '')}" data-project-field="client" data-project-id="${project.id}"></label>
               <div class="grid grid--2">
-                <label class="field"><span class="label">Estado</span><select data-project-field="status" data-project-id="${project.id}">${STATUS_OPTIONS.map(o => `<option ${project.status === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>
-                <label class="field"><span class="label">Owner interno</span><select data-project-field="ownerId" data-project-id="${project.id}"><option value="">Sin owner</option>${ownerOptions}</select></label>
+                <label class="field"><span class="label">Status</span><select data-project-field="status" data-project-id="${project.id}">${STATUS_OPTIONS.map(o => `<option ${project.status === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>
+                <label class="field"><span class="label">Internal owner</span><select data-project-field="ownerId" data-project-id="${project.id}"><option value="">No owner</option>${ownerOptions}</select></label>
               </div>
               <div class="grid grid--2">
-                <label class="field"><span class="label">Fecha de inicio</span><input type="date" value="${esc(project.startDate)}" data-project-field="startDate" data-project-id="${project.id}"></label>
-                <label class="field"><span class="label">Duración semanas</span><input type="number" min="1" max="104" step="1" value="${esc(project.durationWeeks)}" data-project-field="durationWeeks" data-project-id="${project.id}"></label>
+                <label class="field"><span class="label">Proposal start</span><input type="date" value="${esc(project.proposalStartDate || project.startDate)}" data-project-field="proposalStartDate" data-project-id="${project.id}"></label>
+                <label class="field"><span class="label">Project start</span><input type="date" value="${esc(project.startDate)}" data-project-field="startDate" data-project-id="${project.id}"></label>
+              </div>
+              <div class="grid grid--2">
+                <label class="field"><span class="label">Project weeks</span><input type="number" min="1" max="104" step="1" value="${esc(project.durationWeeks)}" data-project-field="durationWeeks" data-project-id="${project.id}"></label>
+                <div class="field"><span class="label">Proposal phase</span><span class="card__hint">${proposalWeeks(project) > 0 ? `${proposalWeeks(project)} week(s) before project start` : 'No separate proposal phase'}</span></div>
               </div>
               <div class="actions actions--left">
-                <button class="btn btn--small" data-shift-project="-1" data-project-id="${project.id}">Mover -1 sem.</button>
-                <button class="btn btn--small" data-shift-project="1" data-project-id="${project.id}">Mover +1 sem.</button>
-                <button class="btn btn--small" data-extend-project="4" data-project-id="${project.id}">Ampliar +4 sem.</button>
+                <button class="btn btn--small" data-shift-project="-1" data-project-id="${project.id}">Move -1 wk</button>
+                <button class="btn btn--small" data-shift-project="1" data-project-id="${project.id}">Move +1 wk</button>
+                <button class="btn btn--small" data-extend-project="4" data-project-id="${project.id}">Extend +4 wks</button>
               </div>
-              <label class="field field--wide"><span class="label">Notas</span><textarea data-project-field="notes" data-project-id="${project.id}">${esc(project.notes || '')}</textarea></label>
-              <div class="actions actions--left"><button class="btn btn--quiet" data-action="delete-project" data-project-id="${project.id}">Eliminar proyecto</button></div>
+              <label class="field field--wide"><span class="label">Notes</span><textarea data-project-field="notes" data-project-id="${project.id}">${esc(project.notes || '')}</textarea></label>
+              <div class="actions actions--left"><button class="btn btn--quiet" data-action="delete-project" data-project-id="${project.id}">Delete project</button></div>
             </div>
           </aside>
           <div class="card project-planner-card ${isVacation ? 'is-vacation' : ''}">
             <div class="card__head">
               <div>
-                <div class="project-title-row"><h3 class="card__title">${esc(project.name)}</h3><span class="status-pill"><span class="status-dot ${project.status === 'Activo' ? 'active' : ''}"></span>${esc(project.status)}</span><span class="owner-pill">${esc(getOwnerName(project))}</span></div>
-                <p class="card__hint">${isVacation ? 'Registra vacaciones/ausencias por persona y semana. No suma carga: resta capacidad disponible en el resumen.' : 'Imputa FTEs a nivel de actividad. El resumen agrega automáticamente por proyecto, persona y periodo.'}</p>
+                <div class="project-title-row"><h3 class="card__title">${esc(project.name)}</h3><span class="status-pill"><span class="status-dot ${normalizeStatus(project.status) === 'Active' ? 'active' : ''}"></span>${esc(normalizeStatus(project.status))}</span><span class="owner-pill">${esc(getOwnerName(project))}</span></div>
+                <p class="card__hint">${isVacation ? 'Record holidays/absences by person and week. This does not add workload: it reduces available capacity in the summary.' : 'Plan FTEs at activity level. The summary automatically aggregates by project, person and period.'}</p>
+                <div class="fte-legend" aria-label="FTE input legend"><span class="fte-legend__item"><span class="fte-legend__key">F</span> Forecast</span><span class="fte-legend__item"><span class="fte-legend__key fte-legend__key--actual">A</span> Actual</span></div>
               </div>
-              <div class="actions"><button class="btn btn--green btn--small" data-action="add-activity" data-project-id="${project.id}">+ Añadir actividad</button><button class="btn btn--small" data-action="clear-project" data-project-id="${project.id}">Vaciar proyecto</button></div>
+              <div class="actions"><button class="btn btn--green btn--small" data-action="add-activity" data-project-id="${project.id}">+ Add activity</button><button class="btn btn--small" data-action="clear-project" data-project-id="${project.id}">Clear project</button></div>
             </div>
             <div class="project-summary-bar">
-              <div class="project-summary-stat"><span class="project-summary-stat__label">${isVacation ? 'Capacidad restada' : 'Total proyecto'}</span><span class="project-summary-stat__value" data-project-grand-total="${project.id}">${fmt(projectGrandTotal,1)} FTE</span></div>
-              <div class="project-summary-stat"><span class="project-summary-stat__label">Pico semanal</span><span class="project-summary-stat__value" data-project-weekly-peak="${project.id}">${fmt(projectWeeklyPeak,1)} FTE</span></div>
-              <div class="project-summary-stat"><span class="project-summary-stat__label">Inicio / duración</span><span class="project-summary-stat__value">${labelWeek(project.startDate)} · ${project.durationWeeks} sem.</span></div>
-              <div class="project-summary-stat"><span class="project-summary-stat__label">Actividades</span><span class="project-summary-stat__value">${projectActivities(project).length}</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">${isVacation ? 'Capacity removed' : 'Project total'}</span><span class="project-summary-stat__value" data-project-grand-total="${project.id}">${fmt(projectGrandTotal,1)} FTE</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">Weekly peak</span><span class="project-summary-stat__value" data-project-weekly-peak="${project.id}">${fmt(projectWeeklyPeak,1)} FTE</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">Proposal / project</span><span class="project-summary-stat__value">${proposalWeeks(project) > 0 ? `${labelWeek(project.proposalStartDate)} → ${labelWeek(project.startDate)}` : labelWeek(project.startDate)} · ${project.durationWeeks} wks</span></div>
+              <div class="project-summary-stat"><span class="project-summary-stat__label">Activities</span><span class="project-summary-stat__value">${projectActivities(project).length}</span></div>
             </div>
-            ${isVacation ? '<div class="card__body"><span class="vacation-note"><strong>Proyecto de capacidad:</strong> los FTEs aquí no cuentan como carga de proyecto; reducen la capacidad disponible de cada persona/semana.</span></div>' : ''}
+            ${isVacation ? '<div class="card__body"><span class="vacation-note"><strong>Capacity project:</strong> FTEs entered here do not count as project workload; they reduce available capacity by person/week.</span></div>' : ''}
             ${projectActivitiesStack(project)}
           </div>
         </div>`;
@@ -1790,7 +1919,7 @@
 
       function projectActivitiesStack(project) {
         const people = state.people;
-        if (!people.length) return `<div class="empty"><h3>No hay personas creadas</h3><p>Crea personas del equipo para poder imputar FTEs en el proyecto.</p><button class="btn btn--primary" data-action="go-people">Crear personas</button></div>`;
+        if (!people.length) return `<div class="empty"><h3>No people created</h3><p>Create team members to plan FTEs in the project.</p><button class="btn btn--primary" data-action="go-people">Create people</button></div>`;
         return `<div class="activity-stack">
           ${projectActivities(project).map((activity, index) => activityCard(project, activity, index)).join('')}
         </div>`;
@@ -1801,18 +1930,18 @@
         return `<div class="activity-card ${isVacationProject(project) ? 'is-vacation' : ''}" data-activity-card="${activity.id}">
           <div class="activity-card__head">
             <div class="activity-heading">
-              <span class="activity-index-badge">${String(index + 1).padStart(2, '0')}</span>
+              <span class="activity-index-badge">${String(index + 1).padStart(2, '0')}</span>${activity.phase === 'proposal' ? '<span class="proposal-badge">Proposal</span>' : ''}
               <div>
-                <label class="field field--wide"><span class="label">Actividad ${index + 1}</span><input class="activity-title-input" value="${esc(activity.name)}" data-activity-field="name" data-project-id="${project.id}" data-activity-id="${activity.id}"></label>
+                <label class="field field--wide"><span class="label">Activity ${index + 1}</span><input class="activity-title-input" value="${esc(activity.name)}" data-activity-field="name" data-project-id="${project.id}" data-activity-id="${activity.id}"></label>
                 <div class="activity-meta">
-                  <label class="field field--wide"><span class="label">Notas actividad</span><input value="${esc(activity.notes || '')}" data-activity-field="notes" data-project-id="${project.id}" data-activity-id="${activity.id}" placeholder="Ej. Diagnóstico, reuniones, modelización..."></label>
+                  <label class="field field--wide"><span class="label">Activity notes</span><input value="${esc(activity.notes || '')}" data-activity-field="notes" data-project-id="${project.id}" data-activity-id="${activity.id}" placeholder="E.g. discovery, meetings, modelling..."></label>
                 </div>
               </div>
             </div>
             <div class="actions">
-              <span class="activity-total-pill"><span class="usage-dot usage--low"></span><strong data-activity-grand-total="${activity.id}">${fmt(total,1)}</strong> FTE actividad</span>
-              <button class="btn btn--small" data-action="clear-activity" data-project-id="${project.id}" data-activity-id="${activity.id}">Vaciar</button>
-              <button class="btn btn--small btn--quiet" data-action="delete-activity" data-project-id="${project.id}" data-activity-id="${activity.id}">Eliminar</button>
+              <span class="activity-total-pill"><span class="usage-dot usage--low"></span><strong data-activity-grand-total="${activity.id}">${fmt(total,1)}</strong> activity FTE</span>
+              <button class="btn btn--small" data-action="clear-activity" data-project-id="${project.id}" data-activity-id="${activity.id}">Clear</button>
+              <button class="btn btn--small btn--quiet" data-action="delete-activity" data-project-id="${project.id}" data-activity-id="${activity.id}">Delete</button>
             </div>
           </div>
           ${activityMatrix(project, activity)}
@@ -1821,21 +1950,21 @@
 
       function activityMatrix(project, activity) {
         const people = state.people;
-        const weeks = range(project.durationWeeks || 1);
+        const weeks = range(activityDurationWeeks(project, activity));
         const colTotals = weeks.map(w => people.reduce((sum, p) => sum + activityWeekValue(activity, p.id, w), 0));
         return `<div class="table-scroll" data-activity-matrix-wrap="${activity.id}"><table class="matrix-table" data-activity-matrix="${activity.id}" data-project-matrix="${project.id}">
-          <thead><tr><th class="sticky-col">Persona</th>${weeks.map(w => `<th class="week-head"><span class="week-head__num">S${w+1}</span><span class="week-head__date">${labelWeek(addWeeks(project.startDate, w))}</span></th>`).join('')}<th>Total</th></tr></thead>
+          <thead><tr><th class="sticky-col">Person</th>${weeks.map(w => `<th class="week-head"><span class="week-head__num">W${w+1}</span><span class="week-head__date">${labelWeek(addWeeks(activityStartDate(project, activity), w))}</span></th>`).join('')}<th>Total</th></tr></thead>
           <tbody>
             ${people.map((person, rowIndex) => {
               const rowTotal = weeks.reduce((sum,w)=>sum + activityWeekValue(activity, person.id, w), 0);
               return `<tr><td class="sticky-col"><div class="person-name"><span class="avatar ${person.active ? '' : 'inactive'}">${esc(initials(person.name))}</span><span><span class="strong">${esc(person.name)}</span><div class="person-sub">${esc(person.role)} · cap. ${fmt(person.capacity,1)}</div></span></div></td>${weeks.map((w, colIndex) => {
                 const forecast = activityWeekForecast(activity, person.id, w);
                 const actual = activityWeekActual(activity, person.id, w);
-                return `<td style="text-align:center"><div class="fte-cell ${forecast ? 'has-forecast' : ''} ${actual ? 'has-actual' : ''}"><label class="fte-mini"><span class="fte-mini__label">F</span><input class="fte-input fte-input--mini ${forecast ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${forecast ? esc(forecast) : ''}" data-fte-kind="forecast" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="Forecast FTE ${esc(person.name)} actividad ${esc(activity.name)} semana ${w+1}"></label><label class="fte-mini fte-mini--actual"><span class="fte-mini__label">R</span><input class="fte-input fte-input--mini fte-input--actual ${actual ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${actual ? esc(actual) : ''}" data-fte-kind="actual" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="Real FTE ${esc(person.name)} actividad ${esc(activity.name)} semana ${w+1}"></label></div></td>`;
+                return `<td style="text-align:center"><div class="fte-cell ${forecast ? 'has-forecast' : ''} ${actual ? 'has-actual' : ''}"><label class="fte-mini"><span class="fte-mini__label" title="Forecast FTE">F</span><input class="fte-input fte-input--mini ${forecast ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${forecast ? esc(forecast) : ''}" data-fte-kind="forecast" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="Forecast FTE ${esc(person.name)} activity ${esc(activity.name)} week ${w+1}"></label><label class="fte-mini fte-mini--actual"><span class="fte-mini__label" title="Actual FTE">A</span><input class="fte-input fte-input--mini fte-input--actual ${actual ? 'has-value' : ''}" type="text" inputmode="decimal" autocomplete="off" value="${actual ? esc(actual) : ''}" data-fte-kind="actual" data-fte-project="${project.id}" data-fte-activity="${activity.id}" data-fte-person="${person.id}" data-fte-week="${w}" data-fte-row="${rowIndex}" data-fte-col="${colIndex}" aria-label="Actual FTE ${esc(person.name)} activity ${esc(activity.name)} week ${w+1}"></label></div></td>`;
               }).join('')}<td class="cell-total mono" data-row-total="${activity.id}:${person.id}">${fmt(rowTotal,1)}</td></tr>`;
             }).join('')}
           </tbody>
-          <tfoot><tr><td class="sticky-col">Total actividad</td>${colTotals.map((v, w) => `<td class="cell-total mono" data-col-total="${activity.id}:${w}">${fmt(v,1)}</td>`).join('')}<td class="cell-total mono" data-grand-total="${activity.id}">${fmt(colTotals.reduce((a,b)=>a+b,0),1)}</td></tr></tfoot>
+          <tfoot><tr><td class="sticky-col">Activity total</td>${colTotals.map((v, w) => `<td class="cell-total mono" data-col-total="${activity.id}:${w}">${fmt(v,1)}</td>`).join('')}<td class="cell-total mono" data-grand-total="${activity.id}">${fmt(colTotals.reduce((a,b)=>a+b,0),1)}</td></tr></tfoot>
         </table></div>`;
       }
 
@@ -1843,24 +1972,60 @@
         return `<section>
           <div class="view-header">
             <div>
-              <h2 class="view-title"><span class="title-base">Personas</span><span class="title-accent"> del equipo</span></h2>
-              <p class="view-subtitle">Define equipo, rol y capacidad semanal. Las personas inactivas se mantienen en histórico, pero no suman capacidad disponible.</p>
+              <h2 class="view-title"><span class="title-base">Team</span><span class="title-accent"> people</span></h2>
+              <p class="view-subtitle">Define team members, roles and weekly capacity. Inactive people remain in history, but do not add available capacity.</p>
             </div>
-            <div class="actions"><button class="btn btn--green" data-action="add-person">+ Crear persona</button></div>
+            <div class="actions"><button class="btn btn--green" data-action="add-person">+ Create person</button></div>
           </div>
           <div class="card">
-            <div class="card__head"><div><h3 class="card__title">Equipo Advisory</h3><p class="card__hint">Edita directamente las celdas. Los cambios se guardan automáticamente.</p></div></div>
-            <div class="table-scroll"><table class="plain-table"><thead><tr><th>Persona</th><th>Rol</th><th>Capacidad FTE</th><th>Activa</th><th></th></tr></thead><tbody>
+            <div class="card__head"><div><h3 class="card__title">Advisory team</h3><p class="card__hint">Use “Update this week” to update forecast and actual FTEs only for activities where the person already participates.</p></div></div>
+            <div class="table-scroll"><table class="plain-table"><thead><tr><th>Person</th><th>Role</th><th>Capacity FTE</th><th>Active</th><th>Current week</th><th></th></tr></thead><tbody>
               ${state.people.map(p => `<tr>
                 <td><div class="person-name"><span class="avatar ${p.active ? '' : 'inactive'}">${esc(initials(p.name))}</span><input value="${esc(p.name)}" data-person-field="name" data-person-id="${p.id}" style="min-width:180px"></div></td>
                 <td><select data-person-field="role" data-person-id="${p.id}">${ROLE_OPTIONS.map(o => `<option ${p.role === o ? 'selected' : ''}>${o}</option>`).join('')}</select></td>
                 <td><input type="number" min="0" max="2" step="0.1" value="${esc(p.capacity)}" data-person-field="capacity" data-person-id="${p.id}" style="width:110px"></td>
-                <td><select data-person-field="active" data-person-id="${p.id}"><option value="true" ${p.active ? 'selected' : ''}>Sí</option><option value="false" ${!p.active ? 'selected' : ''}>No</option></select></td>
-                <td><button class="btn btn--small btn--quiet" data-delete-person="${p.id}">Eliminar</button></td>
+                <td><select data-person-field="active" data-person-id="${p.id}"><option value="true" ${p.active ? 'selected' : ''}>Yes</option><option value="false" ${!p.active ? 'selected' : ''}>No</option></select></td>
+                <td><button class="btn btn--small" data-action="open-week-adjust" data-person-id="${p.id}">Update this week</button></td>
+                <td><button class="btn btn--small btn--quiet" data-delete-person="${p.id}">Delete</button></td>
               </tr>`).join('')}
             </tbody></table></div>
           </div>
+          ${weekAdjustModal()}
         </section>`;
+      }
+
+      function currentIsoDate() {
+        return formatISO(new Date());
+      }
+      function personWeekAssignments(personId) {
+        const today = currentIsoDate();
+        const rows = [];
+        for (const project of state.projects) {
+          for (const activity of projectActivities(project)) {
+            const start = activityStartDate(project, activity);
+            const relWeek = diffWeeksFloor(start, today);
+            const duration = activityDurationWeeks(project, activity);
+            const participates = Object.keys(activity.plan?.[personId] || {}).length > 0;
+            if (relWeek >= 0 && relWeek < duration && participates) {
+              rows.push({ project, activity, relWeek, weekLabel: labelWeek(addWeeks(start, relWeek)), forecast: activityWeekForecast(activity, personId, relWeek), actual: activityWeekActual(activity, personId, relWeek) });
+            }
+          }
+        }
+        return rows;
+      }
+      function weekAdjustModal() {
+        if (!ui.adjustPersonId) return '';
+        const person = getPerson(ui.adjustPersonId);
+        if (!person) return '';
+        const rows = personWeekAssignments(person.id);
+        return `<div class="modal-backdrop">
+          <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Update this week for ${esc(person.name)}">
+            <div class="modal-head"><div><h3 class="modal-title">Update this week · ${esc(person.name)}</h3><p class="modal-subtitle">Week containing today (${labelWeek(currentIsoDate())}). Only activities where this person already participates are listed.</p></div><button class="btn btn--small" data-action="close-week-adjust">Close</button></div>
+            <div class="modal-body">
+              ${rows.length ? `<div class="table-scroll"><table class="plain-table adjust-table"><thead><tr><th>Project</th><th>Activity</th><th>Week</th><th>Forecast FTE</th><th>Actual FTE</th></tr></thead><tbody>${rows.map(r => `<tr><td><span class="strong">${esc(r.project.name)}</span><div class="person-sub">${esc(r.project.client || 'No client')} · ${esc(normalizeStatus(r.project.status))}</div></td><td>${esc(r.activity.name)}</td><td class="mono">${esc(r.weekLabel)}</td><td><input type="text" inputmode="decimal" value="${r.forecast ? esc(r.forecast) : ''}" data-adjust-fte data-fte-kind="forecast" data-fte-project="${r.project.id}" data-fte-activity="${r.activity.id}" data-fte-person="${person.id}" data-fte-week="${r.relWeek}"></td><td><input type="text" inputmode="decimal" value="${r.actual ? esc(r.actual) : ''}" data-adjust-fte data-fte-kind="actual" data-fte-project="${r.project.id}" data-fte-activity="${r.activity.id}" data-fte-person="${person.id}" data-fte-week="${r.relWeek}"></td></tr>`).join('')}</tbody></table></div>` : `<div class="empty"><h3>No current-week assignments</h3><p>${esc(person.name)} does not currently participate in any active activity for this week.</p></div>`}
+            </div>
+          </div>
+        </div>`;
       }
 
       function viewData() {
@@ -1869,34 +2034,34 @@
         return `<section>
           <div class="view-header">
             <div>
-              <h2 class="view-title"><span class="title-base">Datos</span><span class="title-accent"> y publicación</span></h2>
-              <p class="view-subtitle">El repositorio está definido internamente. Para publicar cambios solo necesitas pegar un token fine-grained con permiso <strong>Contents: Read and write</strong>.</p>
+              <h2 class="view-title"><span class="title-base">Data</span><span class="title-accent"> and publishing</span></h2>
+              <p class="view-subtitle">The repository is defined internally. The token is only required to publish changes; viewing and editing locally do not require a token. Use a fine-grained token with <strong>Contents: Read and write</strong> permission.</p>
             </div>
-            <div class="actions"><button class="btn" data-action="download-json">Descargar JSON</button><button class="btn btn--primary" data-action="copy-json">Copiar JSON</button></div>
+            <div class="actions"><button class="btn" data-action="download-json">Download JSON</button><button class="btn btn--primary" data-action="copy-json">Copy JSON</button></div>
           </div>
           <div class="grid grid--2">
             <div class="card sync-card">
               <div class="card__head">
-                <div><h3 class="card__title">Sincronización GitHub Pages</h3><p class="card__hint">Configuración fija: <strong>hybridathletics94 / Advisory_FTE / main / data/planner.json</strong>.</p></div>
-                <span class="sync-status ${github.status === 'ok' ? 'is-ok' : github.status === 'error' ? 'is-error' : 'is-local'}" id="githubSyncStatus">${esc(github.statusText || 'Sin sincronizar')}</span>
+                <div><h3 class="card__title">GitHub Pages sync</h3><p class="card__hint">Fixed configuration: <strong>hybridathletics94 / Advisory_FTE / main / data/planner.json</strong>. Publishing creates a new GitHub commit.</p></div>
+                <span class="sync-status ${github.status === 'ok' ? 'is-ok' : github.status === 'error' ? 'is-error' : 'is-local'}" id="githubSyncStatus">${esc(github.statusText || 'Remote not checked')}</span>
               </div>
               <div class="card__body">
-                <label class="field field--token field--full"><span class="label">Token GitHub para publicar</span><input type="password" value="${esc(tokenValue)}" data-github-field="token" placeholder="Pega aquí tu fine-grained PAT"></label>
+                <label class="field field--token field--full"><span class="label">GitHub token for publishing</span><input type="password" value="${esc(tokenValue)}" data-github-field="token" placeholder="Paste your fine-grained PAT"></label>
                 <div class="actions actions--left" style="margin-top:14px">
-                  <button class="btn" data-action="save-github-config">Guardar token</button>
-                  <button class="btn" data-action="load-github">Actualizar desde GitHub</button>
-                  <button class="btn btn--primary" data-action="publish-github">Publicar cambios</button>
+                  <button class="btn" data-action="save-github-config">Save token</button>
+                  <button class="btn" data-action="load-github">Load from GitHub</button>
+                  <button class="btn btn--primary" data-action="publish-github">Publish changes</button>
                 </div>
-                <p class="sync-note">El token no se publica ni se guarda en el JSON: queda solo en esta sesión del navegador. Si cierras la pestaña, tendrás que pegarlo de nuevo.</p>
+                <p class="sync-note">The token is only required to publish changes. Viewing, editing locally and exporting JSON do not require a token. It is not published or saved in the JSON; if you close the tab, paste it again.</p>
                 <div class="sync-meta-grid">
-                  <div class="sync-meta-item"><span class="sync-meta-item__label">Estado local</span><span class="sync-meta-item__value">${syncMeta.hasPendingChanges ? 'Cambios pendientes de publicar' : 'Sin cambios pendientes'}</span></div>
-                  <div class="sync-meta-item"><span class="sync-meta-item__label">Última actualización</span><span class="sync-meta-item__value">${formatDateTime(syncMeta.lastGithubLoadAt)}</span></div>
-                  <div class="sync-meta-item"><span class="sync-meta-item__label">Última publicación</span><span class="sync-meta-item__value">${formatDateTime(syncMeta.lastGithubPublishAt)}</span></div>
+                  <div class="sync-meta-item"><span class="sync-meta-item__label">Local status</span><span class="sync-meta-item__value">${syncMeta.hasPendingChanges ? 'Pending changes' : 'No pending changes'}</span></div>
+                  <div class="sync-meta-item"><span class="sync-meta-item__label">Last GitHub load</span><span class="sync-meta-item__value">${formatDateTime(syncMeta.lastGithubLoadAt)}</span></div>
+                  <div class="sync-meta-item"><span class="sync-meta-item__label">Last publication</span><span class="sync-meta-item__value">${formatDateTime(syncMeta.lastGithubPublishAt)}</span></div>
                 </div>
               </div>
             </div>
-            <div class="card"><div class="card__head"><div><h3 class="card__title">Export actual</h3><p class="card__hint">Copia local de la planificación visible en esta sesión.</p></div></div><div class="card__body"><textarea class="data-box" readonly>${esc(data)}</textarea></div></div>
-            <div class="card"><div class="card__head"><div><h3 class="card__title">Importar planificación</h3><p class="card__hint">Pega un JSON exportado desde esta herramienta.</p></div></div><div class="card__body"><textarea class="data-box" data-import-text placeholder="Pega aquí el JSON..."></textarea><div class="actions actions--left" style="margin-top:12px"><button class="btn btn--primary" data-action="import-json">Importar</button><button class="btn" data-action="reset-demo">Restaurar demo</button></div></div></div>
+            <div class="card"><div class="card__head"><div><h3 class="card__title">Current export</h3><p class="card__hint">Local copy of the planning data visible in this session.</p></div></div><div class="card__body"><textarea class="data-box" readonly>${esc(data)}</textarea></div></div>
+            <div class="card"><div class="card__head"><div><h3 class="card__title">Import planning</h3><p class="card__hint">Paste a JSON exported from this tool.</p></div></div><div class="card__body"><textarea class="data-box" data-import-text placeholder="Paste JSON here..."></textarea><div class="actions actions--left" style="margin-top:12px"><button class="btn btn--primary" data-action="import-json">Import</button><button class="btn" data-action="reset-demo">Restore demo</button></div></div></div>
           </div>
         </section>`;
       }
@@ -1926,6 +2091,10 @@
           el.addEventListener('blur', e => formatFteInput(e.currentTarget));
           el.addEventListener('keydown', handleFteKeydown);
         });
+        root.querySelectorAll('[data-adjust-fte]').forEach(el => {
+          el.addEventListener('input', e => updateAdjustFte(e.currentTarget));
+          el.addEventListener('blur', e => formatFteInput(e.currentTarget));
+        });
         root.querySelectorAll('[data-select-project]').forEach(el => el.addEventListener('click', e => { ui.selectedProjectId = e.currentTarget.dataset.selectProject; render(); }));
         root.querySelectorAll('[data-summary-granularity]').forEach(el => el.addEventListener('click', e => {
           const value = e.currentTarget.dataset.summaryGranularity === 'month' ? 'month' : 'week';
@@ -1944,7 +2113,10 @@
           if (!p) return;
           let value = el.type === 'number' ? Math.max(1, Math.round(cleanNumber(el.value))) : el.value;
           if (field === 'durationWeeks') value = Math.max(1, Math.min(104, value));
+          if (field === 'status') value = normalizeStatus(value);
           p[field] = value;
+          if (field === 'startDate' && (!p.proposalStartDate || parseDate(p.proposalStartDate) > parseDate(p.startDate))) p.proposalStartDate = p.startDate;
+          ensureProposalActivity(p);
         }, { silent: true });
       }
       function updateActivityField(el) {
@@ -2000,13 +2172,23 @@
         el.value = value ? String(value) : '';
         el.classList.toggle('has-value', value > 0);
       }
+      function updateAdjustFte(el) {
+        normalizeFteInput(el);
+        const projectId = el.dataset.fteProject, activityId = el.dataset.fteActivity, personId = el.dataset.ftePerson, week = Number(el.dataset.fteWeek);
+        const kind = el.dataset.fteKind === 'actual' ? 'actual' : 'forecast';
+        const p = state.projects.find(x => x.id === projectId);
+        const activity = p ? projectActivities(p).find(a => a.id === activityId) : null;
+        if (activity) setActivityWeek(activity, personId, week, kind, el.value);
+        el.classList.toggle('has-value', fteValue(el.value) > 0);
+        saveState(true);
+      }
       function updateMatrixTotals(projectId, activityId) {
         const project = getProject(projectId);
         const activity = project ? projectActivities(project).find(a => a.id === activityId) : null;
         const table = document.querySelector(`[data-activity-matrix="${activityId}"]`);
         if (!project || !activity || !table) return;
         const people = state.people;
-        const weeks = range(project.durationWeeks || 1);
+        const weeks = range(activityDurationWeeks(project, activity));
         people.forEach(person => {
           const rowTotal = weeks.reduce((sum, w) => sum + activityWeekValue(activity, person.id, w), 0);
           const cell = table.querySelector(`[data-row-total="${activityId}:${person.id}"]`);
@@ -2026,7 +2208,13 @@
         const projectGrand = projectTotal(project);
         const projectGrandCell = document.querySelector(`[data-project-grand-total="${projectId}"]`);
         if (projectGrandCell) projectGrandCell.textContent = `${fmt(projectGrand, 1)} FTE`;
-        const projectWeeklyPeak = Math.max(0, ...range(project.durationWeeks || 1).map(w => people.reduce((sum, person) => sum + projectWeekValue(project, person.id, w), 0)));
+        const projectWeeklyPeak = Math.max(0, ...range(projectPlanningWeeks(project)).map(w => people.reduce((sum, person) => {
+          const date = addWeeks(projectPlanningStart(project), w);
+          return sum + projectActivities(project).reduce((aSum, activity) => {
+            const rel = diffWeeksFloor(activityStartDate(project, activity), date);
+            return aSum + (rel >= 0 && rel < activityDurationWeeks(project, activity) ? activityWeekValue(activity, person.id, rel) : 0);
+          }, 0);
+        }, 0)));
         const projectPeakCell = document.querySelector(`[data-project-weekly-peak="${projectId}"]`);
         if (projectPeakCell) projectPeakCell.textContent = `${fmt(projectWeeklyPeak, 1)} FTE`;
       }
@@ -2058,7 +2246,7 @@
           const p = st.projects.find(x => x.id === id);
           if (p) p.startDate = addWeeks(p.startDate, weeks);
         });
-        toast(weeks > 0 ? 'Proyecto movido una semana adelante' : 'Proyecto movido una semana atrás');
+        toast(weeks > 0 ? 'Project moved one week forward' : 'Project moved one week back');
       }
       function extendProject(id, weeks) {
         setState(st => {
@@ -2071,14 +2259,14 @@
         const activityId = uid('activity');
         setState(st => {
           const ownerId = st.people.find(p => p.active)?.id || st.people[0]?.id || '';
-          st.projects.push({ id, name: `Nuevo proyecto ${st.projects.filter(p => !isVacationProject(p)).length + 1}`, client: 'Astara Intelligence', status: 'Pipeline', capacityMode: 'standard', ownerId, startDate: st.settings.portfolioStartDate || formatISO(new Date()), durationWeeks: 12, notes: '', activities: [{ id: activityId, name: 'Planificación general', notes: '', plan: {} }] });
+          st.projects.push({ id, name: `New project ${st.projects.filter(p => !isVacationProject(p)).length + 1}`, client: 'Astara Intelligence', status: 'Pipeline', capacityMode: 'standard', ownerId, proposalStartDate: st.settings.portfolioStartDate || formatISO(new Date()), startDate: st.settings.portfolioStartDate || formatISO(new Date()), durationWeeks: 12, notes: '', activities: [{ id: activityId, name: 'General planning', notes: '', plan: {} }] });
         });
         ui.selectedProjectId = id; ui.tab = 'projects'; render();
       }
       function deleteProject(id) {
         const project = getProject(id);
         if (!project) return;
-        if (!confirm(`¿Eliminar el proyecto "${project.name}"? Esta acción borra su matriz de FTEs.`)) return;
+        if (!confirm(`Delete project "${project.name}"? This will delete its FTE matrix.`)) return;
         setState(st => { st.projects = st.projects.filter(p => p.id !== id); });
         ui.selectedProjectId = state.projects[0]?.id || null;
         render();
@@ -2086,21 +2274,21 @@
       function clearProject(id) {
         const project = getProject(id);
         if (!project) return;
-        if (!confirm(`¿Vaciar todos los FTEs de "${project.name}"?`)) return;
+        if (!confirm(`Clear all FTEs in "${project.name}"?`)) return;
         setState(st => { const p = st.projects.find(x => x.id === id); if (p) projectActivities(p).forEach(activity => { activity.plan = {}; }); });
       }
       function addActivity(projectId) {
         setState(st => {
           const p = st.projects.find(x => x.id === projectId);
           if (!p) return;
-          projectActivities(p).push({ id: uid('activity'), name: `Nueva actividad ${projectActivities(p).length + 1}`, notes: '', plan: {} });
+          projectActivities(p).push({ id: uid('activity'), name: `New activity ${projectActivities(p).length + 1}`, notes: '', plan: {} });
         });
       }
       function clearActivity(projectId, activityId) {
         const project = getProject(projectId);
         const activity = project ? projectActivities(project).find(a => a.id === activityId) : null;
         if (!activity) return;
-        if (!confirm(`¿Vaciar la actividad "${activity.name}"?`)) return;
+        if (!confirm(`Clear activity "${activity.name}"?`)) return;
         setState(st => {
           const p = st.projects.find(x => x.id === projectId);
           const a = p ? projectActivities(p).find(x => x.id === activityId) : null;
@@ -2111,8 +2299,8 @@
         const project = getProject(projectId);
         const activity = project ? projectActivities(project).find(a => a.id === activityId) : null;
         if (!project || !activity) return;
-        if (projectActivities(project).length <= 1) { toast('El proyecto debe tener al menos una actividad'); return; }
-        if (!confirm(`¿Eliminar la actividad "${activity.name}"? También se borran sus FTEs.`)) return;
+        if (projectActivities(project).length <= 1) { toast('The project must have at least one activity'); return; }
+        if (!confirm(`Delete activity "${activity.name}"? Its FTEs will also be deleted.`)) return;
         setState(st => {
           const p = st.projects.find(x => x.id === projectId);
           if (p) p.activities = projectActivities(p).filter(a => a.id !== activityId);
@@ -2120,13 +2308,13 @@
       }
       function addPerson() {
         const id = uid('person');
-        setState(st => { st.people.push({ id, name: `Nueva persona ${st.people.length + 1}`, role: 'Consultant', capacity: 1, active: true }); });
+        setState(st => { st.people.push({ id, name: `New person ${st.people.length + 1}`, role: 'Consultant', capacity: 1, active: true }); });
         ui.tab = 'people'; render();
       }
       function deletePerson(id) {
         const person = getPerson(id);
         if (!person) return;
-        if (!confirm(`¿Eliminar a "${person.name}"? También se eliminarán sus FTEs en todos los proyectos.`)) return;
+        if (!confirm(`Delete "${person.name}"? Their FTEs will also be removed from all projects.`)) return;
         setState(st => {
           st.people = st.people.filter(p => p.id !== id);
           st.projects.forEach(pr => {
@@ -2143,6 +2331,8 @@
         if (action === 'clear-activity') clearActivity(el.dataset.projectId, el.dataset.activityId);
         if (action === 'delete-activity') deleteActivity(el.dataset.projectId, el.dataset.activityId);
         if (action === 'add-person') addPerson();
+        if (action === 'open-week-adjust') { ui.adjustPersonId = el.dataset.personId; render(); }
+        if (action === 'close-week-adjust') { ui.adjustPersonId = null; render(); }
         if (action === 'go-people') { ui.tab = 'people'; render(); }
         if (action === 'go-projects') { ui.tab = 'projects'; render(); }
         if (action === 'print') window.print();
@@ -2155,8 +2345,8 @@
         if (action === 'publish-github') publishToGithub();
       }
       async function copyJson() {
-        try { await navigator.clipboard.writeText(JSON.stringify(state, null, 2)); toast('JSON copiado'); }
-        catch { toast('No se pudo copiar. Selecciona el texto manualmente.'); }
+        try { await navigator.clipboard.writeText(JSON.stringify(state, null, 2)); toast('JSON copied'); }
+        catch { toast('Could not copy. Select the text manually.'); }
       }
       function downloadJson() {
         const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
@@ -2168,18 +2358,18 @@
       function importJson() {
         const text = document.querySelector('[data-import-text]')?.value || '';
         try {
-          if (!confirm('¿Importar este JSON? Se reemplazará la planificación guardada en este navegador.')) return;
+          if (!confirm('Import this JSON? It will replace the planning data saved in this browser.')) return;
           const parsed = JSON.parse(text);
-          if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('Formato no válido');
+          if (!parsed.people || !parsed.projects || !parsed.settings) throw new Error('Invalid format');
           state = normalizeState(parsed);
           saveState();
           ui.selectedProjectId = state.projects[0]?.id || null;
-          toast('Planificación importada');
+          toast('Planning imported');
           render();
-        } catch (err) { toast('JSON no válido'); }
+        } catch (err) { toast('Invalid JSON'); }
       }
       function resetDemo() {
-        if (!confirm('¿Restaurar los datos demo? Se perderán los cambios guardados en este navegador.')) return;
+        if (!confirm('Restore demo data? Changes saved in this browser will be lost.')) return;
         state = seedState(); ui.selectedProjectId = state.projects[0]?.id || null; saveState(); render();
       }
 
