@@ -552,8 +552,8 @@
     .chart-card__head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:14px; }
     .chart-card__title { margin:0; color:var(--fg-1); font-size:16px; font-weight:700; letter-spacing:-.01em; }
     .chart-card__subtitle { margin:5px 0 0; color:var(--fg-2); font-size:12px; line-height:1.5; }
-    .line-chart { width: 100%; min-height: 300px; }
-    .line-chart svg { width: 100%; height: 300px; display: block; overflow: visible; }
+    .line-chart { width: 100%; min-height: 320px; }
+    .line-chart svg { width: 100%; height: 320px; display: block; overflow: visible; }
     .line-chart__grid { stroke: rgba(196,211,223,.76); stroke-width: 1; stroke-dasharray: 3 7; }
     .line-chart__axis { stroke: rgba(46,74,98,.34); stroke-width: 1; }
     .line-chart__area { opacity: .10; }
@@ -1690,17 +1690,21 @@
 
 
       function lineChart(title, periods, series) {
-        const width = 1120, height = 300, left = 58, right = 28, top = 32, bottom = 46;
+        const width = 1120, height = 320, left = 62, right = 28, top = 34, bottom = 48;
         const values = series.flatMap(s => s.values || []).map(v => Number(v) || 0);
         const maxRaw = Math.max(1, ...values);
-        const max = Math.ceil((maxRaw * 1.15) * 10) / 10;
+        const max = Math.max(1, Math.ceil(maxRaw * 1.12));
         const innerW = width - left - right;
         const innerH = height - top - bottom;
         const x = i => left + (periods.length <= 1 ? innerW / 2 : i * (innerW / (periods.length - 1)));
         const y = v => (height - bottom) - ((Number(v) || 0) / max) * innerH;
         const palette = ['#1a4d7a', '#0e2236'];
-        const ticks = [0, .25, .5, .75, 1].map(t => ({ value: max * (1 - t), y: top + t * innerH }));
-        const grid = ticks.map(t => `<line class="line-chart__grid" x1="${left}" x2="${width-right}" y1="${t.y.toFixed(1)}" y2="${t.y.toFixed(1)}"></line><text class="line-chart__tick" x="${left - 12}" y="${(t.y + 3).toFixed(1)}" text-anchor="end">${fmt(t.value,1)}</text>`).join('');
+        const tickStep = max <= 6 ? 1 : Math.ceil(max / 6);
+        const tickValues = [];
+        for (let v = 0; v <= max; v += tickStep) tickValues.push(v);
+        if (!tickValues.includes(max)) tickValues.push(max);
+        const ticks = tickValues.sort((a,b) => b - a).map(value => ({ value, y: y(value) }));
+        const grid = ticks.map(t => `<line class="line-chart__grid" x1="${left}" x2="${width-right}" y1="${t.y.toFixed(1)}" y2="${t.y.toFixed(1)}"></line><text class="line-chart__tick" x="${left - 12}" y="${(t.y + 3).toFixed(1)}" text-anchor="end">${fmt(t.value,0)}</text>`).join('');
         const pathFrom = (vals) => {
           const pts = (vals || []).map((v,i) => [x(i), y(v)]);
           if (!pts.length) return '';
@@ -1776,23 +1780,19 @@
       function summaryTimelineTable(s) {
         const periods = summaryPeriods(s);
         const mode = summaryGranularity() === 'month' ? 'monthly' : 'weekly';
-        const chart = lineChart(`Weekly effective FTE vs net capacity`, periods, [
+        const chart = lineChart(`${mode[0].toUpperCase() + mode.slice(1)} effective FTE vs net capacity`, periods, [
           { name: 'Effective FTE', color: '#1a4d7a', values: periods.map(p => p.total) },
           { name: 'Net capacity', color: '#0e2236', dashed: true, values: periods.map(p => p.capacity) }
         ]);
         return `<div class="card">
-          <div class="card__head"><div><h3 class="card__title">${mode[0].toUpperCase() + mode.slice(1)} summary</h3><p class="card__hint">Chart shows weekly effective FTE vs net capacity. Table keeps the full capacity bridge and utilisation detail.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
+          <div class="card__head"><div><h3 class="card__title">${mode[0].toUpperCase() + mode.slice(1)} summary</h3><p class="card__hint">Chart and table focus on the three operating metrics: effective FTE, net capacity and utilisation.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
           ${chart}
           <div class="table-scroll"><table class="summary-table">
             <thead><tr><th class="sticky-col">Metric</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
             <tbody>
-              <tr><td class="sticky-col">Gross capacity</td>${periods.map(p => `<td class="cell-total mono" title="Team capacity before holidays">${fmt(p.grossCapacity,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Holidays / absences</td>${periods.map(p => `<td class="cell-total mono" title="Capacity removed by team holidays">-${fmt(p.vacation || 0,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Net available capacity</td>${periods.map(p => `<td class="cell-total mono" title="Gross capacity ${fmt(p.grossCapacity || 0,1)} - holidays ${fmt(p.vacation || 0,1)}">${fmt(p.capacity,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Forecast FTE</td>${periods.map(p => `<td class="cell-total mono" title="Planned FTE before actuals are entered">${fmt(p.forecast,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Actual FTE</td>${periods.map(p => `<td class="cell-total mono" title="Reported actual FTE">${fmt(p.actual,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Effective load</td>${periods.map(p => `<td class="cell-total mono" title="Uses actual if available; otherwise forecast">${fmt(p.total,1)}</td>`).join('')}</tr>
-              <tr><td class="sticky-col">Capacity utilisation</td>${periods.map(p => `<td>${usageCell(p.utilization, p.capacity, false, `${fmt(p.total,1)} FTE / ${fmt(p.capacity,1)} net capacity`)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Effective FTE</td>${periods.map(p => `<td class="cell-total mono" title="Uses Actual where available; otherwise Forecast">${fmt(p.total,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Net capacity</td>${periods.map(p => `<td class="cell-total mono" title="Gross capacity ${fmt(p.grossCapacity || 0,1)} - Team holidays ${fmt(p.vacation || 0,1)}">${fmt(p.capacity,1)}</td>`).join('')}</tr>
+              <tr><td class="sticky-col">Utilisation</td>${periods.map(p => `<td>${usageCell(p.utilization, p.capacity, false, `${fmt(p.total,1)} FTE / ${fmt(p.capacity,1)} net capacity`)}</td>`).join('')}</tr>
             </tbody>
           </table></div>
         </div>`;
