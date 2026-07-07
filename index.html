@@ -552,15 +552,17 @@
     .chart-card__head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:14px; }
     .chart-card__title { margin:0; color:var(--fg-1); font-size:16px; font-weight:700; letter-spacing:-.01em; }
     .chart-card__subtitle { margin:5px 0 0; color:var(--fg-2); font-size:12px; line-height:1.5; }
-    .line-chart { width: 100%; min-height: 320px; }
-    .line-chart svg { width: 100%; height: 320px; display: block; overflow: visible; }
+    .line-chart { width: 100%; min-height: 390px; }
+    .line-chart svg { width: 100%; height: 390px; display: block; overflow: visible; }
     .line-chart__grid { stroke: rgba(196,211,223,.76); stroke-width: 1; stroke-dasharray: 3 7; }
     .line-chart__axis { stroke: rgba(46,74,98,.34); stroke-width: 1; }
     .line-chart__area { opacity: .10; }
     .line-chart__line { fill: none; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 3px 8px rgba(14,34,54,.10)); }
     .line-chart__line--capacity { stroke-width: 3; stroke-dasharray: 8 7; opacity: .88; }
+    .line-chart__line--max { stroke-width: 2.2; stroke-dasharray: 2 8; opacity: .82; }
     .line-chart__dot { stroke: #fff; stroke-width: 2; }
     .line-chart__label { font-family: var(--font-ui); font-size: 10px; fill: var(--fg-3); font-weight: 600; }
+    .line-chart__label--date { font-size: 9px; letter-spacing: .02em; }
     .line-chart__tick { font-family: var(--font-ui); font-size: 10px; fill: var(--fg-3); font-weight: 600; }
     .chart-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     .chart-legend__item { display: inline-flex; align-items: center; gap: 7px; padding:6px 9px; border:1px solid var(--border-light); border-radius:999px; background:#fff; font-size: 10px; color: var(--fg-2); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
@@ -1690,15 +1692,15 @@
 
 
       function lineChart(title, periods, series) {
-        const width = 1120, height = 320, left = 62, right = 28, top = 34, bottom = 48;
+        const width = 1160, height = 390, left = 64, right = 34, top = 34, bottom = 86;
         const values = series.flatMap(s => s.values || []).map(v => Number(v) || 0);
         const maxRaw = Math.max(1, ...values);
-        const max = Math.max(1, Math.ceil(maxRaw * 1.12));
+        const max = Math.max(1, Math.ceil(maxRaw * 1.10));
         const innerW = width - left - right;
         const innerH = height - top - bottom;
         const x = i => left + (periods.length <= 1 ? innerW / 2 : i * (innerW / (periods.length - 1)));
         const y = v => (height - bottom) - ((Number(v) || 0) / max) * innerH;
-        const palette = ['#1a4d7a', '#0e2236'];
+        const palette = ['#1a4d7a', '#0e2236', '#5a7a94'];
         const tickStep = max <= 6 ? 1 : Math.ceil(max / 6);
         const tickValues = [];
         for (let v = 0; v <= max; v += tickStep) tickValues.push(v);
@@ -1728,14 +1730,20 @@
           const color = s.color || palette[idx % palette.length];
           const d = pathFrom(s.values || []);
           const area = idx === 0 ? `<path class="line-chart__area" d="${areaFrom(s.values || [])}" fill="${color}"></path>` : '';
-          const dots = (s.values || []).map((v,i) => `<circle class="line-chart__dot" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4" fill="${color}"><title>${esc(s.name)} · ${esc(periods[i]?.head || '')}: ${fmt(v,1)} FTE</title></circle>`).join('');
-          const lineClass = s.dashed ? 'line-chart__line line-chart__line--capacity' : 'line-chart__line';
+          const dots = (s.values || []).map((v,i) => `<circle class="line-chart__dot" cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${s.maxCapacity ? 3 : 4}" fill="${color}"><title>${esc(s.name)} · ${esc(periods[i]?.head || '')}: ${fmt(v,1)} FTE</title></circle>`).join('');
+          const lineClass = s.maxCapacity ? 'line-chart__line line-chart__line--max' : (s.dashed ? 'line-chart__line line-chart__line--capacity' : 'line-chart__line');
           return `${area}<path class="${lineClass}" d="${d}" stroke="${color}"></path>${dots}`;
         }).join('');
-        const step = periods.length <= 10 ? 1 : periods.length <= 18 ? 2 : 4;
-        const labels = periods.map((p, i) => (i === 0 || i === periods.length - 1 || i % step === 0) ? `<text class="line-chart__label" x="${x(i).toFixed(1)}" y="${height - 14}" text-anchor="middle">${esc(p.head)}</text>` : '').join('');
-        const legend = `<div class="chart-legend">${series.map((s, idx) => `<span class="chart-legend__item"><span class="chart-legend__swatch" style="background:${s.color || palette[idx % palette.length]}; ${s.dashed ? 'background: repeating-linear-gradient(90deg, '+(s.color || palette[idx % palette.length])+' 0 8px, transparent 8px 13px);' : ''}"></span>${esc(s.name)}</span>`).join('')}</div>`;
-        return `<div class="chart-card"><div class="chart-card__head"><div><h3 class="chart-card__title">${esc(title)}</h3><p class="chart-card__subtitle">Weekly effective FTE uses Actual where available; otherwise Forecast. Net capacity already subtracts Team holidays.</p></div></div><div class="line-chart" role="img" aria-label="${esc(title)}"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">${grid}<line class="line-chart__axis" x1="${left}" x2="${width-right}" y1="${height-bottom}" y2="${height-bottom}"></line><line class="line-chart__axis" x1="${left}" x2="${left}" y1="${top}" y2="${height-bottom}"></line>${lines}${labels}</svg></div>${legend}</div>`;
+        const labels = periods.map((p, i) => {
+          const xx = x(i).toFixed(1);
+          return `<text class="line-chart__label line-chart__label--date" x="${xx}" y="${height - 38}" text-anchor="end" transform="rotate(-35 ${xx} ${height - 38})">${esc(p.head)}</text>`;
+        }).join('');
+        const legend = `<div class="chart-legend">${series.map((s, idx) => {
+          const color = s.color || palette[idx % palette.length];
+          const dash = s.maxCapacity ? `background: repeating-linear-gradient(90deg, ${color} 0 3px, transparent 3px 9px);` : (s.dashed ? `background: repeating-linear-gradient(90deg, ${color} 0 8px, transparent 8px 13px);` : `background:${color};`);
+          return `<span class="chart-legend__item"><span class="chart-legend__swatch" style="${dash}"></span>${esc(s.name)}</span>`;
+        }).join('')}</div>`;
+        return `<div class="chart-card"><div class="chart-card__head"><div><h3 class="chart-card__title">${esc(title)}</h3><p class="chart-card__subtitle">Weekly effective FTE uses Actual where available; otherwise Forecast. Net capacity subtracts Team holidays; Max capacity shows the baseline before holidays.</p></div></div><div class="line-chart" role="img" aria-label="${esc(title)}"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">${grid}<line class="line-chart__axis" x1="${left}" x2="${width-right}" y1="${height-bottom}" y2="${height-bottom}"></line><line class="line-chart__axis" x1="${left}" x2="${left}" y1="${top}" y2="${height-bottom}"></line>${lines}${labels}</svg></div>${legend}</div>`;
       }
       function seriesFromPeople(s, periods) {
         return state.people.map(person => ({ name: person.name, values: periods.map(period => period.weekIndexes.reduce((sum, i) => sum + ((s.personWeekly[person.id] || [])[i] || 0), 0)) }));
@@ -1777,15 +1785,29 @@
           </section>`;
       }
 
+      function weeklyChartPeriods(s) {
+        return s.weeks.map((w, i) => ({
+          key: w.date,
+          head: labelWeek(w.date),
+          label: `Week ${w.index + 1}`,
+          weekIndexes: [i],
+          total: s.weeklyTotal?.[i] || 0,
+          capacity: s.teamCapacityWeekly?.[i] || 0,
+          grossCapacity: s.grossCapacityWeekly?.[i] || 0
+        }));
+      }
+
       function summaryTimelineTable(s) {
         const periods = summaryPeriods(s);
         const mode = summaryGranularity() === 'month' ? 'monthly' : 'weekly';
-        const chart = lineChart(`${mode[0].toUpperCase() + mode.slice(1)} effective FTE vs net capacity`, periods, [
-          { name: 'Effective FTE', color: '#1a4d7a', values: periods.map(p => p.total) },
-          { name: 'Net capacity', color: '#0e2236', dashed: true, values: periods.map(p => p.capacity) }
+        const chartPeriods = weeklyChartPeriods(s);
+        const chart = lineChart('Weekly effective FTE vs capacity', chartPeriods, [
+          { name: 'Effective FTE', color: '#1a4d7a', values: chartPeriods.map(p => p.total) },
+          { name: 'Net capacity', color: '#0e2236', dashed: true, values: chartPeriods.map(p => p.capacity) },
+          { name: 'Max capacity', color: '#5a7a94', maxCapacity: true, values: chartPeriods.map(p => p.grossCapacity) }
         ]);
         return `<div class="card">
-          <div class="card__head"><div><h3 class="card__title">${mode[0].toUpperCase() + mode.slice(1)} summary</h3><p class="card__hint">Chart and table focus on the three operating metrics: effective FTE, net capacity and utilisation.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
+          <div class="card__head"><div><h3 class="card__title">${mode[0].toUpperCase() + mode.slice(1)} summary</h3><p class="card__hint">The chart is weekly and labels each Monday. The table follows the selected grouping and keeps only effective FTE, net capacity and utilisation.</p></div><div class="legend">${usageBadge(.45)}${usageBadge(.82)}${usageBadge(1.02)}${usageBadge(1.18)}</div></div>
           ${chart}
           <div class="table-scroll"><table class="summary-table">
             <thead><tr><th class="sticky-col">Metric</th>${periods.map(p => `<th class="week-head"><span class="week-head__num">${esc(p.head)}</span><span class="week-head__date">${esc(p.label)}</span></th>`).join('')}</tr></thead>
